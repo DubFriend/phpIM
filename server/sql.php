@@ -9,16 +9,13 @@ class Sequel {
         $this->DB = $fig['connection'];
     }
 
-    
-
-
     function select($query, array $values = array()) {
-        $statement = "SELECT $query";        
+        $statement = "SELECT $query";
         $Results = $this->DB->prepare($statement);
         $Results->execute($values);
         return new Sequel_Results(array(
             "results" => $Results,
-            "statement" => $statement,//$this->extract_select_predicate($query),
+            "statement" => $statement,
             "values" => $values,
             "connection" => $this->DB
         ));
@@ -43,7 +40,7 @@ class Sequel_Results implements Iterator {
             $DB,
             $predicate,
             $values,
-            $count,
+            $count = null,
             $key = -1,
             $current;
 
@@ -73,7 +70,11 @@ class Sequel_Results implements Iterator {
         return $this->count;
     }
 
-    function rewind() {}
+    function rewind() {
+        if($this->key !== 0) {
+            throw new Exception("Sequel_Results does not support rewind.");
+        }
+    }
   
     function valid() {
         return ($this->current !== false);

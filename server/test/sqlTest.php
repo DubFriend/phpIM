@@ -67,18 +67,17 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $actualResults);
     }
 
-    //doesnt support rewind so foreach loop doesnt start at beggining index
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage Sequel_Results does not support rewind.
+     */
     function test_results_foreach_loop_next_allready_called() {
-    	$ResultsObject = $this->Sql->select("* FROM A");
-    	$ResultsObject->next();
-    	$actualResults = array();
-    	foreach($ResultsObject as $key => $val) {
-    		$actualResults[$key] = $val;
-    	}
-    	$this->assertEquals(
-    		array("1" => array("id" => 2, "a" => "bar", "b" => 6)),
-    		$actualResults
-    	);
+        $ResultsObject = $this->Sql->select("* FROM A");
+        $ResultsObject->next();
+        $actualResults = array();
+        foreach($ResultsObject as $key => $val) {
+            $actualResults[$key] = $val;
+        }
     }
 
     function test_insert() {

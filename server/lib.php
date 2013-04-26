@@ -1,7 +1,41 @@
 <?php
+class Session {
+
+    function __construct() {
+        if(session_status() != PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+    }
+    
+    function get($key) {
+        return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
+    }
+
+    function set($key, $value) {
+        $_SESSION[$key] = $value;
+    }
+
+    function destroy() {
+        if($_SESSION) {
+            $_SESSION = array();
+            if(session_id() != ""  ||  isset($_COOKIE[session_name()])) {
+                setcookie(session_name(), '', time()-2592000, '/');
+            }
+            session_unset();
+            session_destroy();
+        }
+    }
+
+    function regenerate() {
+        session_regenerate_id();
+    }
+}
+
+
 function try_array(array $array, $key, $default = null) {
     return array_key_exists($key, $array) ? $array[$key] : $default;
 }
+
 
 function debug($message) {
     if(IS_DEBUG_MESSAGES_ON) {
@@ -18,5 +52,30 @@ function debug($message) {
         }
         echo $output;
     }
+}
+
+
+//input:  string
+//output: sanitized string, safer to use within the application
+//        NOTE: not prepped for database insertion!
+function sanitize ($var) {
+    $var = strip_tags($var);
+    $var = stripcslashes($var);
+    return $var;
+}
+
+function sanitize_array ($array) {
+    $cleanArray = array();
+    if(is_array($array)) {
+        foreach($array as $key => $value) {
+            if(is_array($value)) {
+                $cleanArray[$key] = sanitize_array($value);
+            }
+            else {
+                $cleanArray[$key] = sanitize($value);
+            }
+        }
+    }
+    return $cleanArray;
 }
 ?>
