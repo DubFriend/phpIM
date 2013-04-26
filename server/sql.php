@@ -10,9 +10,7 @@ class Sequel {
     }
 
     
-    private function extract_select_predicate($query) {
-        return substr($query, strpos($query, "FROM"));
-    }
+
 
     function select($query, array $values = array()) {
         $statement = "SELECT $query";        
@@ -20,7 +18,7 @@ class Sequel {
         $Results->execute($values);
         return new Sequel_Results(array(
             "results" => $Results,
-            "predicate" => $this->extract_select_predicate($query),
+            "statement" => $statement,//$this->extract_select_predicate($query),
             "values" => $values,
             "connection" => $this->DB
         ));
@@ -51,12 +49,16 @@ class Sequel_Results implements Iterator {
 
     function __construct(array $fig = array()) {
         $this->Results = $fig['results'];
-        $this->predicate = $fig['predicate'];
+        $this->predicate = $this->extract_select_predicate($fig['statement']);
         $this->values = $fig['values'];
         $this->DB = $fig['connection'];
 
         $this->Results->setFetchMode(PDO::FETCH_ASSOC);
         $this->next();
+    }
+
+    private function extract_select_predicate($query) {
+        return substr($query, strpos($query, "FROM"));
     }
 
     //rowCount doesnt work for sqlite :(
