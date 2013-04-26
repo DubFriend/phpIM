@@ -1,4 +1,5 @@
 <?php
+require_once "sql.php";
 
 class Sql_Test extends PHPUnit_Framework_TestCase {
 	
@@ -27,64 +28,17 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
 			 ->execute(array("foo", 5));
 	}
 
-	function test_simple_select() {
-		$Results = $this->Sql->query("SELECT * FROM A");
+	function test_count() {
+		$Results = $this->Sql->select("* FROM A");
 		$this->assertEquals(1, $Results->count());
-		$this->assertEquals(array("a" => "foo", "b" => 5), $Results->next());
+		//$this->assertEquals(array("a" => "foo", "b" => 5), $Results->next());
 	}
+
+	
 
 	//function test_results_work_with_foreach_loop() {}
 	//function test_insert() {}
 	//function test_update() {}
 	//function test_delete() {}
 }
-/*
-class MyIterator implements Iterator
-{
-    private $var = array();
-
-    public function __construct($array)
-    {
-        if (is_array($array)) {
-            $this->var = $array;
-        }
-    }
-
-    public function rewind()
-    {
-        echo "rewinding\n";
-        reset($this->var);
-    }
-  
-    public function current()
-    {
-        $var = current($this->var);
-        echo "current: $var\n";
-        return $var;
-    }
-  
-    public function key() 
-    {
-        $var = key($this->var);
-        echo "key: $var\n";
-        return $var;
-    }
-  
-    public function next() 
-    {
-        $var = next($this->var);
-        echo "next: $var\n";
-        return $var;
-    }
-  
-    public function valid()
-    {
-        $key = key($this->var);
-        $var = ($key !== NULL && $key !== FALSE);
-        echo "valid: $var\n";
-        return $var;
-    }
-
-}
-*/
 ?>
