@@ -16,7 +16,8 @@ class Sequel {
 
     function select($query, array $values = array()) {
         $statement = "SELECT $query";        
-        $Results = $this->DB->prepare($statement)->execute($values);
+        $Results = $this->DB->prepare($statement);
+        $Results->execute($values);//->execute($values);
         return new Sequel_Results(array(
             "results" => $Results,
             "predicate" => $this->extract_select_predicate($query),
@@ -36,13 +37,18 @@ class Sequel_Results implements Iterator {
             $DB,
             $predicate,
             $values,
-            $count;
+            $count,
+            $isNextCalled = false,
+            $key = -1,
+            $current;
 
     function __construct(array $fig = array()) {
         $this->Results = $fig['results'];
         $this->predicate = $fig['predicate'];
         $this->values = $fig['values'];
         $this->DB = $fig['connection'];
+
+        $this->Results->setFetchMode(PDO::FETCH_ASSOC);
     }
 
     //rowCount doesnt work for sqlite :(
@@ -59,83 +65,43 @@ class Sequel_Results implements Iterator {
 
 
     function rewind() {
-        echo "rewinding\n";
-        reset($this->var);
+        if($this->isNextCalled) {
+            throw new Exception("Rewind not supported by Sequel_Results");
+        }
     }
   
     function current() {
-        $var = current($this->var);
-        echo "current: $var\n";
-        return $var;
+        if($this->current) {
+            return $this->current;
+        }
+        else {
+            return $this->next();
+        }
     }
   
     function key() {
-        $var = key($this->var);
-        echo "key: $var\n";
-        return $var;
+        return $this->key;
     }
   
     function next() {
-        $var = next($this->var);
-        echo "next: $var\n";
-        return $var;
+        $this->isNextCalled = true;
+        $this->key += 1;
+        $this->current = $this->Results->fetch();
+        if($this->current !== false) {
+            return $this->current;
+        }
     }
   
     function valid() {
-        $key = key($this->var);
-        $var = ($key !== NULL && $key !== FALSE);
-        echo "valid: $var\n";
-        return $var;
-    }
-}
-
-/*
-class MyIterator implements Iterator
-{
-    private $var = array();
-
-    public function __construct($array)
-    {
-        if (is_array($array)) {
-            $this->var = $array;
+        if($this->key === -1) {
+            $this->next();
         }
+        if($this->current) {
+            return true;
+        }
+        else {
+            return false;
+        } 
     }
-
-    public function rewind()
-    {
-        echo "rewinding\n";
-        reset($this->var);
-    }
-  
-    public function current()
-    {
-        $var = current($this->var);
-        echo "current: $var\n";
-        return $var;
-    }
-  
-    public function key() 
-    {
-        $var = key($this->var);
-        echo "key: $var\n";
-        return $var;
-    }
-  
-    public function next() 
-    {
-        $var = next($this->var);
-        echo "next: $var\n";
-        return $var;
-    }
-  
-    public function valid()
-    {
-        $key = key($this->var);
-        $var = ($key !== NULL && $key !== FALSE);
-        echo "valid: $var\n";
-        return $var;
-    }
-
 }
-*/
 ?>
