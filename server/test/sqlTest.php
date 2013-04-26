@@ -75,7 +75,6 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
     	foreach($ResultsObject as $key => $val) {
     		$actualResults[$key] = $val;
     	}
-
     	$this->assertEquals(
     		array("1" => array("id" => 2, "a" => "bar", "b" => 6)),
     		$actualResults
@@ -98,8 +97,22 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
     }
 
     function test_update() {
-        //$this->Sql->update();
+        $this->Sql->update("A SET a = 'edit' WHERE id='1'");
+        $Results = $this->DB->query("SELECT * FROM A WHERE id='1'");
+        $Results->setFetchMode(PDO::FETCH_ASSOC);
+        $this->assertEquals(
+            array("id" => 1, "a" => "edit", "b" => 5),
+            $Results->fetch()
+        );
     }
-    //function test_delete() {}
+    
+    function test_delete() {
+        $this->Sql->delete("A WHERE id='1'");
+        $Results = $this->DB->query("SELECT * FROM A WHERE id='1'");
+        $this->assertEquals(
+            false,
+            $Results->fetch()
+        );
+    }
 }
 ?>

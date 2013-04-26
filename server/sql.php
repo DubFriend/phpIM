@@ -30,8 +30,13 @@ class Sequel {
         $this->DB->prepare("INSERT INTO $query")->execute($values);
         return $this->DB->lastInsertId();
     }
-    //function update($query, array $values = array()) {}
-    //function delete($query, array $values = array()) {}
+    function update($query, array $values = array()) {
+        $this->DB->prepare("UPDATE $query")->execute($values);
+    }
+
+    function delete($query, array $values = array()) {
+        $this->DB->prepare("DELETE FROM $query")->execute($values);
+    }
 }
 
 //Results Set Wrapper returned by calls to select
