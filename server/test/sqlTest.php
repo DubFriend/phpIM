@@ -19,7 +19,7 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
     private function create_database() {
         $this->DB->exec(
             "CREATE TABLE IF NOT EXISTS A (
-                id INT PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 a CHAR(3),
                 b INT
             )"
@@ -27,8 +27,8 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
     }
 
     private function insert_default_rows() {
-        $this->DB->prepare("INSERT INTO A (id, a, b) VALUES (?, ?, ?)")->execute(array(0, "foo", 5));
-        $this->DB->prepare("INSERT INTO A (id, a, b) VALUES (?, ?, ?)")->execute(array(1, "bar", 6));
+        $this->DB->prepare("INSERT INTO A (id, a, b) VALUES (?, ?, ?)")->execute(array(1, "foo", 5));
+        $this->DB->prepare("INSERT INTO A (id, a, b) VALUES (?, ?, ?)")->execute(array(2, "bar", 6));
     }
 
 
@@ -39,7 +39,7 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
 
     function test_results_next() {
         $Results = $this->Sql->select("* FROM A");
-        $this->assertEquals(array("id" => 0,"a" => "foo", "b" => 5), $Results->next());
+        $this->assertEquals(array("id" => 1,"a" => "foo", "b" => 5), $Results->next());
     }
 
     function test_results_foreach_loop() {
@@ -51,8 +51,8 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(
             array(
-                array("id" => 0, "a" => "foo", "b" => 5),
-                array("id" => 1,"a" => "bar", "b" => 6)
+                array("id" => 1, "a" => "foo", "b" => 5),
+                array("id" => 2,"a" => "bar", "b" => 6)
             ),
             $actualResults
         );
@@ -77,16 +77,29 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
     	}
 
     	$this->assertEquals(
-    		array("1" => array("id" => 1, "a" => "bar", "b" => 6)),
+    		array("1" => array("id" => 2, "a" => "bar", "b" => 6)),
     		$actualResults
     	);
     }
 
-    //function test_insert() {
-    //    $id = $this->Sql->insert("A (id, a, b) VALUES (? ,?, ?)", array(2, "baz", 7));
-    //    $this->assertEquals(2, $id);
-    //}
-    //function test_update() {}
+    function test_insert() {
+        $this->Sql->insert("A (id, a, b) VALUES (? ,?, ?)", array(3, "baz", 7));
+        $Results = $this->DB->query("SELECT * FROM A WHERE id='3'");
+        $Results->setFetchMode(PDO::FETCH_ASSOC);
+        $this->assertEquals(
+            array("id" => 3, "a" => "baz", "b" => 7),
+            $Results->fetch()
+        );
+    }
+
+    function test_insert_id() {
+        $id = $this->Sql->insert("A (id, a, b) VALUES (? ,?, ?)", array(3, "baz", 7));
+        $this->assertEquals(3, $id);
+    }
+
+    function test_update() {
+        //$this->Sql->update();
+    }
     //function test_delete() {}
 }
 ?>

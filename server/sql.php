@@ -26,9 +26,12 @@ class Sequel {
         ));
     }
 
-    //function insert($query, array $values = null) {}
-    //function update($query, array $values = null) {}
-    //function delete($query, array $values = null) {}
+    function insert($query, array $values = array()) {
+        $this->DB->prepare("INSERT INTO $query")->execute($values);
+        return $this->DB->lastInsertId();
+    }
+    //function update($query, array $values = array()) {}
+    //function delete($query, array $values = array()) {}
 }
 
 //Results Set Wrapper returned by calls to select
