@@ -1,76 +1,92 @@
 <?php
+require_once "define.php";
+require_once "lib.php";
 require_once "sql.php";
 
 class Sql_Test extends PHPUnit_Framework_TestCase {
-	
-	private $Sql, $DB;
 
-	function setUp() {
-		$this->DB = new PDO("sqlite::memory:");
-		$this->Sql = new Sequel(array(
-			"connection" => $this->DB
-		));
-		$this->create_database();
-		$this->insert_default_rows();
-	}
+    private $Sql, $DB;
 
-	private function create_database() {
-		$this->DB->exec(
-			"CREATE TABLE IF NOT EXISTS A (
-				a CHAR(3),
-				b INT
-			)"
-		);
-	}
+    function setUp() {
+        $this->DB = new PDO("sqlite::memory:");
+        $this->Sql = new Sequel(array(
+            "connection" => $this->DB
+        ));
+        $this->create_database();
+        $this->insert_default_rows();
+    }
 
-	private function insert_default_rows() {
-		$this->DB->prepare("INSERT INTO A (a, b) VALUES (?, ?)")
-			 ->execute(array("foo", 5));
+    private function create_database() {
+        $this->DB->exec(
+            "CREATE TABLE IF NOT EXISTS A (
+                id INT PRIMARY KEY,
+                a CHAR(3),
+                b INT
+            )"
+        );
+    }
 
-		$this->DB->prepare("INSERT INTO A (a, b) VALUES (?, ?)")
-			 ->execute(array("bar", 6));
-	}
+    private function insert_default_rows() {
+        $this->DB->prepare("INSERT INTO A (id, a, b) VALUES (?, ?, ?)")->execute(array(0, "foo", 5));
+        $this->DB->prepare("INSERT INTO A (id, a, b) VALUES (?, ?, ?)")->execute(array(1, "bar", 6));
+    }
 
-	function test_results_count() {
-		$Results = $this->Sql->select("* FROM A");
-		$this->assertEquals(2, $Results->count());
-	}
 
-	function test_results_next() {
-		$Results = $this->Sql->select("* FROM A");
-		$this->assertEquals(array("a" => "foo", "b" => 5), $Results->next());
-	}
+    function test_results_count() {
+        $Results = $this->Sql->select("* FROM A");
+        $this->assertEquals(2, $Results->count());
+    }
 
-	function test_results_work_with_foreach_loop() {
-		$ResultsObject = $this->Sql->select("* FROM A");
-		$actualResults = array();
-		foreach($ResultsObject as $key => $val) {
-			$actualResults[$key] = $val;
-		}
+    function test_results_next() {
+        $Results = $this->Sql->select("* FROM A");
+        $this->assertEquals(array("id" => 0,"a" => "foo", "b" => 5), $Results->next());
+    }
 
-		$this->assertEquals(
-			array(
-				array("a" => "foo", "b" => 5),
-				array("a" => "bar", "b" => 6)
-			),
-			$actualResults
-		);
-	}
+    function test_results_foreach_loop() {
+        $ResultsObject = $this->Sql->select("* FROM A");
+        $actualResults = array();
+        foreach($ResultsObject as $key => $val) {
+            $actualResults[$key] = $val;
+        }
 
-	function test_results_work_with_foreach_loop_empty_results() {
-		$ResultsObject = $this->Sql->select("* FROM A WHERE a = ?", array("wrong"));
-		$actualResults = array();
-		foreach($ResultsObject as $key => $val) {
-			$actualResults[$key] = $val;
-		}
-		
-		$this->assertEquals(
-			array(),
-			$actualResults
-		);
-	}
-	//function test_insert() {}
-	//function test_update() {}
-	//function test_delete() {}
+        $this->assertEquals(
+            array(
+                array("id" => 0, "a" => "foo", "b" => 5),
+                array("id" => 1,"a" => "bar", "b" => 6)
+            ),
+            $actualResults
+        );
+    }
+
+    function test_results_foreach_loop_empty_results() {
+        $ResultsObject = $this->Sql->select("* FROM A WHERE a = ?", array("wrong"));
+        $actualResults = array();
+        foreach($ResultsObject as $key => $val) {
+            $actualResults[$key] = $val;
+        }
+        $this->assertEquals(array(), $actualResults);
+    }
+
+    //doesnt support rewind so foreach loop doesnt start at beggining index
+    function test_results_foreach_loop_next_allready_called() {
+    	$ResultsObject = $this->Sql->select("* FROM A");
+    	$ResultsObject->next();
+    	$actualResults = array();
+    	foreach($ResultsObject as $key => $val) {
+    		$actualResults[$key] = $val;
+    	}
+
+    	$this->assertEquals(
+    		array("1" => array("id" => 1, "a" => "bar", "b" => 6)),
+    		$actualResults
+    	);
+    }
+
+    //function test_insert() {
+    //    $id = $this->Sql->insert("A (id, a, b) VALUES (? ,?, ?)", array(2, "baz", 7));
+    //    $this->assertEquals(2, $id);
+    //}
+    //function test_update() {}
+    //function test_delete() {}
 }
 ?>

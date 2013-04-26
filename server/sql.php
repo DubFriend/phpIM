@@ -17,7 +17,7 @@ class Sequel {
     function select($query, array $values = array()) {
         $statement = "SELECT $query";        
         $Results = $this->DB->prepare($statement);
-        $Results->execute($values);//->execute($values);
+        $Results->execute($values);
         return new Sequel_Results(array(
             "results" => $Results,
             "predicate" => $this->extract_select_predicate($query),
@@ -38,7 +38,6 @@ class Sequel_Results implements Iterator {
             $predicate,
             $values,
             $count,
-            $isNextCalled = false,
             $key = -1,
             $current;
 
@@ -49,11 +48,12 @@ class Sequel_Results implements Iterator {
         $this->DB = $fig['connection'];
 
         $this->Results->setFetchMode(PDO::FETCH_ASSOC);
+        $this->next();
     }
 
     //rowCount doesnt work for sqlite :(
     function count() {
-        if($this->count === NULL) {
+        if($this->count === null) {
             $sql= "SELECT count(*) " . $this->predicate;
             $sth = $this->DB->prepare($sql);
             $sth->execute($this->values);
@@ -63,45 +63,25 @@ class Sequel_Results implements Iterator {
         return $this->count;
     }
 
+    function rewind() {}
+  
+    function valid() {
+        return ($this->current !== false);
+    }
 
-    function rewind() {
-        if($this->isNextCalled) {
-            throw new Exception("Rewind not supported by Sequel_Results");
-        }
-    }
-  
     function current() {
-        if($this->current) {
-            return $this->current;
-        }
-        else {
-            return $this->next();
-        }
+        return $this->current;
     }
-  
+
     function key() {
         return $this->key;
     }
-  
+
     function next() {
-        $this->isNextCalled = true;
         $this->key += 1;
+        $hold = $this->current;
         $this->current = $this->Results->fetch();
-        if($this->current !== false) {
-            return $this->current;
-        }
-    }
-  
-    function valid() {
-        if($this->key === -1) {
-            $this->next();
-        }
-        if($this->current) {
-            return true;
-        }
-        else {
-            return false;
-        } 
+        return $hold;
     }
 }
 ?>
