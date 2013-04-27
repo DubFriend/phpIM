@@ -18,6 +18,11 @@ class User_Model extends Model {
                     "placeholder" => "Enter message.",
                     "button_name" => "Submit"
                 )
+            ),
+            "js" => array(
+                PUBLIC_ROOT . "jquery-1.9.1.min.js",
+                PUBLIC_ROOT . "js/base.js",
+                PUBLIC_ROOT . "js/user.js"
             )
         );
     }
@@ -34,7 +39,7 @@ class User_View extends View {
             $this->Templator->render($this->template_head(), try_array($data, "head", array())) .
             "<body>" .
                 $this->Templator->render($this->template_chat_box(), try_array($data, "chat", array())) .
-                $this->Templator->render($this->template_js(), try_array($data, "js", array())) .
+                $this->Templator->render($this->template_js(), array("js" => try_array($data, "js", array()))) .
             "</body>" .
         "</html>";
     }
@@ -66,26 +71,6 @@ class User_View extends View {
 }
 
 class User_Controller extends Controller {
-    /*    debug("User_Controller::execute()");
-        
-        
-        
-
-
-        return $this->execute();
-
-
-        switch($this->server['REQUEST_METHOD']) {
-            case "GET":
-                $response = $this->View->render($this->Model->initial_data());
-                break;
-            default:
-                throw new Exception("Invalid REQUEST_METHOD value");
-        }
-
-        echo $response;
-    }*/
-
     function get() {
         return $this->View->render($this->Model->initial_data());
     }

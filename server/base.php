@@ -34,6 +34,8 @@ abstract class Controller {
     protected function put() {}
     protected function post() {}
     protected function delete() {}
+    protected function head() {}
+    protected function options() {}
     protected function error() {}
 
     function respond() {
