@@ -2,9 +2,10 @@
 class Session {
 
     function __construct() {
-        if(session_status() != PHP_SESSION_ACTIVE) {
-            session_start();
-        }
+        session_start();
+        //if(session_status() != PHP_SESSION_ACTIVE) {
+        //    session_start();
+        //}
     }
     
     function get($key) {
@@ -45,7 +46,7 @@ function debug($message) {
                 $output = "\n\tDEBUG : $message\n";
                 break;
             case "html":
-                $output = "<p><b style='color=red;'>DEBUG : </b>$message</p>";
+                $output = "<p><b style='color:red;'>DEBUG : </b>$message</p>";
                 break;
             default:
                 throw new Exception("invalid DEBUG_OUTPUT_TYPE value");

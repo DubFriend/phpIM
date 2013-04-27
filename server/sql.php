@@ -34,6 +34,7 @@ class Sequel {
     }
 }
 
+
 //Results Set Wrapper returned by calls to select
 class Sequel_Results implements Iterator {
     private $Results,
