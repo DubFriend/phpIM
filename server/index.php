@@ -6,6 +6,7 @@ require ROOT . "router.php";
 require ROOT . "base.php";
 require ROOT . "manager.php";
 require ROOT . "user.php";
+require ROOT . "conversations.php";
 require ROOT . "mustache.php-2.3.0/src/Mustache/Autoloader.php";
 
 Mustache_Autoloader::register();
