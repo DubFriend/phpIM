@@ -66,22 +66,28 @@ class User_View extends View {
 }
 
 class User_Controller extends Controller {
-    function execute() {
-        debug("User_Controller::execute()");
-        debug(print_r($this->server, true));
-        debug(print_r($this->server['REQUEST_METHOD'], true));
+    /*    debug("User_Controller::execute()");
         
-        $response = null;
+        
+        
+
+
+        return $this->execute();
+
 
         switch($this->server['REQUEST_METHOD']) {
             case "GET":
-                $response =$this->View->render($this->Model->initial_data());
+                $response = $this->View->render($this->Model->initial_data());
                 break;
             default:
                 throw new Exception("Invalid REQUEST_METHOD value");
         }
 
         echo $response;
+    }*/
+
+    function get() {
+        return $this->View->render($this->Model->initial_data());
     }
 }
 ?>

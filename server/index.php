@@ -1,8 +1,8 @@
 <?php
-
 require ROOT . "lib.php";
 require ROOT . "sql.php";
 require ROOT . "factory.php";
+require ROOT . "router.php";
 require ROOT . "base.php";
 require ROOT . "manager.php";
 require ROOT . "user.php";
@@ -30,6 +30,14 @@ $Factory = new Factory(array(
     ))
 ));
 
+$Router = new Router(array(
+    "factory" => $Factory,
+    "path" => $server['PATH_INFO']
+));
+
+$Controller = $Router->build_controller();
+echo $Controller->respond();
+/*
 switch(try_array($get, "type")) {
     case "manager":
         $Controller = $Factory->build_manager_controller();
@@ -39,7 +47,5 @@ switch(try_array($get, "type")) {
         break;
     default:
         throw new Exception("invalid \$_GET['type'] value");
-}
-
-$Controller->execute();
+}*/
 ?>

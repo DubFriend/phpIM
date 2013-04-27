@@ -10,8 +10,6 @@ class Manager_View extends View {
 }
 
 class Manager_Controller extends Controller {
-	function execute() {
-		debug("Manager_Controller::execute()");
-	}
+	
 }
 ?>

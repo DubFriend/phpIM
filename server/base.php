@@ -19,6 +19,7 @@ abstract class View {
     }
 }
 
+
 abstract class Controller {
     protected $get, $post, $server, $Model, $View;
     function __construct(array $fig = array()) {
@@ -29,6 +30,43 @@ abstract class Controller {
         $this->View = $fig['view'];
     }
 
-    abstract function execute();
+    protected function get() {}
+    protected function put() {}
+    protected function post() {}
+    protected function delete() {}
+    protected function error() {}
+
+    function respond() {
+        debug(print_r($this->server, true));
+        debug(print_r($this->server['REQUEST_METHOD'], true));
+
+        $response = null;
+        $method = $this->server['REQUEST_METHOD'];
+        switch ($method) {
+            case 'GET':
+                $response = $this->get();  
+                break;
+            case 'PUT':
+                $response = $this->put();  
+                break;
+            case 'POST':
+                $response = $this->post();  
+                break;
+            case 'DELETE':
+                $response = $this->delete();  
+                break;
+            case 'HEAD':
+                $response = $this->head();  
+                break;
+            case 'OPTIONS':
+                $response = $this->options();    
+                break;
+            default:
+                $response = $this->error();  
+                break;
+        }
+
+        return $response;
+    }
 }
 ?>
