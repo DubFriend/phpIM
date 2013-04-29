@@ -38,15 +38,4 @@ $Router = new Router(array(
 
 $Controller = $Router->build_controller();
 echo $Controller->respond();
-/*
-switch(try_array($get, "type")) {
-    case "manager":
-        $Controller = $Factory->build_manager_controller();
-        break;
-    case "user":
-        $Controller = $Factory->build_user_controller();
-        break;
-    default:
-        throw new Exception("invalid \$_GET['type'] value");
-}*/
 ?>

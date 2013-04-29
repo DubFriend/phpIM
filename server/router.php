@@ -9,7 +9,6 @@
 /manager_dashboard
     GET: boostrap
 
-
 /conversations
     GET: gets metadata of all currently active conversations
     POST: create a new conversation
@@ -18,6 +17,10 @@
     GET: request long poll update on conversation
     POST: create new conversation message
     DELETE: end conversation
+
+/conversations/{id}/messages
+    GET: returns all messages from conversation
+    DELETE: deletes conversation. 
 
 /conversations/{id}/messages/{id}
     GET: gets message
@@ -36,7 +39,6 @@
 
 /conversations/archive/{id}/messages/{id}
 
-
 /user
     GET: list of current managers
     PUT: edit profile metadata
@@ -46,7 +48,6 @@
     GET: details of selected manager
     PUT: edit manager profile
     DELETE: delete manager profile
-
 
 /settings
     GET: view app settings
