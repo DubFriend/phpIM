@@ -4,25 +4,30 @@ class User_Model extends Model {
         return array(
             "chat" => array(
                 "messages" => array(
-                    array(
+                    /*array(
                         "username" => "Bob",
                         "body" => "message 1",
                         "time" => "time"
-                    ),
-                    array(
-                        "username" => "Alice",
-                        "body" => "message 2"
-                    )
+                    )*/
                 ),
-                "form" => array(
+                "sendForm" => array(
                     "placeholder" => "Enter message.",
-                    "button_name" => "Submit"
+                    "buttonName" => "Submit"
+                ),
+                "connectForm" => array(
+                    "placeholder" => "Username",
+                    "buttonName" => "Connect"
+                ),
+                "disconnectForm" => array(
+                    "buttonName" => "Disconnect"
                 )
             ),
             "js" => array(
                 PUBLIC_ROOT . "jquery-1.9.1.min.js",
-                PUBLIC_ROOT . "js/base.js",
-                PUBLIC_ROOT . "js/user.js"
+                PUBLIC_ROOT . "js/define.js",
+                PUBLIC_ROOT . "js/lib.js",
+                PUBLIC_ROOT . "js/messenger.js",
+                PUBLIC_ROOT . "js/execute.js"
             )
         );
     }
@@ -62,10 +67,19 @@ class User_View extends View {
                     "</div>" .
                 "{{/messages}}" .
             "</div>" .
-            "<form id='phpIM-form'>" .
-                "<textarea name='message' placeholder='{{form.placeholder}}'></textarea>" .
-                "<input type='submit' value='{{form.button_name}}'/>" .
+            
+            "<form id='phpIM-connect'>" .
+                "<input type='text' name='username' placeholder='{{connectForm.placeholder}}'/>" .
+                "<input type='submit' value='{{connectForm.buttonName}}'/>" .
             "</form>" .
+            
+            "<button id='phpIM-disconnect'>{{disconnectForm.buttonName}}</button>" .
+
+            "<form id='phpIM-send-message'>" .
+                "<textarea name='message' placeholder='{{sendForm.placeholder}}'></textarea>" .
+                "<input type='submit' value='{{sendForm.buttonName}}'/>" .
+            "</form>" .
+        
         "</div>";
     }
 }

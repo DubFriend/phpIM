@@ -1,6 +1,3 @@
-var IS_LOG = true;
-var ROOT = "/phpIM/index.php/";
-
 if(typeof Object.create !== 'function') {
     Object.create = function (o) {
         var F = function () {};
@@ -49,14 +46,3 @@ if(typeof Array.reduce !== 'function') {
 else {
     throw("Array.reduce is allready implemented");
 }
-
-
-console.log(
-    [1,2,3].map(function (val) {
-        return val *= 2;
-    }).filter(function (val) { 
-        return val % 4 !== 0;
-    }).reduce(function (val, acc) {
-        return acc + val;
-    })
-);

@@ -1,0 +1,1 @@
+var ROOT = "/phpIM/index.php/";
