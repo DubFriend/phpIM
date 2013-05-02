@@ -1,50 +1,186 @@
 (function () {
-    var messenger,
-        ajax,
-        ajaxData = [];
+    var messenger, ajax, ajaxData;
+
     module("messenger", {
         setup: function () {
+            ajaxData = [];
             ajax = function (fig) {
                 ajaxData.push(fig);
             };
-
-            $('#qunit-fixture').append(
-                /*'<div id="phpIM-connect">' +
-                    '<input type="text" name="username" value="username value"/>' +
-                '</div>' +*/
-                /*'<div id="phpIM-message">' +
-                    '<input type="text" name="message" value="message value"/>' +
-                '</div>'*/
-            );
-
-            messenger = new_messenger({ajax: ajax});
+            messenger = new_messenger({
+                ajax: ajax,
+                isUnitTest: true,
+                maxErrors: 1,
+            });
         }
     });
 
-    test("establish connection", function () {
-        messenger.connect({username: "foo"});
+
+//------------------------------- connect ------------------------------------------------
+
+    test("messenger.connect({connectData})", function () {
+        deepEqual(messenger.is_connected(), false, "messenger.is_connected false before connect");
+        messenger.connect({username: "bob"});
+        deepEqual(messenger.is_connected(), true, "messenger.is_connected true after connect");
+        
         var data = ajaxData.pop();
-        deepEqual(data.url, ROOT + "conversations", "url set");
-        deepEqual(data.type, "POST", "type set");
-        deepEqual(data.data, {username: "foo"}, "username value set");
+        deepEqual(
+            {
+                url: data.url,
+                type: data.type,
+                data: data.data
+            },
+            {
+                url: ROOT + "conversations",
+                type: "POST",
+                data: {username: "bob"}
+            },
+            "correct ajax config"
+        );
+
+        data.success({id: 4});
+        deepEqual(messenger.id(), 4, "response sets id");
     });
 
-    test("send message, connection not established", function () {
-        messenger.send({message: "foo"});
-        var data = ajaxData.pop();
-        deepEqual(ajaxData.pop(), undefined, "ajax call not made");
+    test("messenger.disconnect()", function () {
+        messenger.connect();
+        deepEqual(messenger.is_connected(), true, "messenger.is_connected true before disconnect");
+        messenger.disconnect();
+        deepEqual(messenger.is_connected(), false, "messenger.is_connected false after disconnect");
     });
 
-    test("send message, connection established", function () {
-        messenger.connect({username: "foo"});
-        var connectAjaxData = ajaxData.pop();
-        connectAjaxData.success({id: 3});
 
-        messenger.send({message: "bar"});
-        var sendAjaxData = ajaxData.pop();
-        deepEqual(sendAjaxData.url, ROOT + "conversations/3", "url set");
-        deepEqual(sendAjaxData.type, "POST", "type set");
-        deepEqual(sendAjaxData.data, {message: "bar"}, "form data set");
+// ------------------------------ update --------------------------------------------
+    
+    test("update", function () {
+        messenger.connect();
+        var connectData = ajaxData.pop();
+        connectData.success({id: 3});
+        var updateData = ajaxData.pop();
+        deepEqual(
+            {
+                url: updateData.url,
+                type: updateData.type,
+            },
+            {
+                url: ROOT + "conversations/3",
+                type: "GET"
+            },
+            "correct ajax config"
+        );
+
+        updateData.success({id: 3});
+        var secondUpdateData = ajaxData.pop();
+        deepEqual(
+            {
+                url: secondUpdateData.url,
+                type: secondUpdateData.type,
+            },
+            {
+                url: ROOT + "conversations/3",
+                type: "GET"
+            },
+            "update called again on update success"
+        ); 
+    });
+
+    test("update not called if is not connected", function () {
+        messenger.connect();
+        var data = ajaxData.pop();
+        messenger.disconnect();
+        data.success({id: 3});
+        deepEqual(ajaxData.pop(), undefined, "update not called");
+    });
+
+
+// --------------------------- send_message ---------------------------------------
+    test("messenger.send_message({messageData})", function () {
+
+        messenger.connect();
+        ajaxData.pop().success({id: 3});
+
+        deepEqual(
+            messenger.is_message_pending(), false,
+            "message pending flag is false before message sent"
+        );
+
+        messenger.send_message({message: "foo"});
+        
+        var data = ajaxData.pop();
+        
+        deepEqual(
+            {
+                url: data.url,
+                type: data.type,
+                data: data.data,
+            },
+            {
+                url: ROOT + "conversations/3",
+                type: "POST",
+                data: {message: "foo"}
+            },
+            "correct ajax config"
+        );
+
+        deepEqual(
+            messenger.is_message_pending(), true,
+            "message pending flag is true after message sent"
+        );
+
+        data.success();
+
+        deepEqual(messenger.is_message_pending(), false,
+            "message pending flat set to false after response recieved"
+        );
+    });
+
+    test("messenger.send_message : not connected", function () {
+        messenger.send_message({message: "foo"});
+        deepEqual(ajaxData.length, 0, "ajax not executed if not connected");
+        deepEqual(messenger.message_queue_length(), 1, "message added to the queue");
+    });
+
+    test("messenger.send_message : connection started but not complete", function () {
+        messenger.connect(); //ajax call 1
+        var ajaxDataLength = ajaxData.length;
+        messenger.send_message({message: "foo"}); //no ajax, connection not yet complete
+        deepEqual(ajaxData.length, ajaxDataLength, "ajax not called");
+        deepEqual(messenger.message_queue_length(), 1, "message added to the queue");
+    });
+
+    test("messenger.send_message : message allready pending", function () {
+        messenger.connect(); //ajaxData.length == 1
+        ajaxData.pop().success({id: 3}); //ajaxData.length == 1
+        messenger.send_message(); //ajaxData.length == 2
+        
+        var ajaxDataLength = ajaxData.length;
+        messenger.send_message({message: "foo"}); //no ajax, allready pending
+        deepEqual(ajaxData.length, ajaxDataLength, "ajax not executed if allready pending");
+        
+        deepEqual(messenger.message_queue_length(), 1, "message added to message queue");
+    });
+
+    test("messenger.send_message : sends queued messages", function () {
+        messenger.connect();
+        messenger.send_message({message: "queued message"});
+        ajaxData.pop().success({id: 1});
+        messenger.send_message({message: "send message"});
+        var data = ajaxData.pop();
+        deepEqual(
+            {data: data.data},
+            {data: [{message: "queued message"}, {message: "send message"}]},
+            "queued messages added to request"
+        );
+        deepEqual(messenger.message_queue_length(), 0, "message queue reset");
+    });
+
+    test("max errors reached", function () {
+        messenger.connect();
+        var data = ajaxData.pop();
+        data.error();
+        deepEqual(messenger.is_connected(), true, "still connected after one error");
+        data.error();
+        deepEqual(messenger.is_connected(), false, "disonnect after maxErrors are reached");
     });
 
 }());
