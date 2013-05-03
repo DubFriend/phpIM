@@ -1,6 +1,7 @@
 <?php
 require_once "define.php";
 require_once "library.php";
+require_once "sql.php";
 require_once "base.php";
 require_once "conversations.php";
 
@@ -19,6 +20,7 @@ function build_test_database($Database) {
         "CREATE TABLE IF NOT EXISTS Conversation (
             id CHAR(65) PRIMARY KEY,
             manager_id INT UNSIGNED,
+            username,
             last_edit DATETIME
         )"
     );
@@ -43,13 +45,13 @@ function build_test_database($Database) {
     
 }
 
-class New_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
+class New_Conversation_Model_Test extends PHPUnit_Framework_TestCase {
     private $Database, $Model;
 
     function setUp() {
         $this->Database = new PDO("sqlite::memory:");
         $this->Model = new New_Conversation_Model(array(
-            "database"=> $this->Database
+            "database"=> new Sequel(array("connection" => $this->Database))
         ));
         build_test_database($this->Database);
     }
@@ -83,6 +85,10 @@ class New_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         ));
     }
 
+    function test_start_conversation_signature_without_salt_is_40_characters() {
+        $this->assertEquals(40, strlen($this->start_conversation()) - New_Conversation_Model::SALT_LENGTH);
+    }
+
     function test_start_conversation_results_logged() {
         $conversationId = $this->start_conversation();
 
@@ -92,11 +98,75 @@ class New_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array(
                 "id" => $conversationId,
-                "manager_id" => NULL,
+                "manager_id" => null,
+                "username" => "username",
                 "last_edit" => date("Y-m-d H:i:s")
             ),
             $row
         );
+    }
+}
+
+
+
+class New_Conversation_Model_Mock {
+    function start_conversation(array $fig = array()) {
+        return "mock_conversation_id";
+    }
+}
+
+class New_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
+    private $Controller;
+
+    function setUp() {
+        $this->Controller = $this->build_controller_override();
+    }
+
+    private function build_controller_override(array $fig = array()) {
+        return new New_Conversation_Controller(array(
+            "post" => try_array($fig, "post", array("username" => "mock_username")),
+            "server" => try_array($fig, "server", array(
+                "REMOTE_ADDR" => try_array($fig, "REMOTE_ADDR", "mock_remote_addr"),
+                "HTTP_USER_AGENT" => try_array($fig, "HTTP_USER_AGENT", "mock_http_user_agent"),
+                "REQUEST_METHOD" => try_array($fig, "REQUEST_METHOD", "POST")
+            )),
+            "model" => new New_Conversation_Model_Mock()
+        ));
+    }
+
+    function test_post_success() {
+        $response = $this->Controller->respond();
+        $this->assertEquals(
+            json_encode(array("id" => "mock_conversation_id")),
+            $response
+        );
+    }
+
+    function test_post_no_post_data() {
+        $Controller = $this->build_controller_override(array(
+            "post" => array()
+        ));
+        $response = $Controller->respond();
+        $this->assertEquals(
+            json_encode(array("id" => "mock_conversation_id")),
+            $response
+        );
+    }
+
+    /**
+     * @expectedException Bad_Request_Exception
+     */
+    function test_post_signature_too_short() {
+        $padLength = New_Conversation_Controller::MIN_SIGNATURE_LENGTH / 2;
+        $Controller = $this->build_controller_override(array(
+            "post" => array("username" => null),
+            "server" => array(
+                "REMOTE_ADDR" => str_pad("", $padLength - 1, "x"),
+                "HTTP_USER_AGENT" => str_pad("", $padLength, "y"),
+                "REQUEST_METHOD" => "POST"
+            )
+        ));
+        $Controller->respond();
     }
 }
 ?>

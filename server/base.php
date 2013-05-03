@@ -1,8 +1,8 @@
 <?php
 abstract class Model {
-    protected $DB;
+    protected $Database;
     function __construct(array $fig = array()) {
-        $this->DB = $fig['database'];
+        $this->Database = $fig['database'];
     }
 }
 
@@ -15,25 +15,27 @@ abstract class View implements Renderable {
     function __construct(array $fig = array()) {
         $this->Templator = $fig['templator'];
     }
-    //abstract function render(array $data = array());
 
     protected function template_js() {
         return '{{#js}}<script src="{{.}}"></script>{{/js}}';
     }
 }
 
+class Bad_Request_Exception extends Exception {}
 
 abstract class Controller {
     protected $get, $post, $server, $Model, $View;
     function __construct(array $fig = array()) {
-        $this->get = $fig['get'];
-        $this->post = $fig['post'];
         $this->server = $fig['server'];
-        $this->Model = $fig['model'];
-        $this->View = $fig['view'];
+        $this->get = try_array($fig, 'get');
+        $this->post = try_array($fig, 'post');
+        $this->Model = try_array($fig, 'model');
+        $this->View = try_array($fig, 'view');
     }
     
-    private function default_unimplemented_response($type) {}
+    private function default_unimplemented_response($type) {
+        throw new Exception("implement me");
+    }
 
     protected function get() { $this->default_unimplemented_response("get"); }
     protected function put() { $this->default_unimplemented_response("put"); }
@@ -42,7 +44,9 @@ abstract class Controller {
     protected function head() { $this->default_unimplemented_response("head"); }
     protected function options() { $this->default_unimplemented_response("options"); }
 
-    protected function error() {}
+    protected function error() {
+        throw new Exception("implement me");
+    }
 
     function respond() {
         debug(print_r($this->server, true));
