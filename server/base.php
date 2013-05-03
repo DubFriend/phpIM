@@ -34,6 +34,7 @@ abstract class Controller {
     }
     
     private function default_unimplemented_response($type) {}
+
     protected function get() { $this->default_unimplemented_response("get"); }
     protected function put() { $this->default_unimplemented_response("put"); }
     protected function post() { $this->default_unimplemented_response("post"); }
@@ -42,8 +43,6 @@ abstract class Controller {
     protected function options() { $this->default_unimplemented_response("options"); }
 
     protected function error() {}
-
-    
 
     function respond() {
         debug(print_r($this->server, true));

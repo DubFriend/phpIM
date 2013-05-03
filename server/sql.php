@@ -2,7 +2,6 @@
 //Wrapper to abstract the method of database access
 //(currently implented with PDO)
 class Sequel {
-    
     private $DB;
     
     function __construct(array $fig = array()) {

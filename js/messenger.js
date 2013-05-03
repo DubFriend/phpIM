@@ -9,12 +9,13 @@ var new_messenger = function (fig) {
         numErrors = 0,
         maxErrors = fig.maxErrors || 3,
         updateTimeoutTime = fig.updateTimeoutTime || 0,
-        
         subscribers = [],
+
         subscribe = function (subscriber) {
             var i;
             subscribers.push(subscriber);
         },
+
         un_subscribe = function (subscriber) {
             var i;
             for(i = 0; i < subscribers.length; i += 1) {
@@ -25,6 +26,7 @@ var new_messenger = function (fig) {
             }
             return false;
         },
+
         publish = function (data) {
             var i;
             for(i = 0; i < subscribers.length; i += 1) {
@@ -60,6 +62,7 @@ var new_messenger = function (fig) {
 
             return config;
         },
+
         update = function () {
             if(isConnected) {
                 ajax(ajax_fig({

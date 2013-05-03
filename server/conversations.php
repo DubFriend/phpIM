@@ -4,7 +4,8 @@ class New_Conversation_Model extends Model {
 
     private function generate_signature($input) {
         $salt = random_string(self::SALT_LENGTH);
-        $userHash = sha1($salt . $input);//$this->server['REMOTE_ADDR'] . $this->server['HTTP_USER_AGENT']);
+        //input == username . $_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']
+        $userHash = sha1($salt . $input);
         return $salt . $userHash;
     }
 

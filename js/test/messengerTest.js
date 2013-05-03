@@ -9,14 +9,12 @@
             };
             messenger = new_messenger({
                 ajax: ajax,
-                isUnitTest: true,
                 maxErrors: 1,
             });
         }
     });
 
-
-//------------------------------- connect ------------------------------------------------
+//----------------------------------- connect ------------------------------------------------
 
     test("messenger.connect({connectData})", function () {
         deepEqual(messenger.is_connected(), false, "messenger.is_connected false before connect");
@@ -50,7 +48,7 @@
     });
 
 
-// ------------------------------ update --------------------------------------------
+// -------------------------------- update --------------------------------------------
     
     test("update", function () {
         messenger.connect();
@@ -92,8 +90,8 @@
         deepEqual(ajaxData.pop(), undefined, "update not called");
     });
 
+// -------------------------------- send_message ---------------------------------------
 
-// --------------------------- send_message ---------------------------------------
     test("messenger.send_message({messageData})", function () {
 
         messenger.connect();
@@ -130,7 +128,7 @@
         data.success();
 
         deepEqual(messenger.is_message_pending(), false,
-            "message pending flat set to false after response recieved"
+            "message pending flag set to false after response recieved"
         );
     });
 
@@ -149,9 +147,9 @@
     });
 
     test("messenger.send_message : message allready pending", function () {
-        messenger.connect(); //ajaxData.length == 1
-        ajaxData.pop().success({id: 3}); //ajaxData.length == 1
-        messenger.send_message(); //ajaxData.length == 2
+        messenger.connect();
+        ajaxData.pop().success({id: 3});
+        messenger.send_message();
         
         var ajaxDataLength = ajaxData.length;
         messenger.send_message({message: "foo"}); //no ajax, allready pending
