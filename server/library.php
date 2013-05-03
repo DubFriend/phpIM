@@ -76,4 +76,15 @@ function sanitize_array ($array) {
     }
     return $cleanArray;
 }
+
+//for use in random salt generation.
+function random_string($length) {
+    $characters = "0123456789abcdef";
+    $size = strlen($characters)-1;
+    $string = "";     
+    for ($p = 0; $p < $length ; $p++) {
+        $string .= $characters[mt_rand(0, $size)];
+    }
+    return $string;
+}
 ?>

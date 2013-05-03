@@ -1,5 +1,5 @@
 <?php
-require ROOT . "lib.php";
+require ROOT . "library.php";
 require ROOT . "sql.php";
 require ROOT . "factory.php";
 require ROOT . "router.php";
@@ -37,5 +37,6 @@ $Router = new Router(array(
 ));
 
 $Controller = $Router->build_controller();
+//This should be the only output in the program (not including debugging)
 echo $Controller->respond();
 ?>

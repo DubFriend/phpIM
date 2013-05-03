@@ -1,6 +1,6 @@
 <?php
 require_once "define.php";
-require_once "lib.php";
+require_once "library.php";
 require_once "sql.php";
 
 class Sql_Test extends PHPUnit_Framework_TestCase {

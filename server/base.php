@@ -6,13 +6,16 @@ abstract class Model {
     }
 }
 
-abstract class View {
+interface Renderable {
+    function render(array $data = array());
+}
+
+abstract class View implements Renderable {
     protected $Templator;
     function __construct(array $fig = array()) {
         $this->Templator = $fig['templator'];
     }
-
-    abstract function render(array $data = array());
+    //abstract function render(array $data = array());
 
     protected function template_js() {
         return '{{#js}}<script src="{{.}}"></script>{{/js}}';
@@ -29,14 +32,18 @@ abstract class Controller {
         $this->Model = $fig['model'];
         $this->View = $fig['view'];
     }
+    
+    private function default_unimplemented_response($type) {}
+    protected function get() { $this->default_unimplemented_response("get"); }
+    protected function put() { $this->default_unimplemented_response("put"); }
+    protected function post() { $this->default_unimplemented_response("post"); }
+    protected function delete() { $this->default_unimplemented_response("delete"); }
+    protected function head() { $this->default_unimplemented_response("head"); }
+    protected function options() { $this->default_unimplemented_response("options"); }
 
-    protected function get() {}
-    protected function put() {}
-    protected function post() {}
-    protected function delete() {}
-    protected function head() {}
-    protected function options() {}
     protected function error() {}
+
+    
 
     function respond() {
         debug(print_r($this->server, true));
