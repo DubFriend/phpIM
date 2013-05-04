@@ -46,27 +46,35 @@ class New_Conversation_Controller extends Controller {
 }
 
 
-class Existing_Conversation_Model extends Model {
 
+
+
+class Existing_Conversation_Model extends Model {
+    function is_updated(array $fig = array()) {
+        $Results = $this->Database->select(
+            "last_edit FROM Conversation WHERE id = ?",
+            array($fig['conversationId'])
+        )->next();
+
+        return strtotime($Results['last_edit']) <= strtotime($fig['last_update']);
+    }
 }
 
 
 class Existing_Conversation_Controller extends Controller {
     const INITIAL_SLEEP_TIME = 5000000; //5 seconds
     const UPDATE_SLEEP_TIME = 1000000; //1 seconds
-    const MAX_UPDATE_CHECKS = 30;
+    const MAX_NUM_UPDATES = 30;
 
 
     protected function post() {
+        $numUpdates = 0;
         usleep(self::INITIAL_SLEEP_TIME);
-        while(!$this->is_updated()) {
+        while(!$this->Model->is_updated() and $numUpdates < self::MAX_NUM_UPDATES) {
+            $numUpdates += 1;
             usleep(self::UPDATE_SLEEP_TIME);
         }
-        return "conversations response";
-    }
-
-    private function is_updated() {
-        return rand(0, 1);
+        return json_encode($this->Model->get_new_messages());
     }
 }
 ?>

@@ -169,4 +169,53 @@ class New_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         $Controller->respond();
     }
 }
+
+
+
+
+class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
+    private $Model, $Database;
+    function setUp() {
+        $this->Database = new PDO("sqlite::memory:");
+        $this->Model = new Existing_Conversation_Model(array(
+            "database"=> new Sequel(array("connection" => $this->Database))
+        ));
+        build_test_database($this->Database);
+        $this->insert_default_rows();
+    }
+
+    private function insert_default_rows() {
+        $this->Database->query(
+            "INSERT INTO Conversation (id, last_edit)
+             VALUES ('conv_id', '2013-01-01 10:10:10')"
+        );
+
+        $this->Database->query(
+            "INSERT INTO Message (id, conversation_id, message, time_stamp)
+             VALUES (1, 'conv_id', 'message 1', '2013-01-01 10:10:09')"
+        );
+
+        $this->Database->query(
+            "INSERT INTO Message (id, conversation_id, message, time_stamp)
+             VALUES (2, 'conv_id', 'message 2', '2013-01-01 10:10:10')"
+        );
+    }
+
+    function test_is_updated_true() {
+        $this->assertTrue($this->Model->is_updated(array(
+            "conversationId" => 'conv_id',
+            "last_update" => "2013-01-01 10:10:10"
+        )));
+    }
+
+    function test_is_updated_false() {
+        $this->assertFalse($this->Model->is_updated(array(
+            "conversationId" => "conv_id",
+            "last_update" => "2013-01-01 10:10:09"
+        )));
+    }
+
+    //function test_get_updates_no_updates() {}
+    //function test_get_updates() {}
+}
 ?>
