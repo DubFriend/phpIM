@@ -53,10 +53,26 @@ class Existing_Conversation_Model extends Model {
     function is_updated(array $fig = array()) {
         $Results = $this->Database->select(
             "last_edit FROM Conversation WHERE id = ?",
-            array($fig['conversationId'])
+            array($fig['conversation_id'])
         )->next();
-
         return strtotime($Results['last_edit']) <= strtotime($fig['last_update']);
+    }
+
+    function get_updates(array $fig = array()) {
+        if(isset($fig['last_id'])) {
+            $sql = "" .
+            "id, message, time_stamp FROM Message " .
+            "WHERE id > ? AND conversation_id = ? AND user = ?";
+            $values = array($fig['last_id'], $fig['conversation_id'], $fig['user']);
+        }
+        else {
+            $sql = "" .
+            "id, message, time_stamp FROM Message " .
+            "WHERE conversation_id = ? AND user = ?";
+            $values = array($fig['conversation_id'], $fig['user']);
+        }
+
+        return $this->Database->select($sql, $values);
     }
 }
 

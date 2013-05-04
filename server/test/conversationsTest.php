@@ -86,13 +86,18 @@ class New_Conversation_Model_Test extends PHPUnit_Framework_TestCase {
     }
 
     function test_start_conversation_signature_without_salt_is_40_characters() {
-        $this->assertEquals(40, strlen($this->start_conversation()) - New_Conversation_Model::SALT_LENGTH);
+        $this->assertEquals(
+            40,
+            strlen($this->start_conversation()) - New_Conversation_Model::SALT_LENGTH
+        );
     }
 
     function test_start_conversation_results_logged() {
         $conversationId = $this->start_conversation();
 
-        $Results = $this->Database->query("SELECT * FROM Conversation WHERE id = '$conversationId'");
+        $Results = $this->Database->query(
+            "SELECT * FROM Conversation WHERE id = '$conversationId'"
+        );
         $row = $Results->fetch(PDO::FETCH_ASSOC);
 
         $this->assertEquals(
@@ -191,31 +196,83 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         );
 
         $this->Database->query(
-            "INSERT INTO Message (id, conversation_id, message, time_stamp)
-             VALUES (1, 'conv_id', 'message 1', '2013-01-01 10:10:09')"
+            "INSERT INTO Message (id, conversation_id, user, message, time_stamp)
+             VALUES (1, 'conv_id', 'M', 'manager message', '2013-01-01 10:10:09')"
         );
 
         $this->Database->query(
-            "INSERT INTO Message (id, conversation_id, message, time_stamp)
-             VALUES (2, 'conv_id', 'message 2', '2013-01-01 10:10:10')"
+            "INSERT INTO Message (id, conversation_id, user, message, time_stamp)
+             VALUES (2, 'conv_id', 'C', 'client message', '2013-01-01 10:10:10')"
         );
     }
 
     function test_is_updated_true() {
         $this->assertTrue($this->Model->is_updated(array(
-            "conversationId" => 'conv_id',
-            "last_update" => "2013-01-01 10:10:10"
+            "conversation_id" => 'conv_id',
+            "last_update" => '2013-01-01 10:10:10'
         )));
     }
 
     function test_is_updated_false() {
         $this->assertFalse($this->Model->is_updated(array(
-            "conversationId" => "conv_id",
-            "last_update" => "2013-01-01 10:10:09"
+            "conversation_id" => 'conv_id',
+            "last_update" => '2013-01-01 10:10:09'
         )));
     }
 
-    //function test_get_updates_no_updates() {}
-    //function test_get_updates() {}
+    function test_get_updates() {
+        $updates = $this->Model->get_updates(array(
+            "conversation_id" => 'conv_id',
+            "user" => 'C',
+            "last_id" => 1
+        ));
+
+        $this->assertEquals(
+            array(
+                "id" => 2,
+                "message" => 'client message',
+                "time_stamp" => '2013-01-01 10:10:10'
+            ),
+            $updates->next()
+        );
+
+        $this->assertFalse($updates->next());
+    }
+    
+    function test_get_updates_no_updates() {
+        $updates = $this->Model->get_updates(array(
+            "conversation_id" => 'conv_id',
+            "user" => 'C',
+            "last_id" => 2
+        ));
+        $this->assertFalse($updates->next());
+    }
+
+    function test_get_updates_own_updates() {
+        $updates = $this->Model->get_updates(array(
+            "conversation_id" => 'conv_id',
+            "user" => 'M',
+            "last_id" => 1
+        ));
+        $this->assertFalse($updates->next());
+    }
+
+    function test_get_updates_all_manager_messages() {
+        $updates = $this->Model->get_updates(array(
+            "conversation_id" => 'conv_id',
+            "user" => 'M'
+        ));
+
+        $this->assertEquals(
+            array(
+                "id" => 1,
+                "message" => 'manager message',
+                "time_stamp" => '2013-01-01 10:10:09'
+            ),
+            $updates->next()
+        );
+
+        $this->assertFalse($updates->next());
+    }
 }
 ?>
