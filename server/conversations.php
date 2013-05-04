@@ -79,18 +79,24 @@ class Existing_Conversation_Model extends Model {
 
 class Existing_Conversation_Controller extends Controller {
     const INITIAL_SLEEP_TIME = 5000000; //5 seconds
-    const UPDATE_SLEEP_TIME = 1000000; //1 seconds
+    const UPDATE_SLEEP_TIME  = 1000000; //1 seconds
     const MAX_NUM_UPDATES = 30;
 
+    private $Clock;
 
-    protected function post() {
+    function __construct(array $fig = array()) {
+        parent::__construct($fig);
+        $this->Clock = try_array($fig, "clock", new Clock());
+    }
+
+    protected function get() {
         $numUpdates = 0;
-        usleep(self::INITIAL_SLEEP_TIME);
-        while(!$this->Model->is_updated() and $numUpdates < self::MAX_NUM_UPDATES) {
+        $this->Clock->sleep(self::INITIAL_SLEEP_TIME);
+        while($this->Model->is_updated() and $numUpdates < self::MAX_NUM_UPDATES) {
             $numUpdates += 1;
-            usleep(self::UPDATE_SLEEP_TIME);
+            $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
         }
-        return json_encode($this->Model->get_new_messages());
+        return json_encode($this->Model->get_updates());
     }
 }
 ?>

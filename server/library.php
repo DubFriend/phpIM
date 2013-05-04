@@ -29,6 +29,16 @@ class Session {
     }
 }
 
+class Clock {
+    function time() {
+        return time();
+    }
+
+    function sleep($microseconds) {
+        usleep($microseconds);
+    }
+}
+
 
 function try_array(array $array, $key, $default = null) {
     return array_key_exists($key, $array) ? $array[$key] : $default;

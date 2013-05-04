@@ -41,9 +41,27 @@ function build_test_database($Database) {
             ip CHAR(45) UNIQUE,
             failed_attempts INT
         )"
-    );
-    
+    );   
 }
+
+
+function insert_default_rows($Database) {
+    $Database->query(
+        "INSERT INTO Conversation (id, last_edit)
+         VALUES ('conv_id', '2013-01-01 10:10:10')"
+    );
+
+    $Database->query(
+        "INSERT INTO Message (id, conversation_id, user, message, time_stamp)
+         VALUES (1, 'conv_id', 'M', 'manager message', '2013-01-01 10:10:09')"
+    );
+
+    $Database->query(
+        "INSERT INTO Message (id, conversation_id, user, message, time_stamp)
+         VALUES (2, 'conv_id', 'C', 'client message', '2013-01-01 10:10:10')"
+    );
+}
+
 
 class New_Conversation_Model_Test extends PHPUnit_Framework_TestCase {
     private $Database, $Model;
@@ -186,24 +204,7 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
             "database"=> new Sequel(array("connection" => $this->Database))
         ));
         build_test_database($this->Database);
-        $this->insert_default_rows();
-    }
-
-    private function insert_default_rows() {
-        $this->Database->query(
-            "INSERT INTO Conversation (id, last_edit)
-             VALUES ('conv_id', '2013-01-01 10:10:10')"
-        );
-
-        $this->Database->query(
-            "INSERT INTO Message (id, conversation_id, user, message, time_stamp)
-             VALUES (1, 'conv_id', 'M', 'manager message', '2013-01-01 10:10:09')"
-        );
-
-        $this->Database->query(
-            "INSERT INTO Message (id, conversation_id, user, message, time_stamp)
-             VALUES (2, 'conv_id', 'C', 'client message', '2013-01-01 10:10:10')"
-        );
+        insert_default_rows($this->Database);
     }
 
     function test_is_updated_true() {
@@ -273,6 +274,55 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         );
 
         $this->assertFalse($updates->next());
+    }
+}
+
+class Existing_Conversation_Model_Mock {
+    public $isUpdatedCountdown = 2,
+           $isUpdatedFig,
+           $getUpdatesFig;
+
+    function is_updated(array $fig = array()) {
+        $isUpdatedFig = $fig;
+        $this->isUpdatedCountdown -= 1;
+        return $this->isUpdatedCountdown > 0;
+    }
+
+    function get_updates(array $fig = array()) {
+        $getUpdatesFig = $fig;
+        return "mock update";
+    }
+}
+
+class Clock_Mock {
+    function sleep() {}
+}
+
+//Must call Clock::resume() after each Controller::respond() call
+class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
+    private $Clock, $Controller, $Model;
+
+    function setUp() {
+        $this->Clock = new Clock_Mock();
+        $this->Model = new Existing_Conversation_Model_Mock();
+        $this->Controller = $this->build_controller_override();
+    }
+
+    function build_controller_override(array $fig = array()) {
+        return new Existing_Conversation_Controller(array(
+            "clock" => $this->Clock,
+            "last_id" => try_array($fig, "last_id", 1),
+            "conversation_id" => try_array($fig, "conversation_id", "foo"),
+            "server" => try_array($fig, "server", array(
+                "REQUEST_METHOD" => try_array($fig, "REQUEST_METHOD", "GET")
+            )),
+            "model" => $this->Model
+        ));
+    }
+
+    function test_get() {
+        $response = $this->Controller->respond();
+        $this->assertEquals(json_encode("mock update"), $response);
     }
 }
 ?>
