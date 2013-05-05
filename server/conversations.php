@@ -54,10 +54,12 @@ class Existing_Conversation_Model extends Model {
     //TODO CHANGE TO LAST ID NUMBER INSTEAD OF LAST EDIT DATE. (consistency)
     function is_updated(array $fig = array()) {
         $Results = $this->Database->select(
-            "last_edit FROM Conversation WHERE id = ?",
+            //"last_edit FROM Conversation WHERE id = ?",
+            "last_id FROM Conversation WHERE id = ?",
             array($fig['conversation_id'])
         )->next();
-        return strtotime($Results['last_edit']) <= strtotime($fig['last_update']);
+        //return strtotime($Results['last_edit']) <= strtotime($fig['last_update']);
+        return $Results['last_id'] <= $fig['last_id'];
     }
 
     function get_updates(array $fig = array()) {
@@ -117,7 +119,6 @@ class Existing_Conversation_Controller extends Controller {
                 return json_encode($this->Model->get_updates($getUpdateConfig));
             }
         }
-        //return json_encode($this->Model->get_updates());
     }
 }
 ?>

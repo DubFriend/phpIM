@@ -21,7 +21,8 @@ function build_test_database($Database) {
             id CHAR(65) PRIMARY KEY,
             manager_id INT UNSIGNED,
             username,
-            last_edit DATETIME
+            last_edit DATETIME,
+            last_id INT UNSIGNED
         )"
     );
 
@@ -47,8 +48,8 @@ function build_test_database($Database) {
 
 function insert_default_rows($Database) {
     $Database->query(
-        "INSERT INTO Conversation (id, last_edit)
-         VALUES ('conv_id', '2013-01-01 10:10:10')"
+        "INSERT INTO Conversation (id, last_edit, last_id)
+         VALUES ('conv_id', '2013-01-01 10:10:10', 2)"
     );
 
     $Database->query(
@@ -123,7 +124,8 @@ class New_Conversation_Model_Test extends PHPUnit_Framework_TestCase {
                 "id" => $conversationId,
                 "manager_id" => null,
                 "username" => "username",
-                "last_edit" => date("Y-m-d H:i:s")
+                "last_edit" => date("Y-m-d H:i:s"),
+                "last_id" => null
             ),
             $row
         );
@@ -207,22 +209,17 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         insert_default_rows($this->Database);
     }
 
-    
-//TODO : INPUT FOR IS_UPDATED SHOULD BE ID, NOT DATE.
-
-
-
     function test_is_updated_true() {
         $this->assertTrue($this->Model->is_updated(array(
             "conversation_id" => 'conv_id',
-            "last_update" => '2013-01-01 10:10:10'
+            "last_id" => 2
         )));
     }
 
     function test_is_updated_false() {
         $this->assertFalse($this->Model->is_updated(array(
             "conversation_id" => 'conv_id',
-            "last_update" => '2013-01-01 10:10:09'
+            "last_id" => 1
         )));
     }
 
@@ -305,7 +302,7 @@ class Clock_Mock {
     function sleep() {}
 }
 
-//Must call Clock::resume() after each Controller::respond() call
+
 class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
     private $Controller, $Model;
 
