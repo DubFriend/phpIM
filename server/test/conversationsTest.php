@@ -223,6 +223,41 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         )));
     }
 
+
+
+
+
+    function test_is_updated_last_id_not_sent() {
+        $this->assertFalse($this->Model->is_updated(array(
+            "conversation_id" => 'conv_id'
+        )));
+    }
+
+    function test_is_updated_last_id_not_set() {
+        $this->Database->query(
+            "UPDATE Conversation SET last_id = NULL
+             WHERE conversation_id = 'conv_id'"
+        );
+        $this->assertTrue($this->Model->is_updated(array(
+            "conversation_id" => 'conv_id',
+            "last_id" => 1
+        )));
+    }
+
+    function test_is_updated_both_ids_not_set() {
+        $this->Database->query(
+            "UPDATE Conversation SET last_id = NULL
+             WHERE conversation_id = 'conv_id'"
+        );
+        $this->assertTrue($this->Model->is_updated(array(
+            "conversation_id" => 'conv_id'
+        )));
+    }
+
+
+
+
+
     function test_get_updates() {
         $updates = $this->Model->get_updates(array(
             "conversation_id" => 'conv_id',
@@ -278,6 +313,11 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         $this->assertFalse($updates->next());
     }
 }
+
+
+
+
+
 
 class Existing_Conversation_Model_Mock {
     public $isUpdatedCountdown = 2,
