@@ -50,6 +50,8 @@ class New_Conversation_Controller extends Controller {
 
 
 class Existing_Conversation_Model extends Model {
+
+    //TODO CHANGE TO LAST ID NUMBER INSTEAD OF LAST EDIT DATE. (consistency)
     function is_updated(array $fig = array()) {
         $Results = $this->Database->select(
             "last_edit FROM Conversation WHERE id = ?",
@@ -78,25 +80,44 @@ class Existing_Conversation_Model extends Model {
 
 
 class Existing_Conversation_Controller extends Controller {
-    const INITIAL_SLEEP_TIME = 5000000; //5 seconds
-    const UPDATE_SLEEP_TIME  = 1000000; //1 seconds
-    const MAX_NUM_UPDATES = 30;
+    const INITIAL_SLEEP_TIME = 5000000, //5 seconds
+          UPDATE_SLEEP_TIME  = 1000000, //1 seconds
+          MAX_NUM_UPDATES = 30;
 
-    private $Clock;
+    private $Clock,
+            $conversationId,
+            $lastMessageId,
+            $userType;
 
     function __construct(array $fig = array()) {
         parent::__construct($fig);
         $this->Clock = try_array($fig, "clock", new Clock());
+        $this->conversationId = try_array($fig, "conversation_id");
+        $this->lastMessageId = try_array($fig, "last_id");
+        $this->userType = try_array($fig, "user");
     }
 
     protected function get() {
-        $numUpdates = 0;
         $this->Clock->sleep(self::INITIAL_SLEEP_TIME);
-        while($this->Model->is_updated() and $numUpdates < self::MAX_NUM_UPDATES) {
+        $updateConfig = array(
+            "conversation_id" => $this->conversationId,
+            "last_id" => $this->lastMessageId
+        );
+        $getUpdateConfig = array_merge(
+            $updateConfig,
+            array("user" => $this->userType)
+        );
+        $numUpdates = 0;
+        while($numUpdates < self::MAX_NUM_UPDATES) {
             $numUpdates += 1;
-            $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
+            if($this->Model->is_updated($updateConfig)) {
+                $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
+            }
+            else {
+                return json_encode($this->Model->get_updates($getUpdateConfig));
+            }
         }
-        return json_encode($this->Model->get_updates());
+        //return json_encode($this->Model->get_updates());
     }
 }
 ?>
