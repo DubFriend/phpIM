@@ -66,7 +66,7 @@ var new_messenger = function (fig) {
         update = function () {
             if(isConnected) {
                 ajax(ajax_fig({
-                    //should be conversations/{conversationId}/messages_since/{lastId}/user/client
+                    //should be conversations/{conversationId}/messages_since/{lastId}/client
                     url: ROOT + "conversations/" + conversationId,
                     type: "GET",
                     success: function (response) {

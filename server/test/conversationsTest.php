@@ -20,7 +20,7 @@ function build_test_database($Database) {
         "CREATE TABLE IF NOT EXISTS Conversation (
             id CHAR(65) PRIMARY KEY,
             manager_id INT UNSIGNED,
-            username,
+            username VARCHAR(32),
             last_edit DATETIME,
             last_id INT UNSIGNED
         )"
@@ -236,18 +236,21 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
     function test_is_updated_last_id_not_set() {
         $this->Database->query(
             "UPDATE Conversation SET last_id = NULL
-             WHERE conversation_id = 'conv_id'"
+             WHERE id = 'conv_id'"
         );
         $this->assertTrue($this->Model->is_updated(array(
+            "conversation_id" => 'conv_id'
+        )));
+        $this->assertTrue($this->Model->is_updated(array(
             "conversation_id" => 'conv_id',
-            "last_id" => 1
+            "last_id" => 1 //this wouldnt be set in this case, but here as a corner-case
         )));
     }
 
     function test_is_updated_both_ids_not_set() {
         $this->Database->query(
             "UPDATE Conversation SET last_id = NULL
-             WHERE conversation_id = 'conv_id'"
+             WHERE id = 'conv_id'"
         );
         $this->assertTrue($this->Model->is_updated(array(
             "conversation_id" => 'conv_id'

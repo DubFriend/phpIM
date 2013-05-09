@@ -56,7 +56,19 @@ class Existing_Conversation_Model extends Model {
             "last_id FROM Conversation WHERE id = ?",
             array($fig['conversation_id'])
         )->next();
-        return $Results['last_id'] <= $fig['last_id'];
+        
+        if(!$Results) {
+            throw new Exception("Invalid conversation_id");
+        }
+        else if(!$Results['last_id']) {
+            return true;
+        }
+        else if(isset($fig['last_id'])) {
+            return ($Results['last_id'] <= $fig['last_id']);
+        }
+        else {
+            return false;
+        }
     }
 
     function get_updates(array $fig = array()) {
