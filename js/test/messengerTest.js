@@ -113,7 +113,7 @@
                 data: data.data,
             },
             {
-                url: ROOT + "conversations/3",
+                url: ROOT + "conversations/3/messages",
                 type: "POST",
                 data: {message: "foo"}
             },

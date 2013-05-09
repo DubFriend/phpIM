@@ -124,7 +124,7 @@ var new_messenger = function (fig) {
             isMessagePending = true;
             
             ajax(ajax_fig({
-                url: ROOT + "conversations/" + conversationId,
+                url: ROOT + "conversations/" + conversationId + "/messages",
                 type: "POST",
                 data: sendMessages,
                 success: function (response) {
