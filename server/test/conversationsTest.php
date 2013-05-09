@@ -209,57 +209,56 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         insert_default_rows($this->Database);
     }
 
-    function test_is_updated_true() {
-        $this->assertTrue($this->Model->is_updated(array(
+    function test_is_up_to_date_true() {
+        $this->assertTrue($this->Model->is_up_to_date(array(
             "conversation_id" => 'conv_id',
             "last_id" => 2
         )));
     }
 
-    function test_is_updated_false() {
-        $this->assertFalse($this->Model->is_updated(array(
+    function test_is_up_to_date_false() {
+        $this->assertFalse($this->Model->is_up_to_date(array(
             "conversation_id" => 'conv_id',
             "last_id" => 1
         )));
     }
 
-
-
-
-
-    function test_is_updated_last_id_not_sent() {
-        $this->assertFalse($this->Model->is_updated(array(
+    function test_is_up_to_date_last_id_not_sent() {
+        $this->assertFalse($this->Model->is_up_to_date(array(
             "conversation_id" => 'conv_id'
         )));
     }
 
-    function test_is_updated_last_id_not_set() {
+    function test_is_up_to_date_last_id_not_set() {
         $this->Database->query(
             "UPDATE Conversation SET last_id = NULL
              WHERE id = 'conv_id'"
         );
-        $this->assertTrue($this->Model->is_updated(array(
+        $this->assertTrue($this->Model->is_up_to_date(array(
             "conversation_id" => 'conv_id'
         )));
-        $this->assertTrue($this->Model->is_updated(array(
+        $this->assertTrue($this->Model->is_up_to_date(array(
             "conversation_id" => 'conv_id',
             "last_id" => 1 //this wouldnt be set in this case, but here as a corner-case
         )));
     }
 
-    function test_is_updated_both_ids_not_set() {
+    function test_is_up_to_date_both_ids_not_set() {
         $this->Database->query(
             "UPDATE Conversation SET last_id = NULL
              WHERE id = 'conv_id'"
         );
-        $this->assertTrue($this->Model->is_updated(array(
+        $this->assertTrue($this->Model->is_up_to_date(array(
             "conversation_id" => 'conv_id'
         )));
     }
 
-
-
-
+    /**
+     * @expectedException Exception
+     */
+    function test_is_up_to_date_invalid_conversation_id() {
+        $this->Model->is_up_to_date(array("conversationId" => 'wrong'));
+    }
 
     function test_get_updates() {
         $updates = $this->Model->get_updates(array(
@@ -328,7 +327,7 @@ class Existing_Conversation_Model_Mock {
            $isUpdatedFig,
            $getUpdatesFig;
 
-    function is_updated(array $fig = array()) {
+    function is_up_to_date(array $fig = array()) {
         $this->isUpdatedFig = $fig;
         $this->numUpdatedChecks += 1;
         $this->isUpdatedCountdown -= 1;

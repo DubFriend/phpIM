@@ -51,7 +51,7 @@ class New_Conversation_Controller extends Controller {
 
 class Existing_Conversation_Model extends Model {
 
-    function is_updated(array $fig = array()) {
+    function is_up_to_date(array $fig = array()) {
         $Results = $this->Database->select(
             "last_id FROM Conversation WHERE id = ?",
             array($fig['conversation_id'])
@@ -60,7 +60,7 @@ class Existing_Conversation_Model extends Model {
         if(!$Results) {
             throw new Exception("Invalid conversation_id");
         }
-        else if(!$Results['last_id']) {
+        else if($Results['last_id'] === null) {
             return true;
         }
         else if(isset($fig['last_id'])) {
@@ -121,7 +121,7 @@ class Existing_Conversation_Controller extends Controller {
         $numUpdates = 0;
         while($numUpdates < self::MAX_NUM_UPDATES) {
             $numUpdates += 1;
-            if($this->Model->is_updated($updateConfig)) {
+            if($this->Model->is_up_to_date($updateConfig)) {
                 $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
             }
             else {
