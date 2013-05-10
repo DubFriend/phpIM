@@ -24,6 +24,7 @@ class Sequel {
         $this->DB->prepare("INSERT INTO $query")->execute($values);
         return $this->DB->lastInsertId();
     }
+    
     function update($query, array $values = array()) {
         $this->DB->prepare("UPDATE $query")->execute($values);
     }

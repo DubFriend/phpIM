@@ -1,6 +1,6 @@
 <?php
 class New_Conversation_Model extends Model {
-    const SALT_LENGTH = 25; //max salt length is 25 (database no designed to hold longer strings)
+    const SALT_LENGTH = 25; //max salt length is 25 (database not designed to hold longer strings)
 
     private function generate_signature($input) {
         $salt = random_string(self::SALT_LENGTH);
