@@ -102,12 +102,7 @@ class Messages_Model_Mock {
 
 class Messages_Controller_Test extends PHPUnit_Framework_TestCase {
     private $Model,
-            $Controller,
-            $defaultPost = array(
-                "user" => "M",
-                "message" => "test message",
-                "conversation_id" => "conv_id"
-            );
+            $Controller;
 
     function setUp() {
         $this->Model = new Messages_Model_Mock();
@@ -115,7 +110,11 @@ class Messages_Controller_Test extends PHPUnit_Framework_TestCase {
 
     private function build_controller_override(array $fig = array()) {
         return new Messages_Controller(array(
-            "post" => try_array($fig, "post", $this->defaultPost),
+            "post" => try_array($fig, "post", array(
+                "user" => "M",
+                "message" => "test message"
+            )),
+            "conversation_id" => try_array($fig, "conversation_id", "conv_id"),
             "server" => try_array($fig, "server", array(
                 "REMOTE_ADDR" => try_array($fig, "REMOTE_ADDR", "mock_remote_addr"),
                 "HTTP_USER_AGENT" => try_array($fig, "HTTP_USER_AGENT", "mock_http_user_agent"),
@@ -131,7 +130,14 @@ class Messages_Controller_Test extends PHPUnit_Framework_TestCase {
             json_encode(array("is_success" => true, "id" => 3)),
             $Controller->respond()
         );
-        $this->assertEquals($this->defaultPost, $this->Model->messageFig);
+        $this->assertEquals(
+            array(
+                "user" => "M",
+                "message" => "test message",
+                "conversation_id" => "conv_id"
+            ),
+            $this->Model->messageFig
+        );
     }
 
     function test_post_invalid_conversation_id() {

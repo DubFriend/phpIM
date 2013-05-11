@@ -1,5 +1,14 @@
 <?php
-class Factory {
+
+interface Factory_Interface {
+    function build_manager_controller();
+    function build_user_controller();
+    function build_new_conversations_controller();
+    function build_existing_conversations_controller(array $fig = array());
+    function build_messages_controller(array $fig = array());
+}
+
+class Factory implements Factory_Interface {
     private $get,
             $post,
             $server,
@@ -81,6 +90,27 @@ class Factory {
             "model" => $this->build_new_conversations_model(),
             "view" => $this->build_new_conversations_view()
         )));
+    }
+
+
+    function build_messages_controller(array $fig = array()) {
+        return new Messages_Controller(array(
+            "model" => new Messages_Model(array("database" => $this->Database)),
+            "post" => $this->post,
+            "server" => $this->server,
+            "conversation_id" => try_array($fig, 'conversation_id')
+        ));
+    }
+
+    function build_existing_conversations_controller(array $fig = array()) {
+        return new Existing_Conversation_Controller(array(
+            //"clock" => new Clock_Mock(),
+            "last_id" => try_array($fig, "last_id"),
+            "user" => try_array($this->post, "user"),
+            "conversation_id" => try_array($fig, "conversation_id"),
+            "server" => $this->server,
+            "model" => $this->Model
+        ));
     }
 }
 ?>

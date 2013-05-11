@@ -13,9 +13,13 @@ CREATE TABLE IF NOT EXISTS Message (
 CREATE TABLE IF NOT EXISTS Conversation (
     id CHAR(65) PRIMARY KEY,
     manager_id INT UNSIGNED,
+    username VARCHAR(32),
     last_edit DATETIME,
+    last_id INT UNSIGNED,
     INDEX(manager_id),
-    INDEX(last_edit)
+    INDEX(username),
+    INDEX(last_edit),
+    INDEX(last_id)
 );
 
 CREATE TABLE IF NOT EXISTS Manager (
@@ -25,11 +29,4 @@ CREATE TABLE IF NOT EXISTS Manager (
     access_level INT UNSIGNED,
     failed_attempts INT,
     INDEX(username)
-);
-
-CREATE TABLE IF NOT EXISTS Ip_Check (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    ip CHAR(45) UNIQUE,
-    failed_attempts INT,
-    INDEX(ip)
 );

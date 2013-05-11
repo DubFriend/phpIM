@@ -24,12 +24,20 @@ class Messages_Model extends Model {
 
 
 class Messages_Controller extends Controller {
+    private $conversationId;
+
+    function __construct(array $fig = array()) {
+        parent::__construct($fig);
+        $this->conversationId = try_array($fig, 'conversation_id');
+    }
+
     function post() {
         try {
             $insertId = $this->Model->add_message(array(
                 "user" => $this->post['user'],
                 "message" => $this->post['message'],
-                "conversation_id" => $this->post['conversation_id']
+                //"conversation_id" => $this->post['conversation_id']
+                "conversation_id" => $this->conversationId
             ));
             return json_encode(array(
                 "is_success" => true,

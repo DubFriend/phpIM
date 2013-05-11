@@ -28,15 +28,7 @@ function build_test_database($Database) {
             access_level INT UNSIGNED,
             failed_attempts INT
         )"
-    );
-
-    $Database->exec(
-        "CREATE TABLE IF NOT EXISTS Ip_Check (
-            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            ip CHAR(45) UNIQUE,
-            failed_attempts INT
-        )"
-    );   
+    ); 
 }
 
 
