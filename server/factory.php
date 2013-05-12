@@ -78,20 +78,14 @@ class Factory implements Factory_Interface {
     }
 
     private function build_new_conversations_model() {
-        return new New_Conversations_Model($this->default_model_fig());
-    }
-
-    private function build_new_conversations_view() {
-        return new New_Conversations_View($this->default_view_fig());
+        return new New_Conversation_Model($this->default_model_fig());
     }
 
     function build_new_conversations_controller() {
-        return new New_Conversations_Controller($this->default_controller_fig(array(
-            "model" => $this->build_new_conversations_model(),
-            "view" => $this->build_new_conversations_view()
+        return new New_Conversation_Controller($this->default_controller_fig(array(
+            "model" => $this->build_new_conversations_model()
         )));
     }
-
 
     function build_messages_controller(array $fig = array()) {
         return new Messages_Controller(array(
@@ -104,12 +98,11 @@ class Factory implements Factory_Interface {
 
     function build_existing_conversations_controller(array $fig = array()) {
         return new Existing_Conversation_Controller(array(
-            //"clock" => new Clock_Mock(),
             "last_id" => try_array($fig, "last_id"),
             "user" => try_array($this->post, "user"),
             "conversation_id" => try_array($fig, "conversation_id"),
             "server" => $this->server,
-            "model" => $this->Model
+            "model" => new Existing_Conversation_Model($this->default_model_fig())
         ));
     }
 }

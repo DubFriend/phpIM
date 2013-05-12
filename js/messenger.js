@@ -40,6 +40,7 @@ var new_messenger = function (fig) {
                     cache: false,
                     timeout: AJAX_TIMEOUT_MILLISECONDS, //milliseconds
                     dataType: AJAX_DATA_TYPE,
+                    //dataType: "text",
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
                         console.log("ERROR #" + numErrors + " : " + textStatus + " : " + errorThrown);
                         numErrors += 1;

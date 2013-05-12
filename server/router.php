@@ -18,7 +18,9 @@
 class Router_Exception extends Exception {}
 
 class Router {
-    private $Factory, $path;
+    private $Factory,
+            $path;
+
     function __construct(array $fig = array()) {
         $this->Factory = $fig['factory'];
         //substring to remove the preceding slash, else first array element is empty string
@@ -40,7 +42,7 @@ class Router {
                 $Controller = $this->follow_conversations_path();
                 break;
             default:
-                throw new Router_Exception("Base Level Router Error");	
+                throw new Router_Exception("invalid base level path");	
         }
         return $Controller;
     }
@@ -94,6 +96,9 @@ class Router {
                     "user" => "M"
                 ));
                 break;
+
+            default:
+                throw new Router_Exception("invalid conversations path");
         }
         return $Controller;
     }

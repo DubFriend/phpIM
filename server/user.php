@@ -1,6 +1,26 @@
 <?php
 class User_Model extends Model {
     function initial_data() {
+
+        switch(DEPLOYMENT) {
+            case "development":
+                $js = array(
+                    PUBLIC_ROOT . "jquery-1.9.1.min.js",
+                    PUBLIC_ROOT . "js/define.js",
+                    PUBLIC_ROOT . "js/lib.js",
+                    PUBLIC_ROOT . "js/messenger.js",
+                    PUBLIC_ROOT . "js/execute.js"
+                );
+                break;
+            case "production":
+                $js = array(
+                    PUBLIC_ROOT . "jquery-1.9.1.min.js",
+                    PUBLIC_ROOT . "phpIM.min.js"
+                );
+            default:
+                throw new Exception("invalid deployment type");
+        }
+
         return array(
             "chat" => array(
                 "messages" => array(
@@ -79,7 +99,6 @@ class User_View extends View {
                 "<textarea name='message' placeholder='{{sendForm.placeholder}}'></textarea>" .
                 "<input type='submit' value='{{sendForm.buttonName}}'/>" .
             "</form>" .
-        
         "</div>";
     }
 }
