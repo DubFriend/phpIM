@@ -9,7 +9,7 @@
             };
             messenger = new_messenger({
                 ajax: ajax,
-                maxErrors: 1,
+                maxErrors: 1
             });
         }
     });
@@ -58,7 +58,7 @@
         deepEqual(
             {
                 url: updateData.url,
-                type: updateData.type,
+                type: updateData.type
             },
             {
                 url: ROOT + "conversations/3",
@@ -72,7 +72,7 @@
         deepEqual(
             {
                 url: secondUpdateData.url,
-                type: secondUpdateData.type,
+                type: secondUpdateData.type
             },
             {
                 url: ROOT + "conversations/3",
@@ -110,7 +110,7 @@
             {
                 url: data.url,
                 type: data.type,
-                data: data.data,
+                data: data.data
             },
             {
                 url: ROOT + "conversations/3/messages",

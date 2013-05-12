@@ -1,3 +1,5 @@
 bootstrap/*
+node_modules/*
 server/mustache.php-2.3.0/*
 jquery-1.9.1.min.js
+
