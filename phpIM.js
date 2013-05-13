@@ -189,6 +189,7 @@ $(document).ready(function () {
 
     $('#phpIM-disconnect').click(function (e) {
         e.preventDefault();
+        console.log("Disconnect");
         messenger.disconnect();
     });
 

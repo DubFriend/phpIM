@@ -66,7 +66,7 @@ class New_Conversation_Model_Test extends PHPUnit_Framework_TestCase {
                 "id" => $conversationId,
                 "manager_id" => null,
                 "username" => "username",
-                "last_edit" => date("Y-m-d H:i:s"),
+                "last_update" => date("Y-m-d H:i:s"),
                 "last_id" => null
             ),
             $row

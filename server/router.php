@@ -38,6 +38,9 @@ class Router {
             case "user_chat":
                 $Controller = $this->Factory->build_user_controller();
                 break;
+            case "manager":
+                $Controller = $this->Factory->build_manager_controller();
+                break;
             case "conversations":
                 $Controller = $this->follow_conversations_path();
                 break;

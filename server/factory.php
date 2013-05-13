@@ -47,33 +47,17 @@ class Factory implements Factory_Interface {
         return new Mustache_Engine;
     }
 
-    private function build_manager_model() {
-        return new Manager_Model($this->default_model_fig());
-    }
-
-    private function build_manager_view() {
-        return new Manager_View($this->default_view_fig());
-    }
-
     function build_manager_controller() {
         return new Manager_Controller($this->default_controller_fig(array(
-            "model" => $this->build_manager_model(),
-            "view" => $this->build_manager_view()
+            "model" => new Manager_Model($this->default_model_fig()),
+            "view" => new Manager_View($this->default_view_fig())
         )));
-    }
-
-    private function build_user_model() {
-        return new User_Model($this->default_model_fig());
-    }
-
-    private function build_user_view() {
-        return new User_View($this->default_view_fig());
     }
 
     function build_user_controller() {
         return new User_Controller($this->default_controller_fig(array(
-            "model" => $this->build_user_model(),
-            "view" => $this->build_user_view()
+            "model" => new User_Model($this->default_model_fig()),
+            "view" => new User_View($this->default_view_fig())
         )));
     }
 

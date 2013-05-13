@@ -12,7 +12,7 @@ class New_Conversation_Model extends Model {
     function start_conversation(array $fig = array()) {
         $conversationId = $this->generate_signature($fig['username'].$fig['signature']);
         $this->Database->insert(
-            "Conversation (id, manager_id, username, last_edit) VALUES (?, ?, ?, ?)",
+            "Conversation (id, manager_id, username, last_update) VALUES (?, ?, ?, ?)",
             array(
                 $conversationId,
                 try_array($fig, "manager_id"),
@@ -91,9 +91,9 @@ class Existing_Conversation_Model extends Model {
 
 
 class Existing_Conversation_Controller extends Controller {
-    const INITIAL_SLEEP_TIME = 1000000, //5 seconds
-          UPDATE_SLEEP_TIME  = 1000000, //1 seconds
-          MAX_NUM_UPDATES = 5;
+    const INITIAL_SLEEP_TIME = 1000000, //1000000 == 1 second
+          UPDATE_SLEEP_TIME  = 1000000,
+          MAX_NUM_UPDATES = 30;
 
     private $Clock,
             $conversationId,

@@ -64,7 +64,7 @@ class Messages_Model_Test extends PHPUnit_Framework_TestCase {
                 "last_id" => 3
             ),
             array(
-                "last_edit" => $row['last_edit'],
+                "last_edit" => $row['last_update'],
                 "last_id" => $row['last_id']
             )
         );

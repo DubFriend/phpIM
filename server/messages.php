@@ -11,7 +11,7 @@ class Messages_Model extends Model {
                 array($fig['conversation_id'], $fig['user'], $fig['message'])
             );
             $this->Database->update(
-                "Conversation SET last_edit = ?, last_id = ? WHERE id = ?",
+                "Conversation SET last_update = ?, last_id = ? WHERE id = ?",
                 array(date("Y-m-d H:i:s"), $insertId, $fig['conversation_id'])
             );
             return $insertId;
