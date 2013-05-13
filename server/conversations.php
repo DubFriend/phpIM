@@ -12,7 +12,7 @@ class New_Conversation_Model extends Model {
     function start_conversation(array $fig = array()) {
         $conversationId = $this->generate_signature($fig['username'].$fig['signature']);
         $this->Database->insert(
-            "Conversation (id, manager_id, username, last_update) VALUES (?, ?, ?, ?)",
+            "Conversation (id, manager_id, username, last_update_check) VALUES (?, ?, ?, ?)",
             array(
                 $conversationId,
                 try_array($fig, "manager_id"),
@@ -71,6 +71,13 @@ class Existing_Conversation_Model extends Model {
         }
     }
 
+    function update_last_update_check(array $fig = array()) {
+        $this->Database->update(
+            "Conversation SET last_update_check = '" . date("Y-m-d H:i:s") . "' WHERE id = ?",
+            array($fig['conversation_id'])
+        );
+    }
+
     function get_updates(array $fig = array()) {
         if(isset($fig['last_id'])) {
             $sql = "" .
@@ -109,7 +116,12 @@ class Existing_Conversation_Controller extends Controller {
     }
 
     protected function get() {
+        $this->Model->update_last_update_check(array(
+            "conversation_id" => $this->conversationId
+        ));
+
         $this->Clock->sleep(self::INITIAL_SLEEP_TIME);
+        
         $updateConfig = array(
             "conversation_id" => $this->conversationId,
             "last_id" => $this->lastMessageId
@@ -118,17 +130,20 @@ class Existing_Conversation_Controller extends Controller {
             $updateConfig,
             array("user" => $this->userType)
         );
+        
         $numUpdates = 0;
+        $response = null;
         while($numUpdates < self::MAX_NUM_UPDATES) {
             $numUpdates += 1;
             if($this->Model->is_up_to_date($updateConfig)) {
                 $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
             }
             else {
-                return json_encode($this->Model->get_updates($getUpdateConfig));
+                $response = $this->Model->get_updates($getUpdateConfig);
             }
         }
-        return json_encode("Update Response Timeout");
+        $response = $response !== null ? $response : "Update Response Timeout";
+        return json_encode($response);
     }
 }
 ?>

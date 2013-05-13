@@ -60,11 +60,11 @@ class Messages_Model_Test extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(
             array(
-                "last_edit" => date("Y-m-d H:i:s"),
+                "last_update_check" => date("Y-m-d H:i:s"),
                 "last_id" => 3
             ),
             array(
-                "last_edit" => $row['last_update'],
+                "last_update_check" => $row['last_update_check'],
                 "last_id" => $row['last_id']
             )
         );

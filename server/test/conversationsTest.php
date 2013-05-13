@@ -66,7 +66,7 @@ class New_Conversation_Model_Test extends PHPUnit_Framework_TestCase {
                 "id" => $conversationId,
                 "manager_id" => null,
                 "username" => "username",
-                "last_update" => date("Y-m-d H:i:s"),
+                "last_update_check" => date("Y-m-d H:i:s"),
                 "last_id" => null
             ),
             $row
@@ -149,6 +149,22 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         ));
         build_test_database($this->Database);
         insert_default_rows($this->Database);
+    }
+
+    function test_last_update_check_is_updated() {
+        $this->Model->update_last_update_check(array(
+            "conversation_id" => 'conv_id'
+        ));
+
+        $Results = $this->Database->query(
+            "SELECT last_update_check FROM Conversation WHERE id = 'conv_id'"
+        );
+        $row = $Results->fetch(PDO::FETCH_ASSOC);
+
+        $this->assertEquals(
+            date("Y-m-d H:i:s"),
+            $row['last_update_check']
+        );
     }
 
     function test_is_up_to_date_true() {
@@ -267,6 +283,7 @@ class Existing_Conversation_Model_Mock {
     public $isUpdatedCountdown = 2,
            $numUpdateChecks = 0,
            $isUpdatedFig,
+           $updateLastUpdateFig,
            $getUpdatesFig;
 
     function is_up_to_date(array $fig = array()) {
@@ -274,6 +291,10 @@ class Existing_Conversation_Model_Mock {
         $this->numUpdatedChecks += 1;
         $this->isUpdatedCountdown -= 1;
         return $this->isUpdatedCountdown > 0;
+    }
+
+    function update_last_update_check(array $fig = array()) {
+        $this->updateLastUpdateFig = $fig;
     }
 
     function get_updates(array $fig = array()) {
@@ -300,7 +321,7 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
             "clock" => new Clock_Mock(),
             "last_id" => try_array($fig, "last_id", 1),
             "user" => "M",
-            "conversation_id" => try_array($fig, "conversation_id", "foo"),
+            "conversation_id" => try_array($fig, "conversation_id", "conv_id"),
             "server" => try_array($fig, "server", array(
                 "REQUEST_METHOD" => try_array($fig, "REQUEST_METHOD", "GET")
             )),
@@ -313,6 +334,14 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(json_encode("mock update"), $response);
     }
 
+    function test_get_updates_last_update_check() {
+        $response = $this->Controller->respond();
+        $this->assertEquals(
+            array('conversation_id' => 'conv_id'),
+            $this->Model->updateLastUpdateFig
+        );
+    }
+
     function test_get_max_update_checks() {
         $this->Model->isUpdatedCountdown = Existing_Conversation_Controller::MAX_NUM_UPDATES + 1;
         $response = $this->Controller->respond();
@@ -323,7 +352,7 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         $response = $this->Controller->respond();
         $this->assertEquals(
             array(
-                "conversation_id" => 'foo',
+                "conversation_id" => 'conv_id',
                 "last_id" => 1
             ),
             $this->Model->isUpdatedFig
@@ -334,7 +363,7 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         $response = $this->Controller->respond();
         $this->assertEquals(
             array(
-                "conversation_id" => 'foo',
+                "conversation_id" => 'conv_id',
                 "user" => 'M',
                 "last_id" => 1
             ),

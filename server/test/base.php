@@ -15,7 +15,7 @@ function build_test_database($Database) {
             id CHAR(65) PRIMARY KEY,
             manager_id INT UNSIGNED,
             username VARCHAR(32),
-            last_update DATETIME,
+            last_update_check DATETIME,
             last_id INT UNSIGNED
         )"
     );
@@ -34,7 +34,7 @@ function build_test_database($Database) {
 
 function insert_default_rows($Database) {
     $Database->query(
-        "INSERT INTO Conversation (id, last_update, last_id)
+        "INSERT INTO Conversation (id, last_update_check, last_id)
          VALUES ('conv_id', '2013-01-01 10:10:10', 2)"
     );
 
