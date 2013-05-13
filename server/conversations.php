@@ -113,7 +113,9 @@ class Existing_Conversation_Controller extends Controller {
     }
 
     protected function get() {
-        
+        $this->Model->update_last_update_check(array(
+            "conversation_id" => $this->conversationId
+        ));        
 
         $this->Clock->sleep(self::INITIAL_SLEEP_TIME);
         
@@ -140,10 +142,6 @@ class Existing_Conversation_Controller extends Controller {
             }
         }
         $response = $response !== null ? $response : "Update Response Timeout";
-
-        $this->Model->update_last_update_check(array(
-            "conversation_id" => $this->conversationId
-        ));
 
         return json_encode($response);
     }
