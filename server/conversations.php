@@ -91,9 +91,9 @@ class Existing_Conversation_Model extends Model {
 
 
 class Existing_Conversation_Controller extends Controller {
-    const INITIAL_SLEEP_TIME = 5000000, //5 seconds
+    const INITIAL_SLEEP_TIME = 1000000, //5 seconds
           UPDATE_SLEEP_TIME  = 1000000, //1 seconds
-          MAX_NUM_UPDATES = 30;
+          MAX_NUM_UPDATES = 5;
 
     private $Clock,
             $conversationId,
@@ -128,6 +128,7 @@ class Existing_Conversation_Controller extends Controller {
                 return json_encode($this->Model->get_updates($getUpdateConfig));
             }
         }
+        return json_encode("Update Response Timeout");
     }
 }
 ?>

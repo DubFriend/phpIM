@@ -316,7 +316,7 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
     function test_get_max_update_checks() {
         $this->Model->isUpdatedCountdown = Existing_Conversation_Controller::MAX_NUM_UPDATES + 1;
         $response = $this->Controller->respond();
-        $this->assertNull($response);
+        $this->assertEquals(json_encode("Update Response Timeout"), $response);
     }
 
     function test_is_updated_sent_parameters() {

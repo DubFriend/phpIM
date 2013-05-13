@@ -98,7 +98,7 @@ class Router {
                 break;
 
             default:
-                throw new Router_Exception("invalid conversations path");
+                throw new Router_Exception("invalid conversations path : " . print_r($this->path, true));
         }
         return $Controller;
     }

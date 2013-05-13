@@ -5,6 +5,7 @@ var new_messenger = function (fig) {
         messageQueue = [],
         isConnected = false, //set to true immediately after connect called
         conversationId,
+        lastId,
         isMessagePending = false,
         numErrors = 0,
         maxErrors = fig.maxErrors || 3,
@@ -66,12 +67,21 @@ var new_messenger = function (fig) {
 
         update = function () {
             if(isConnected) {
+                var url;
+                if(lastId) {
+                    url = ROOT + "conversations/" + conversationId + "/messages_since/" + lastId;
+                }
+                else {
+                    url = ROOT + "conversations/" + conversationId;
+                }
                 ajax(ajax_fig({
                     //should be conversations/{conversationId}/messages_since/{lastId}/client
-                    url: ROOT + "conversations/" + conversationId,
+                    url: url,
                     type: "GET",
+                    //dataType: "text",
                     success: function (response) {
-                        console.log("CONNECT RESPONSE : " + JSON.stringify(response));
+                        console.log("UPDATE RESPONSE : " + JSON.stringify(response));
+                        
                         //publish(response);
                         if(updateTimeoutTime > 0) {
                             setTimeout(update, updateTimeoutTime);
@@ -113,6 +123,7 @@ var new_messenger = function (fig) {
     that.send_message = function (messageData) {
         var sendMessages;
         if(isConnected && conversationId && !isMessagePending) {
+            console.log("Message Sending");
             if(messageQueue.length > 0) {
                 messageQueue.push(messageData);
                 sendMessages = messageQueue;
@@ -127,14 +138,17 @@ var new_messenger = function (fig) {
             ajax(ajax_fig({
                 url: ROOT + "conversations/" + conversationId + "/messages",
                 type: "POST",
+                //dataType: "text",
                 data: sendMessages,
                 success: function (response) {
+                    lastId = response.id;
                     isMessagePending = false;
                     console.log("MESSAGE RESPONSE : " + JSON.stringify(response));
                 }
             }));
         }
         else {
+            console.log("Could Not send Message");
             messageQueue.push(messageData);
         }
     };

@@ -34,9 +34,8 @@ class Messages_Controller extends Controller {
     function post() {
         try {
             $insertId = $this->Model->add_message(array(
-                "user" => $this->post['user'],
-                "message" => $this->post['message'],
-                //"conversation_id" => $this->post['conversation_id']
+                "user" => try_array($this->post, 'user'),
+                "message" => try_array($this->post, 'message'),
                 "conversation_id" => $this->conversationId
             ));
             return json_encode(array(

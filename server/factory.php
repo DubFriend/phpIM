@@ -12,14 +12,14 @@ class Factory implements Factory_Interface {
     private $get,
             $post,
             $server,
-            $session,
+            //$session,
             $Database;
 
     function __construct(array $fig = array()) {
         $this->get = $fig['get'];
         $this->post = $fig['post'];
         $this->server = $fig['server'];
-        $this->session = $fig['session'];
+        //$this->session = $fig['session'];
         $this->Database = $fig['database'];
     }
 
@@ -89,7 +89,7 @@ class Factory implements Factory_Interface {
 
     function build_messages_controller(array $fig = array()) {
         return new Messages_Controller(array(
-            "model" => new Messages_Model(array("database" => $this->Database)),
+            "model" => new Messages_Model($this->default_model_fig()),
             "post" => $this->post,
             "server" => $this->server,
             "conversation_id" => try_array($fig, 'conversation_id')

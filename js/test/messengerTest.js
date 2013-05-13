@@ -125,7 +125,7 @@
             "message pending flag is true after message sent"
         );
 
-        data.success();
+        data.success({"id": 4});
 
         deepEqual(messenger.is_message_pending(), false,
             "message pending flag set to false after response recieved"

@@ -7,7 +7,13 @@ require ROOT . "base.php";
 require ROOT . "manager.php";
 require ROOT . "user.php";
 require ROOT . "conversations.php";
+require ROOT . "messages.php";
 require ROOT . "mustache.php-2.3.0/src/Mustache/Autoloader.php";
+
+
+//session_start();
+//note: session cannot be maintained on long running script (will block concurrent requests)
+//session_write_close();
 
 Mustache_Autoloader::register();
 
@@ -21,7 +27,7 @@ $Factory = new Factory(array(
     "get" => $get,
     "post" => $post,
     "server" => $server,
-    "session" => new Session(),
+    //"session" => new Session(),
     "database" => new Sequel(array(
         "connection" => new PDO(
             "mysql:host=" . DATABASE_HOST . ";dbname=" . DATABASE_NAME,
