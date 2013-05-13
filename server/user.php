@@ -1,59 +1,14 @@
 <?php
-class User_Model extends Model {
+class User_Model extends Bootstrap_Model {
     function initial_data() {
-
-        switch(DEPLOYMENT) {
-            case "development":
-                $js = array(
-                    PUBLIC_ROOT . "jquery-1.9.1.min.js",
-                    PUBLIC_ROOT . "js/define.js",
-                    PUBLIC_ROOT . "js/lib.js",
-                    PUBLIC_ROOT . "js/messenger.js",
-                    PUBLIC_ROOT . "js/execute.js"
-                );
-                break;
-            case "production":
-                $js = array(
-                    PUBLIC_ROOT . "jquery-1.9.1.min.js",
-                    PUBLIC_ROOT . "phpIM.min.js"
-                );
-            default:
-                throw new Exception("invalid deployment type");
-        }
-
         return array(
-            "chat" => array(
-                "messages" => array(
-                    /*array(
-                        "username" => "Bob",
-                        "body" => "message 1",
-                        "time" => "time"
-                    )*/
-                ),
-                "sendForm" => array(
-                    "placeholder" => "Enter message.",
-                    "buttonName" => "Submit"
-                ),
-                "connectForm" => array(
-                    "placeholder" => "Username",
-                    "buttonName" => "Connect"
-                ),
-                "disconnectForm" => array(
-                    "buttonName" => "Disconnect"
-                )
-            ),
-            "js" => array(
-                PUBLIC_ROOT . "jquery-1.9.1.min.js",
-                PUBLIC_ROOT . "js/define.js",
-                PUBLIC_ROOT . "js/lib.js",
-                PUBLIC_ROOT . "js/messenger.js",
-                PUBLIC_ROOT . "js/execute.js"
-            )
+            "chat" => $this->get_chat_box_data(),
+            "js" => $this->get_base_javascript()
         );
     }
 }
 
-class User_View extends View {
+class User_View extends Bootstrap_View {
     function render(array $data = array()) {
         return $this->render_full_page($data);
     }
@@ -73,33 +28,6 @@ class User_View extends View {
         return "" .
         "<head>" .
         "</head>";
-    }
-
-    private function template_chat_box() {
-        return "" .
-        "<div id='phpIM'>" .
-            "<div id='phpIM-message-area'>" .
-                "{{#messages}}" .
-                    "<div class='message'>" .
-                        "<p>{{username}}</p>" .
-                        "<p>{{body}}</p>" .
-                        "<p>{{time}}</p>" .
-                    "</div>" .
-                "{{/messages}}" .
-            "</div>" .
-            
-            "<form id='phpIM-connect'>" .
-                "<input type='text' name='username' placeholder='{{connectForm.placeholder}}'/>" .
-                "<input type='submit' value='{{connectForm.buttonName}}'/>" .
-            "</form>" .
-            
-            "<button id='phpIM-disconnect'>{{disconnectForm.buttonName}}</button>" .
-
-            "<form id='phpIM-send-message'>" .
-                "<textarea name='message' placeholder='{{sendForm.placeholder}}'></textarea>" .
-                "<input type='submit' value='{{sendForm.buttonName}}'/>" .
-            "</form>" .
-        "</div>";
     }
 }
 

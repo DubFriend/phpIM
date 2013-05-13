@@ -6,6 +6,53 @@ abstract class Model {
     }
 }
 
+//models intended for initial load controllers.
+abstract class Bootstrap_Model extends Model {
+
+    //returns the data used for an initial page load.
+    abstract function initial_data();
+
+    protected function get_chat_box_data() {
+        return array(
+            "sendForm" => array(
+                "placeholder" => "Enter message.",
+                "buttonName" => "Submit"
+            ),
+            "connectForm" => array(
+                "placeholder" => "Username",
+                "buttonName" => "Connect"
+            ),
+            "disconnectForm" => array(
+                "buttonName" => "Disconnect"
+            )
+        );
+    }
+
+    protected function get_base_javascript() {
+        $js = null;
+        switch(DEPLOYMENT) {
+            case "development":
+                $js = array(
+                    PUBLIC_ROOT . "jquery-1.9.1.min.js",
+                    PUBLIC_ROOT . "js/define.js",
+                    PUBLIC_ROOT . "js/lib.js",
+                    PUBLIC_ROOT . "js/messenger.js",
+                    PUBLIC_ROOT . "js/execute.js"
+                );
+                break;
+            case "production":
+                $js = array(
+                    PUBLIC_ROOT . "jquery-1.9.1.min.js",
+                    PUBLIC_ROOT . "phpIM.min.js"
+                );
+            default:
+                throw new Exception("invalid deployment type");
+        }
+        return $js;
+    }
+
+}
+
 interface Renderable {
     function render(array $data = array());
 }
@@ -18,6 +65,35 @@ abstract class View implements Renderable {
 
     protected function template_js() {
         return '{{#js}}<script src="{{.}}"></script>{{/js}}';
+    }
+}
+
+abstract class Bootstrap_View extends View {
+    protected function template_chat_box() {
+        return "" .
+        "<div id='phpIM-chat-box'>" .
+            "<div id='phpIM-message-area'>" .
+                "{{#messages}}" .
+                    "<div class='message'>" .
+                        "<p>{{username}}</p>" .
+                        "<p>{{body}}</p>" .
+                        "<p>{{time}}</p>" .
+                    "</div>" .
+                "{{/messages}}" .
+            "</div>" .
+            
+            "<form id='phpIM-connect'>" .
+                "<input type='text' name='username' placeholder='{{connectForm.placeholder}}'/>" .
+                "<input type='submit' value='{{connectForm.buttonName}}'/>" .
+            "</form>" .
+            
+            "<button id='phpIM-disconnect'>{{disconnectForm.buttonName}}</button>" .
+
+            "<form id='phpIM-send-message'>" .
+                "<textarea name='message' placeholder='{{sendForm.placeholder}}'></textarea>" .
+                "<input type='submit' value='{{sendForm.buttonName}}'/>" .
+            "</form>" .
+        "</div>";
     }
 }
 
