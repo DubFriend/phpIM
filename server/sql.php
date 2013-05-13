@@ -59,6 +59,14 @@ class Sequel_Results implements Iterator {
         return substr($query, strpos($query, "FROM"));
     }
 
+    function to_array() {
+        $arrayResults = array();
+        while($row = $this->next()) {
+            $arrayResults[] = $row;
+        }
+        return $arrayResults;
+    }
+
     //rowCount doesnt work for sqlite :(
     function count() {
         if($this->count === null) {

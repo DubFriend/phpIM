@@ -272,6 +272,28 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
 
         $this->assertFalse($updates->next());
     }
+
+    function test_get_updates_for_any_user() {
+        $updates = $this->Model->get_updates(array(
+            "conversation_id" => 'conv_id',
+        ));
+
+        $this->assertEquals(
+            array(
+                array(
+                    "id" => 1,
+                    "message" => 'manager message',
+                    "time_stamp" => '2013-01-01 10:10:09'
+                ),
+                array(
+                    "id" => 2,
+                    "message" => 'client message',
+                    "time_stamp" => '2013-01-01 10:10:10'
+                )
+            ),
+            $updates->to_array()
+        );
+    }
 }
 
 
@@ -299,6 +321,12 @@ class Existing_Conversation_Model_Mock {
 
     function get_updates(array $fig = array()) {
         $this->getUpdatesFig = $fig;
+        return new Mock_Updates_Result();
+    }
+}
+
+class Mock_Updates_Result {
+    function to_array() {
         return "mock update";
     }
 }

@@ -14,11 +14,11 @@ CREATE TABLE IF NOT EXISTS Conversation (
     id CHAR(65) PRIMARY KEY,
     manager_id INT UNSIGNED,
     username VARCHAR(32),
-    last_edit DATETIME,
+    last_update_check DATETIME,
     last_id INT UNSIGNED,
     INDEX(manager_id),
     INDEX(username),
-    INDEX(last_edit),
+    INDEX(last_update_check),
     INDEX(last_id)
 );
 

@@ -113,5 +113,16 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
             $Results->fetch()
         );
     }
+
+    function test_results_to_array() {
+        $ResultsObject = $this->Sql->select("* FROM A");
+        $this->assertEquals(
+            array(
+                array("id" => 1, "a" => "foo", "b" => 5),
+                array("id" => 2,"a" => "bar", "b" => 6)
+            ),
+            $ResultsObject->to_array()
+        );
+    }
 }
 ?>

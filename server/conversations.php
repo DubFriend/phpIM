@@ -79,19 +79,16 @@ class Existing_Conversation_Model extends Model {
     }
 
     function get_updates(array $fig = array()) {
+        $sql = "id, message, time_stamp FROM Message WHERE conversation_id = ?";
+        $values = array($fig['conversation_id']);
         if(isset($fig['last_id'])) {
-            $sql = "" .
-            "id, message, time_stamp FROM Message " .
-            "WHERE id > ? AND conversation_id = ? AND user = ?";
-            $values = array($fig['last_id'], $fig['conversation_id'], $fig['user']);
+            $sql .= " AND id > ?";
+            $values[] = $fig['last_id'];
         }
-        else {
-            $sql = "" .
-            "id, message, time_stamp FROM Message " .
-            "WHERE conversation_id = ? AND user = ?";
-            $values = array($fig['conversation_id'], $fig['user']);
+        if(isset($fig['user'])) {
+            $sql .= " AND user = ?";
+            $values[] = $fig['user'];
         }
-
         return $this->Database->select($sql, $values);
     }
 }
@@ -116,9 +113,7 @@ class Existing_Conversation_Controller extends Controller {
     }
 
     protected function get() {
-        $this->Model->update_last_update_check(array(
-            "conversation_id" => $this->conversationId
-        ));
+        
 
         $this->Clock->sleep(self::INITIAL_SLEEP_TIME);
         
@@ -139,10 +134,17 @@ class Existing_Conversation_Controller extends Controller {
                 $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
             }
             else {
-                $response = $this->Model->get_updates($getUpdateConfig);
+                $ResponseObject = $this->Model->get_updates($getUpdateConfig);
+
+                $response = $ResponseObject->to_array();
             }
         }
         $response = $response !== null ? $response : "Update Response Timeout";
+
+        $this->Model->update_last_update_check(array(
+            "conversation_id" => $this->conversationId
+        ));
+
         return json_encode($response);
     }
 }
