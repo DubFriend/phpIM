@@ -44,6 +44,18 @@ function try_array(array $array, $key, $default = null) {
     return array_key_exists($key, $array) ? $array[$key] : $default;
 }
 
+//will return a string with $trail removed, if $trail is on the end of the string
+function remove_trailing($string, $trail) {
+    $trailLength = strlen($trail);
+    $stringLength = strlen($string);
+    if(substr($string, $trailLength * -1) === $trail) {
+        return substr($string, 0, $stringLength - $trailLength);
+    }
+    else {
+        return $string;
+    }
+}
+
 
 function debug($message) {
     if(IS_DEBUG_MESSAGES_ON) {

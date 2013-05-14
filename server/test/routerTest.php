@@ -138,5 +138,13 @@ class Router_Test extends PHPUnit_Framework_TestCase {
     function test_invalid_conversation_path() {
         $this->route("conversations/3/wrong");
     }
+/*
+    function test_live_conversations_path() {
+        $this->assertEquals(
+            "live_conversations_controller",
+            $this->route("conversations/live")
+        );
+    }
+*/
 }
 ?>

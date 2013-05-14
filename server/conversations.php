@@ -50,16 +50,6 @@ class New_Conversation_Controller extends Controller {
 
 
 class Existing_Conversation_Model extends Model {
-    //const INITIAL_SLEEP_TIME = 1000000, //1000000 == 1 second
-    //      UPDATE_SLEEP_TIME  = 1000000,
-    //      MAX_NUM_UPDATES = 30;
-
-    //private $Clock;
-
-    //function __construct(array $fig = array()) {
-    //    parent::__construct($fig);
-    //    $this->Clock = try_array($fig, "clock", new Clock());
-    //}
 
     function is_up_to_date(array $fig = array()) {
         $Results = $this->Database->select(
@@ -101,38 +91,7 @@ class Existing_Conversation_Model extends Model {
         }
         return $this->Database->select($sql, $values);
     }
-/*
-    function check_for_updates(array $fig = array()) {
-        $this->update_last_update_check(array(
-            "conversation_id" => $fig['conversation_id']
-        ));
 
-        $this->Clock->sleep(self::INITIAL_SLEEP_TIME);
-        
-        $updateConfig = array(
-            "conversation_id" => $fig['conversation_id'],
-            "last_id" => $fig['last_id']
-        );
-
-        $getUpdateConfig = array_merge(
-            $updateConfig,
-            array("user" => $fig['user'])
-        );
-        
-        $numUpdates = 0;
-        $response = null;
-        while($numUpdates < self::MAX_NUM_UPDATES) {
-            $numUpdates += 1;
-            if($this->is_up_to_date($updateConfig)) {
-                $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
-            }
-            else {
-                $response = $this->get_updates($getUpdateConfig)->to_array();
-            }
-        }
-
-        return $response !== null ? $response : "Update Response Timeout";
-    }*/
 }
 
 
@@ -158,12 +117,6 @@ class Existing_Conversation_Controller extends Controller {
         $this->Model->update_last_update_check(array(
             "conversation_id" => $this->conversationId
         ));
-
-        /*return json_encode($this->Model->check_for_updates(array(
-            "conversation_id" => $this->conversationId,
-            "last_id" => $this->lastMessageId,
-            "user" => $this->userType
-        )));*/
 
         $this->Clock->sleep(self::INITIAL_SLEEP_TIME);
         
@@ -220,8 +173,13 @@ class Conversations_Model extends Model {
             "FROM Conversation WHERE last_update_check > ?",
              array($expirationDate)
         );
-
         return $Results;
+    }
+}
+
+class Live_Conversations_Controller extends Controller {
+    function get() {
+        return json_encode($this->Model->get_live_conversations());
     }
 }
 ?>
