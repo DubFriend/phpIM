@@ -399,4 +399,67 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         );
     }
 }
+
+class Clock_Expire_Mock {
+    private $expirationTime;
+    function __construct($expirationDiff = 0) {
+        $initialSleepTime = Existing_Conversation_Controller::INITIAL_SLEEP_TIME / 1000000;
+        $updateSleepTime = Existing_Conversation_Controller::UPDATE_SLEEP_TIME / 1000000;
+        $maxNumUpdates = Existing_Conversation_Controller::MAX_NUM_UPDATES;
+        $timeBuffer = Conversations_Model::MAX_LIVE_AGE_TIME_BUFFER;
+        $this->expirationTime = $initialSleepTime +
+                               ($updateSleepTime * $maxNumUpdates) +
+                                $timeBuffer + $expirationDiff;
+    }
+
+    function time() {
+        //echo "\nstrtotime : " . strtotime("2013-01-01 10:10:09") . "\n";
+        //echo "expiration time : " . $this->expirationTime . "\n";
+        return strtotime("2013-01-01 10:10:09") + $this->expirationTime;
+    }
+}
+
+
+class Conversations_Model_Test extends PHPUnit_Framework_TestCase {
+    private $Model, $Database;
+    function setUp() {
+        $this->Database = new PDO("sqlite::memory:");
+        //$this->Model = new Conversations_Model(array(
+        //    "database" => new Sequel(array("connection" => $this->Database)),
+        //    "clock" => new Clock_Expire_Mock()
+        //));
+        build_test_database($this->Database);
+        insert_default_rows($this->Database);
+    }
+
+    private function build_model_override($expirationTimeDifferential = 0) {
+        return new Conversations_Model(array(
+            "database" => new Sequel(array("connection" => $this->Database)),
+            "clock" => new Clock_Expire_Mock($expirationTimeDifferential)
+        ));
+    }
+
+    function test_get_live_conversations_within_expiration() {
+        $Model = $this->build_model_override();
+        $Results = $Model->get_live_conversations();
+        $this->assertEquals(1, $Results->count());
+
+        $this->assertEquals(
+            array(
+                "id" => 'conv_id',
+                "last_update_check" => '2013-01-01 10:10:10',
+                "last_id" => 2,
+                "manager_id" => null,
+                "username" => null
+            ),
+            $Results->next()
+        );
+    }
+
+    function test_get_live_conversations_expired() {
+        $Model = $this->build_model_override(1);
+        $Results = $Model->get_live_conversations();
+        $this->assertFalse($Results->next());
+    }
+}
 ?>

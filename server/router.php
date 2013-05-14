@@ -10,6 +10,9 @@
 //connect
 //POST  conversations
 
+//get live conversations
+//GET conversations/live
+
 //send_message
 //POST  conversations/{{id}}/messages
 

@@ -3,12 +3,12 @@ class Manager_Model extends Bootstrap_Model {
     function initial_data() {
         return array(
             "conversation" => array(
-                "available" => array(
+                /*"available" => array(
                     array(
                         "id" => "foo",
                         "user" => "dude"
                     )
-                ),
+                ),*/
                 "join_conversation_button_name" => "Join"
             ),
             "chat" => $this->get_chat_box_data(),
