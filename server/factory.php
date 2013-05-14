@@ -6,6 +6,7 @@ interface Factory_Interface {
     function build_new_conversations_controller();
     function build_existing_conversations_controller(array $fig = array());
     function build_messages_controller(array $fig = array());
+    function build_live_conversations_controller();
 }
 
 class Factory implements Factory_Interface {
@@ -87,6 +88,13 @@ class Factory implements Factory_Interface {
             "conversation_id" => try_array($fig, "conversation_id"),
             "server" => $this->server,
             "model" => new Existing_Conversation_Model($this->default_model_fig())
+        ));
+    }
+
+    function build_live_conversations_controller(array $fig = array()) {
+        return new Live_Conversations_Controller(array(
+            "server" => $this->server,
+            "model" => new Conversations_Model($this->default_model_fig())
         ));
     }
 }

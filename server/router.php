@@ -22,14 +22,16 @@ class Router_Exception extends Exception {}
 
 class Router {
     private $Factory,
-            $path;
+            $path,
+            $stringPath;
 
     function __construct(array $fig = array()) {
         $this->Factory = $fig['factory'];
-        //substring to remove the preceding slash, else first array element is empty string
-        $path = explode("/", substr($fig['path'], 1)); 
+        //remove preceding and trailing slashes and lowercase
+        $this->stringPath = strtolower(substr(remove_trailing($fig['path'], '/'), 1));
+        $path = explode("/", $this->stringPath);
         foreach($path as $key => $value) {
-            $path[$key] = strtolower($value);
+            $path[$key] = $value;
         }
         $this->path = $path;
     }
@@ -54,6 +56,19 @@ class Router {
     }
 
     private function follow_conversations_path() {
+        $Controller = null;
+        switch(try_array($this->path, 1)) {
+            case "live":
+                $Controller = $this->Factory->build_live_conversations_controller();
+                break;
+            default:
+                //treat this level as a conversation_id
+                $Controller = $this->follow_conversations_path_level_2();
+        }
+        return $Controller;
+    }
+
+    private function follow_conversations_path_level_2() {
         $Controller = null;
         switch(try_array($this->path, 2)) {
             case null:

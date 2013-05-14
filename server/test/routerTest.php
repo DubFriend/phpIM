@@ -32,6 +32,10 @@ class Factory_Mock implements Factory_Interface {
         $this->conversationId = try_array($fig, 'conversation_id');
         return "messages_controller";
     }
+
+    function build_live_conversations_controller() {
+        return "live_conversations_controller";
+    }
 }
 
 class Router_Test extends PHPUnit_Framework_TestCase {
@@ -57,6 +61,13 @@ class Router_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             "new_conversations_controller",
             $this->route("conversations/")
+        );
+    }
+
+    function test_case_insensitive() {
+        $this->assertEquals(
+            "new_conversations_controller",
+            $this->route("CONVERSATIONS")
         );
     }
 
@@ -138,13 +149,13 @@ class Router_Test extends PHPUnit_Framework_TestCase {
     function test_invalid_conversation_path() {
         $this->route("conversations/3/wrong");
     }
-/*
+
     function test_live_conversations_path() {
         $this->assertEquals(
             "live_conversations_controller",
             $this->route("conversations/live")
         );
     }
-*/
+
 }
 ?>
