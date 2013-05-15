@@ -7,8 +7,7 @@ var AJAX_DATA_TYPE = "json",
         F.prototype = o;
         return new F();
     };
-}
-;var new_messenger = function (fig) {
+};var new_messenger = function (fig) {
     fig = fig || {};
     var that = {},
         ajax = fig.ajax || $.ajax,
