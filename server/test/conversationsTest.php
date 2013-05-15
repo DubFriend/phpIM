@@ -413,8 +413,6 @@ class Clock_Expire_Mock {
     }
 
     function time() {
-        //echo "\nstrtotime : " . strtotime("2013-01-01 10:10:09") . "\n";
-        //echo "expiration time : " . $this->expirationTime . "\n";
         return strtotime("2013-01-01 10:10:09") + $this->expirationTime;
     }
 }
@@ -424,10 +422,6 @@ class Conversations_Model_Test extends PHPUnit_Framework_TestCase {
     private $Model, $Database;
     function setUp() {
         $this->Database = new PDO("sqlite::memory:");
-        //$this->Model = new Conversations_Model(array(
-        //    "database" => new Sequel(array("connection" => $this->Database)),
-        //    "clock" => new Clock_Expire_Mock()
-        //));
         build_test_database($this->Database);
         insert_default_rows($this->Database);
     }

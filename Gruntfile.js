@@ -15,22 +15,26 @@ module.exports = function(grunt) {
                     'js/execute.js'
                 ],
                 dest: '<%= pkg.name %>.js'
+            },
+            manager: {
+                src: [
+                    'js/manager/manager.js',
+                    'js/manager/execute.js'
+                ],
+                dest: '<%= pkg.name %>_manager.js'
             }
         },
-        
+
         uglify: {
             options: {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
             },
             dist: {
                 files: {
-                    '<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+                    '<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>'],
+                    '<%= pkg.name %>_manager.min.js': ['<%= concat.manager.dest %>']
                 }
             }
-            /*build: {
-                src: '<%= pkg.name %>.js',
-                dest: '<%= pkg.name %>.min.js'
-            }*/
         },
 
         qunit: {

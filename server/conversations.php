@@ -179,7 +179,7 @@ class Conversations_Model extends Model {
 
 class Live_Conversations_Controller extends Controller {
     function get() {
-        return json_encode($this->Model->get_live_conversations());
+        return json_encode($this->Model->get_live_conversations()->to_array());
     }
 }
 ?>

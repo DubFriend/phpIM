@@ -12,8 +12,30 @@ class Manager_Model extends Bootstrap_Model {
                 "join_conversation_button_name" => "Join"
             ),
             "chat" => $this->get_chat_box_data(),
-            "js" => $this->get_base_javascript()
+            "js" => array_merge(
+                $this->get_base_javascript(),
+                $this->get_manager_javascript()
+            )
         );
+    }
+
+    private function get_manager_javascript() {
+        $js = null;
+        switch(DEPLOYMENT) {
+            case "development":
+                $js = array(
+                    PUBLIC_ROOT . "js/manager/manager.js",
+                    PUBLIC_ROOT . "js/manager/execute.js"
+                );
+                break;
+            case "production":
+                $js = array(
+                    PUBLIC_ROOT . "phpIM_manager.min.js"
+                );
+            default:
+                throw new Exception("invalid deployment type");
+        }
+        return $js;
     }
 }
 
@@ -32,6 +54,7 @@ class Manager_View extends Bootstrap_View {
                     $this->template_conversations(),
                     try_array($data, "conversation")
                 ) .
+                "<button id='get-available-conversations'>Get Conversations</button>" .
                 $this->Templator->render($this->template_js(), array("js" => try_array($data, "js", array()))) .
             "</body>" .
         "</html>";
