@@ -21,6 +21,13 @@ var new_conversation = function (fig) {
 };
 */
 
+
+// - get available conversations
+// - subscribe to conversation
+// - send message to a conversation
+// - get updates for all subscribed conversations
+
+
 var new_conversations_manager = function (fig) {
     fig = fig || {};
     var that = {},
@@ -49,6 +56,8 @@ var new_conversations_manager = function (fig) {
 
             return config;
         };
+
+    mixin_observer_publisher(that);
 
     that.get_available_conversations = function () {
         ajax(ajax_fig({

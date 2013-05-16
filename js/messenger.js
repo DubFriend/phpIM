@@ -10,31 +10,7 @@ var new_messenger = function (fig) {
         numErrors = 0,
         maxErrors = fig.maxErrors || 3,
         updateTimeoutTime = fig.updateTimeoutTime || 0,
-        subscribers = [],
-
-        subscribe = function (subscriber) {
-            var i;
-            subscribers.push(subscriber);
-        },
-
-        un_subscribe = function (subscriber) {
-            var i;
-            for(i = 0; i < subscribers.length; i += 1) {
-                if(subscribers[i] === subscriber) {
-                    subscribers.splice(i, 1);
-                    return true;
-                }
-            }
-            return false;
-        },
-
-        publish = function (data) {
-            var i;
-            for(i = 0; i < subscribers.length; i += 1) {
-                subscriber.update(data);
-            }
-        },
-
+        
         ajax_fig = function (fig) {
             var i,
                 config = {
@@ -94,6 +70,8 @@ var new_messenger = function (fig) {
                 }));
             }
         };
+
+    mixin_observer_publisher(that);
 
     //included to give feedback in unit tests.
     that.is_connected = function () { return isConnected; };

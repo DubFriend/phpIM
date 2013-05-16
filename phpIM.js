@@ -7,7 +7,38 @@ var AJAX_DATA_TYPE = "json",
         F.prototype = o;
         return new F();
     };
-};var new_messenger = function (fig) {
+}
+
+//gives passed object a publishers observer pattern
+var mixin_observer_publisher = function (object) {
+    var subscribers = [];
+
+    object.subscribe = function (subscriber) {
+        var i;
+        subscribers.push(subscriber);
+    };
+
+    object.unsubscribe = function (subscriber) {
+        var i;
+        for(i = 0; i < subscribers.length; i += 1) {
+            if(subscribers[i] === subscriber) {
+                subscribers.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    };
+
+    object.publish = function (data) {
+        var i;
+        for(i = 0; i < subscribers.length; i += 1) {
+            subscribers[i].update(data);
+        }
+    };
+
+    return object;
+};
+;var new_messenger = function (fig) {
     fig = fig || {};
     var that = {},
         ajax = fig.ajax || $.ajax,
@@ -19,31 +50,7 @@ var AJAX_DATA_TYPE = "json",
         numErrors = 0,
         maxErrors = fig.maxErrors || 3,
         updateTimeoutTime = fig.updateTimeoutTime || 0,
-        subscribers = [],
-
-        subscribe = function (subscriber) {
-            var i;
-            subscribers.push(subscriber);
-        },
-
-        un_subscribe = function (subscriber) {
-            var i;
-            for(i = 0; i < subscribers.length; i += 1) {
-                if(subscribers[i] === subscriber) {
-                    subscribers.splice(i, 1);
-                    return true;
-                }
-            }
-            return false;
-        },
-
-        publish = function (data) {
-            var i;
-            for(i = 0; i < subscribers.length; i += 1) {
-                subscriber.update(data);
-            }
-        },
-
+        
         ajax_fig = function (fig) {
             var i,
                 config = {
@@ -103,6 +110,8 @@ var AJAX_DATA_TYPE = "json",
                 }));
             }
         };
+
+    mixin_observer_publisher(that);
 
     //included to give feedback in unit tests.
     that.is_connected = function () { return isConnected; };

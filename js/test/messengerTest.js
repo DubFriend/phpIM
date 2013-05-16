@@ -181,4 +181,22 @@
         deepEqual(messenger.is_connected(), false, "disonnect after maxErrors are reached");
     });
 
+
+    test("test publish and subscribe", function () {
+        var subscriber = {
+            data: undefined,
+            update: function (data) {
+                this.data = data;
+            }
+        };
+
+        messenger.subscribe(subscriber);
+        messenger.publish("foo");
+        deepEqual(subscriber.data, "foo", "subscriber receives published data.");
+        
+        messenger.unsubscribe(subscriber);
+        messenger.publish("bar");
+        deepEqual(subscriber.data, "foo", "unsubscribed subscriber does not recieve update");
+    });
+
 }());
