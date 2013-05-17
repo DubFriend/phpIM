@@ -64,16 +64,29 @@
     test("join_conversation(id)", function () {
         manager.get_available_conversations();
         var data = ajaxData.pop();
-        data.success([{id: "foo"}]);
+        data.success([{id: "foo", other: "bar"}]);
         manager.join_conversation("foo");
         deepEqual(manager.conversations_data(), {},
             "conversation removed from available conversations"
         );
-        deepEqual(manager.joined_conversations(), [{id: "foo"}],
+        deepEqual(manager.joined_conversations(), [{id: "foo", other: "bar"}],
             "conversation moved to joined conversations"
         );
     });
 
-    
+    test("connect()", function () {
+        manager.get_available_conversations();
+        ajaxData.pop().success([{id: "id", last_id: "last_id"}]);
+        manager.join_conversation("id");
+
+        manager.connect();
+        var data = ajaxData.pop();
+        deepEqual(data.url, ROOT + "conversations/updates/id,last_id", "url is set");
+        deepEqual(data.type, "GET", "http method type is set");
+
+        data.success({data: "response_data"});
+        var secondData = ajaxData.pop();
+        ok(secondData, "update is called recursively on success response");
+    });
 
 }());

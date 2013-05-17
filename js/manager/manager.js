@@ -1,26 +1,3 @@
-/*
-var new_message = function (fig) {
-    var that = {},
-        ;
-
-    return that;
-};
-
-var new_conversation = function (fig) {
-    var that = {},
-        id = fig.id,
-        messages = [];
-
-    that.get_id = function () {
-        return id;
-    };
-
-    that.add_message
-
-    return that;
-};
-*/
-
 
 // - get available conversations
 // - subscribe to conversation
@@ -59,13 +36,55 @@ var new_conversations_manager = function (fig) {
             return config;
         },
 
-
         is_conversation_joined = function (id) {
             return false;
+        },
+
+        // ROOT + conversations/updates/id,lastId/id,lastId/...
+        build_update_url = function () {
+            var i,
+                url = ROOT + "conversations/updates";
+
+            for(i = 0; i < joinedConversations.length; i += 1) {
+                url += "/" + (joinedConversations[i].id || "null") + "," +
+                             (joinedConversations[i].last_id || "null");
+            }
+            return url;
+        },
+
+        update = function () {
+            if(joinedConversations.length > 0) {
+                ajax(ajax_fig({
+                    url: build_update_url(),
+                    type: "GET",
+                    success: function (response) {
+                        console.log("UPDATE RESPONSE : " + JSON.stringify(response));
+                        if(isConnected) {
+                            update();
+                        }
+                    }
+                }));
+            }
+            else {
+                setTimeout(function () {
+                    update();
+                }, 1000);
+            }
         };
 
 
     mixin_observer_publisher(that);
+
+    that.connect = function () {
+        if(!isConnected) {
+            isConnected = true;
+            update();
+        }
+    };
+
+    that.disconnect = function () {
+        isConnected = false;
+    };
 
     that.conversations_data = function () {
         //this effectively does a deep copy, keeping availableConversations read-only
@@ -132,9 +151,7 @@ var new_conversations_manager = function (fig) {
         }
     };
 
-    that.update = function () {
 
-    };
 
     return that;
 };

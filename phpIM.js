@@ -120,18 +120,19 @@ var mixin_observer_publisher = function (object) {
     that.id = function () { return conversationId; };
 
     that.connect = function (connectData) {
-        isConnected = true;
-
-        ajax(ajax_fig({
-            url: ROOT + "conversations",
-            type: "POST",
-            data: connectData,
-            success: function (response) {
-                console.log("CONNECT RESPONSE : " + JSON.stringify(response));
-                conversationId = response.id;
-                update();
-            }
-        }));
+        if(!isConnected) {
+            isConnected = true;
+            ajax(ajax_fig({
+                url: ROOT + "conversations",
+                type: "POST",
+                data: connectData,
+                success: function (response) {
+                    console.log("CONNECT RESPONSE : " + JSON.stringify(response));
+                    conversationId = response.id;
+                    update();
+                }
+            }));
+        }
     };
 
     that.disconnect = function () {
