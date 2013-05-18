@@ -9,18 +9,21 @@ var new_messenger = function (fig, my) {
 
         update = function () {
             if(my.isConnected) {
-                var url;
-                if(lastId) {
-                    url = ROOT + "conversations/" + conversationId + "/messages_since/" + lastId;
-                }
-                else {
-                    url = ROOT + "conversations/" + conversationId;
-                }
+                var url = my.build_update_url([{id: conversationId, last_id: lastId}]);
+                
+                //alert(url);
+                
+                //if(lastId) {
+                //    url = ROOT + "conversations/" + conversationId + "/messages_since/" + lastId;
+                //}
+                //else {
+                //    url = ROOT + "conversations/" + conversationId;
+                //}
                 ajax(my.ajax_fig({
                     //conversations/{conversationId}/messages_since/{lastId}/client
                     url: url,
                     type: "GET",
-                    //dataType: "text",
+                    dataType: "text",
                     success: function (response) {
                         console.log("UPDATE RESPONSE : " + JSON.stringify(response));
                         if(my.updateTimeoutTime > 0) {

@@ -82,7 +82,8 @@ class Router_Test extends PHPUnit_Framework_TestCase {
     function test_update_first_update() {
         $this->assertEquals(
             "existing_conversations_controller",
-            $this->route("conversations/3")
+            $this->route("conversations/updates/" . json_encode(array(array("id" => 3))))
+            //$this->route("conversations/3")
         );
         $this->assertEquals(3, $this->Factory->conversationId);
     }
