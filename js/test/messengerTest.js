@@ -118,9 +118,10 @@
                 data: data.data
             },
             {
-                url: ROOT + "conversations/3/messages",
+                //url: ROOT + "conversations/3/messages",
+                url: ROOT + "conversations/messages",
                 type: "POST",
-                data: {message: "foo"}
+                data: {messages:[{message: "foo", conversation_id: 3}]}
             },
             "correct ajax config"
         );
@@ -154,7 +155,7 @@
     test("messenger.send_message : message allready pending", function () {
         messenger.connect();
         ajaxData.pop().success({id: 3});
-        messenger.send_message();
+        messenger.send_message({});
         
         var ajaxDataLength = ajaxData.length;
         messenger.send_message({message: "foo"}); //no ajax, allready pending
@@ -171,7 +172,7 @@
         var data = ajaxData.pop();
         deepEqual(
             {data: data.data},
-            {data: [{message: "queued message"}, {message: "send message"}]},
+            {data: {messages: [{message: "queued message"}, {message: "send message", conversation_id: 1}]}},
             "queued messages added to request"
         );
         deepEqual(my.messageQueue.length, 0, "message queue reset");

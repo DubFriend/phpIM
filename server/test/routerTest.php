@@ -71,12 +71,13 @@ class Router_Test extends PHPUnit_Framework_TestCase {
         );
     }
 
+
     function test_send_message_path() {
         $this->assertEquals(
             "messages_controller",
-            $this->route("conversations/3/messages")
+            $this->route("conversations/messages")
         );
-        $this->assertEquals(3, $this->Factory->conversationId);
+        //$this->assertEquals(3, $this->Factory->conversationId);
     }
 
     function test_update_first_update() {

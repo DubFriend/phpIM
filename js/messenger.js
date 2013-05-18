@@ -9,9 +9,6 @@ var new_messenger = function (fig, my) {
 
         update = function () {
             if(my.isConnected) {
-                var url = my.build_update_url([{id: conversationId, last_id: lastId}]);
-                
-                //alert(url);
                 
                 //if(lastId) {
                 //    url = ROOT + "conversations/" + conversationId + "/messages_since/" + lastId;
@@ -19,9 +16,12 @@ var new_messenger = function (fig, my) {
                 //else {
                 //    url = ROOT + "conversations/" + conversationId;
                 //}
+
+                console.log("update url : " + my.build_update_url([{id: conversationId, last_id: lastId}]));
+                console.log("lastId : " + lastId);
                 ajax(my.ajax_fig({
                     //conversations/{conversationId}/messages_since/{lastId}/client
-                    url: url,
+                    url: my.build_update_url([{id: conversationId, last_id: lastId}]),
                     type: "GET",
                     dataType: "text",
                     success: function (response) {
@@ -69,26 +69,39 @@ var new_messenger = function (fig, my) {
         var sendMessages;
         if(my.isConnected && conversationId && !my.isMessagePending) {
             console.log("Message Sending");
-            if(my.messageQueue.length > 0) {
-                my.messageQueue.push(messageData);
-                sendMessages = my.messageQueue;
-            }
-            else {
-                sendMessages = messageData;
-            }
+            
+            messageData.conversation_id = conversationId;
+
+            my.messageQueue.push(messageData);
+
+            sendMessages = my.messageQueue;
+            //if(my.messageQueue.length > 0) {
+            //    my.messageQueue.push(messageData);
+            //    sendMessages = my.messageQueue;
+            //}
+            //else {
+            //    sendMessages = messageData;
+            //}
+
+            console.log("Message Data : " + JSON.stringify(sendMessages));
 
             my.messageQueue = [];
             my.isMessagePending = true;
+
+            console.log(JSON.stringify(sendMessages));
             
             ajax(my.ajax_fig({
-                url: ROOT + "conversations/" + conversationId + "/messages",
+                //url: ROOT + "conversations/" + conversationId + "/messages",
+                url: ROOT + "conversations/messages",
                 type: "POST",
                 //dataType: "text",
-                data: sendMessages,
+                data: {messages: sendMessages},
                 success: function (response) {
+
                     lastId = response.id;
                     my.isMessagePending = false;
                     console.log("MESSAGE RESPONSE : " + JSON.stringify(response));
+                    console.log("Message REsponse Id : " + JSON.stringify(response.id));
                 }
             }));
         }

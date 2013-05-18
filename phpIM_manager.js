@@ -5,61 +5,34 @@
 // - get updates for all subscribed conversations
 
 
-var new_conversations_manager = function (fig) {
+var new_conversations_manager = function (fig, my) {
     fig = fig || {};
-    var that = {},
+    my = my || {};
+    var that = new_base_messenger(fig, my),
         ajax = fig.ajax || $.ajax,
         joinedConversations = [],
         availableConversations = {},
-        isConnected = false,
-        messageQueue = [],
-
-        ajax_fig = function (fig) {
-            var i,
-                config = {
-                    cache: false,
-                    timeout: AJAX_TIMEOUT_MILLISECONDS, //milliseconds
-                    dataType: AJAX_DATA_TYPE,
-                    //dataType: "text",
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        console.log("ERROR #" + numErrors + " : " + textStatus + " : " + errorThrown);
-                    },
-                    complete: function (jqXHR,  textStatus) {
-                        console.log("COMPLETE : " + textStatus);
-                    }
-                };
-
-            for(i in fig) {
-                config[i] = fig[i];
-            }
-
-            return config;
-        },
 
         is_conversation_joined = function (id) {
             return false;
         },
 
-        // ROOT + conversations/updates/id,lastId/id,lastId/...
-        build_update_url = function () {
+        /*build_send_message_url = function (messages) {
             var i,
-                url = ROOT + "conversations/updates";
+                url = ROOT + "conversations/";
+            for(i = 0; i < messages.length; i += 1) {
 
-            for(i = 0; i < joinedConversations.length; i += 1) {
-                url += "/" + (joinedConversations[i].id || "null") + "," +
-                             (joinedConversations[i].last_id || "null");
             }
-            return url;
-        },
+        },*/
 
         update = function () {
             if(joinedConversations.length > 0) {
-                ajax(ajax_fig({
-                    url: build_update_url(),
+                ajax(my.ajax_fig({
+                    url: my.build_update_url(joinedConversations),
                     type: "GET",
                     success: function (response) {
                         console.log("UPDATE RESPONSE : " + JSON.stringify(response));
-                        if(isConnected) {
+                        if(my.isConnected) {
                             update();
                         }
                     }
@@ -76,14 +49,14 @@ var new_conversations_manager = function (fig) {
     mixin_observer_publisher(that);
 
     that.connect = function () {
-        if(!isConnected) {
-            isConnected = true;
+        if(!my.isConnected) {
+            my.isConnected = true;
             update();
         }
     };
 
     that.disconnect = function () {
-        isConnected = false;
+        my.isConnected = false;
     };
 
     that.conversations_data = function () {
@@ -96,7 +69,7 @@ var new_conversations_manager = function (fig) {
     };
 
     that.get_available_conversations = function () {
-        ajax(ajax_fig({
+        ajax(my.ajax_fig({
             url: ROOT + "conversations/live",
             type: "GET",
             success: function (response) {
@@ -104,50 +77,51 @@ var new_conversations_manager = function (fig) {
                 var i;
                 for(i = 0; i < response.length; i += 1) {
                     availableConversations[response[i].id] = response[i];
-                    delete(response[i].id);
+                    //delete(response[i].id);
                 }
             }
         }));
     };
 
     that.join_conversation = function(id) {
-        if(!is_conversation_joined(id) && availableConversations[id]) {
-            availableConversations[id].id = id;
-            joinedConversations.push(availableConversations[id]);
-            delete(availableConversations[id]);
+        var conversation = JSON.parse(JSON.stringify(availableConversations[id]));
+        if(!is_conversation_joined(id) && conversation) {
+            conversation.id = id;
+            joinedConversations.push(conversation);
         }
     };
 
     that.send_message = function (messageData) {
         var sendMessages;
-        if(isConnected && !isMessagePending) {
+        if(my.isConnected && !my.isMessagePending) {
             console.log("Message Sending");
-            if(messageQueue.length > 0) {
-                messageQueue.push(messageData);
-                sendMessages = messageQueue;
+            if(my.messageQueue.length > 0) {
+                my.messageQueue.push(messageData);
+                sendMessages = my.messageQueue;
             }
             else {
                 sendMessages = messageData;
             }
 
-            messageQueue = [];
-            isMessagePending = true;
+            my.messageQueue = [];
+            my.isMessagePending = true;
             
-            ajax(ajax_fig({
-                url: ROOT + "conversations/" + messageData.conversationId + "/messages",
+            ajax(my.ajax_fig({
+                //url: ROOT + "conversations/" + messageData.conversationId + "/messages",
+                url: ROOT + "conversations/messages",
                 type: "POST",
                 //dataType: "text",
                 data: sendMessages,
                 success: function (response) {
                     lastId = response.id;
-                    isMessagePending = false;
+                    my.isMessagePending = false;
                     console.log("MESSAGE RESPONSE : " + JSON.stringify(response));
                 }
             }));
         }
         else {
             console.log("Could Not send Message");
-            messageQueue.push(messageData);
+            my.messageQueue.push(messageData);
         }
     };
 

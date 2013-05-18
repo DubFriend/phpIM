@@ -65,6 +65,13 @@ class Router {
             case "updates":
                 $Controller = $this->follow_conversations_updates_path();
                 break;
+            case "messages":
+                //$Controller = $this->Factory->build_messages_controller(array(
+                //    "conversation_id" => //try_array($this->path, 1),
+                //    "messages_id" => //try_array($this->path, 3)
+                //));
+                $Controller = $this->Factory->build_messages_controller();
+                break;
             default:
                 //treat this level as a conversation_id
                 $Controller = $this->follow_conversations_path_level_2();

@@ -110,11 +110,16 @@ class Messages_Controller_Test extends PHPUnit_Framework_TestCase {
 
     private function build_controller_override(array $fig = array()) {
         return new Messages_Controller(array(
-            "post" => try_array($fig, "post", array(
+            /*"post" => try_array($fig, "post", array(
                 "user" => "M",
                 "message" => "test message"
-            )),
-            "conversation_id" => try_array($fig, "conversation_id", "conv_id"),
+            )),*/
+            "post" => try_array($fig, "post", array("messages" => array(array(
+                "conversation_id" => try_array($fig, "conversation_id", "conv_id"),
+                "user" => "M",
+                "message" => "test message"
+            )))),
+            //"conversation_id" => try_array($fig, "conversation_id", "conv_id"),
             "server" => try_array($fig, "server", array(
                 "REMOTE_ADDR" => try_array($fig, "REMOTE_ADDR", "mock_remote_addr"),
                 "HTTP_USER_AGENT" => try_array($fig, "HTTP_USER_AGENT", "mock_http_user_agent"),

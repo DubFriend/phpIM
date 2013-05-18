@@ -83,6 +83,26 @@ var new_base_messenger = function (fig, my) {
         return config;
     };
 
+    // url: conversations/updates/id=2,last_id=56/id=4,lastId=null/...
+    my.build_update_url = function (conversations) {
+        var i,
+            url = ROOT + "conversations/updates/";
+            //updates = [];
+
+        url += JSON.stringify(conversations);
+
+        //for(i = 0; i < conversations.length; i += 1) {
+            //url += '{"id"=' + (conversations[i].id || "null") + "," +
+            //   '"last_id"=' + (conversations[i].last_id || "null") + "," +
+            //   '"user"=' + (conversations[i].user || "null") + "}";
+
+            //updates.push("id=" + (conversations[i].id || "null") + "," +
+            //   "last_id=" + (conversations[i].last_id || "null") + "," +
+            //   "user=" + (conversations[i].user || "null"));
+        //}
+        return url;// + updates.join("");
+    };
+
     return that;
 };
 ;var new_messenger = function (fig, my) {
@@ -96,18 +116,21 @@ var new_base_messenger = function (fig, my) {
 
         update = function () {
             if(my.isConnected) {
-                var url;
-                if(lastId) {
-                    url = ROOT + "conversations/" + conversationId + "/messages_since/" + lastId;
-                }
-                else {
-                    url = ROOT + "conversations/" + conversationId;
-                }
+                
+                //if(lastId) {
+                //    url = ROOT + "conversations/" + conversationId + "/messages_since/" + lastId;
+                //}
+                //else {
+                //    url = ROOT + "conversations/" + conversationId;
+                //}
+
+                console.log("update url : " + my.build_update_url([{id: conversationId, last_id: lastId}]));
+                console.log("lastId : " + lastId);
                 ajax(my.ajax_fig({
                     //conversations/{conversationId}/messages_since/{lastId}/client
-                    url: url,
+                    url: my.build_update_url([{id: conversationId, last_id: lastId}]),
                     type: "GET",
-                    //dataType: "text",
+                    dataType: "text",
                     success: function (response) {
                         console.log("UPDATE RESPONSE : " + JSON.stringify(response));
                         if(my.updateTimeoutTime > 0) {
@@ -153,26 +176,39 @@ var new_base_messenger = function (fig, my) {
         var sendMessages;
         if(my.isConnected && conversationId && !my.isMessagePending) {
             console.log("Message Sending");
-            if(my.messageQueue.length > 0) {
-                my.messageQueue.push(messageData);
-                sendMessages = my.messageQueue;
-            }
-            else {
-                sendMessages = messageData;
-            }
+            
+            messageData.conversation_id = conversationId;
+
+            my.messageQueue.push(messageData);
+
+            sendMessages = my.messageQueue;
+            //if(my.messageQueue.length > 0) {
+            //    my.messageQueue.push(messageData);
+            //    sendMessages = my.messageQueue;
+            //}
+            //else {
+            //    sendMessages = messageData;
+            //}
+
+            console.log("Message Data : " + JSON.stringify(sendMessages));
 
             my.messageQueue = [];
             my.isMessagePending = true;
+
+            console.log(JSON.stringify(sendMessages));
             
             ajax(my.ajax_fig({
-                url: ROOT + "conversations/" + conversationId + "/messages",
+                //url: ROOT + "conversations/" + conversationId + "/messages",
+                url: ROOT + "conversations/messages",
                 type: "POST",
                 //dataType: "text",
-                data: sendMessages,
+                data: {messages: sendMessages},
                 success: function (response) {
+
                     lastId = response.id;
                     my.isMessagePending = false;
                     console.log("MESSAGE RESPONSE : " + JSON.stringify(response));
+                    console.log("Message REsponse Id : " + JSON.stringify(response.id));
                 }
             }));
         }

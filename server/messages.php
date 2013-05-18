@@ -28,15 +28,16 @@ class Messages_Controller extends Controller {
 
     function __construct(array $fig = array()) {
         parent::__construct($fig);
-        $this->conversationId = try_array($fig, 'conversation_id');
+        //$this->conversationId = try_array($fig, 'conversation_id');
     }
 
     function post() {
+        //print_r(try_array($this->post['messages'][0], 'conversation_id'));
         try {
             $insertId = $this->Model->add_message(array(
-                "user" => try_array($this->post, 'user'),
-                "message" => try_array($this->post, 'message'),
-                "conversation_id" => $this->conversationId
+                "user" => try_array($this->post['messages'][0], 'user'),
+                "message" => try_array($this->post['messages'][0], 'message'),
+                "conversation_id" => try_array($this->post['messages'][0], 'conversation_id')//$this->conversationId
             ));
             return json_encode(array(
                 "is_success" => true,

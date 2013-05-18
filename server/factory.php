@@ -77,7 +77,7 @@ class Factory implements Factory_Interface {
             "model" => new Messages_Model($this->default_model_fig()),
             "post" => $this->post,
             "server" => $this->server,
-            "conversation_id" => try_array($fig, 'conversation_id')
+            //"conversation_id" => try_array($fig, 'conversation_id')
         ));
     }
 
