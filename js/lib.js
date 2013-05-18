@@ -66,7 +66,6 @@ var new_base_messenger = function (fig, my) {
                 }()),
                 complete: function (jqXHR,  textStatus) {
                     console.log("COMPLETE : " + textStatus);
-                    //isMessageSendPending = false;
                     if(my.messageQueue.length > 0) {
                         that.send(my.messageQueue);
                     }
@@ -80,24 +79,8 @@ var new_base_messenger = function (fig, my) {
         return config;
     };
 
-    // url: conversations/updates/id=2,last_id=56/id=4,lastId=null/...
     my.build_update_url = function (conversations) {
-        var i,
-            url = ROOT + "conversations/updates/";
-            //updates = [];
-
-        url += JSON.stringify(conversations);
-
-        //for(i = 0; i < conversations.length; i += 1) {
-            //url += '{"id"=' + (conversations[i].id || "null") + "," +
-            //   '"last_id"=' + (conversations[i].last_id || "null") + "," +
-            //   '"user"=' + (conversations[i].user || "null") + "}";
-
-            //updates.push("id=" + (conversations[i].id || "null") + "," +
-            //   "last_id=" + (conversations[i].last_id || "null") + "," +
-            //   "user=" + (conversations[i].user || "null"));
-        //}
-        return url;// + updates.join("");
+        return ROOT + "conversations/updates/" + JSON.stringify(conversations);
     };
 
     return that;

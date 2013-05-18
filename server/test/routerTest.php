@@ -71,24 +71,21 @@ class Router_Test extends PHPUnit_Framework_TestCase {
         );
     }
 
-
     function test_send_message_path() {
         $this->assertEquals(
             "messages_controller",
             $this->route("conversations/messages")
         );
-        //$this->assertEquals(3, $this->Factory->conversationId);
     }
 
     function test_update_first_update() {
         $this->assertEquals(
             "existing_conversations_controller",
             $this->route("conversations/updates/" . json_encode(array(array("id" => 3))))
-            //$this->route("conversations/3")
         );
         $this->assertEquals(3, $this->Factory->conversationId);
     }
-
+/*
     function test_update_first_update_manager_only() {
         $this->assertEquals(
             "existing_conversations_controller",
@@ -135,7 +132,7 @@ class Router_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(4, $this->Factory->lastMessageId);
         $this->assertEquals("M", $this->Factory->user);
     }
-
+*/
     /**
      * @expectedException Router_Exception
      * @expectedExceptionMessage invalid base level path

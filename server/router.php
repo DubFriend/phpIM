@@ -66,10 +66,6 @@ class Router {
                 $Controller = $this->follow_conversations_updates_path();
                 break;
             case "messages":
-                //$Controller = $this->Factory->build_messages_controller(array(
-                //    "conversation_id" => //try_array($this->path, 1),
-                //    "messages_id" => //try_array($this->path, 3)
-                //));
                 $Controller = $this->Factory->build_messages_controller();
                 break;
             default:
@@ -81,19 +77,15 @@ class Router {
 
    
     private function follow_conversations_updates_path() {
-        
         $updates = json_decode(try_array($this->path, 2), true);
-        
         //multi update needs to be handled for manager
         $updates = $updates[0];
-
 
         return $this->Factory->build_existing_conversations_controller(array(
             "conversation_id" => try_array($updates, 'id'),
             "last_id" => try_array($updates, 'last_id'),
             "user" => try_array($updates, 'user')
         ));
-
     }
 
     private function follow_conversations_path_level_2() {
@@ -110,7 +102,7 @@ class Router {
                 }
                 break;
 
-            case "messages_since":
+            /*case "messages_since":
                 $user = null;
                 if(try_array($this->path, 4) === "client") {
                     $user = "C";
@@ -145,7 +137,7 @@ class Router {
                     "user" => "M"
                 ));
                 break;
-
+*/
             default:
                 throw new Router_Exception("invalid conversations path : " . print_r($this->path, true));
         }

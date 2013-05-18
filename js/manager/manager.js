@@ -17,14 +17,6 @@ var new_conversations_manager = function (fig, my) {
             return false;
         },
 
-        /*build_send_message_url = function (messages) {
-            var i,
-                url = ROOT + "conversations/";
-            for(i = 0; i < messages.length; i += 1) {
-
-            }
-        },*/
-
         update = function () {
             if(joinedConversations.length > 0) {
                 ajax(my.ajax_fig({
@@ -39,6 +31,7 @@ var new_conversations_manager = function (fig, my) {
                 }));
             }
             else {
+                console.log("No Joined Conversations, No Update.");
                 setTimeout(function () {
                     update();
                 }, 1000);
@@ -60,7 +53,6 @@ var new_conversations_manager = function (fig, my) {
     };
 
     that.conversations_data = function () {
-        //this effectively does a deep copy, keeping availableConversations read-only
         return JSON.parse(JSON.stringify(availableConversations));
     };
 
@@ -77,7 +69,6 @@ var new_conversations_manager = function (fig, my) {
                 var i;
                 for(i = 0; i < response.length; i += 1) {
                     availableConversations[response[i].id] = response[i];
-                    //delete(response[i].id);
                 }
             }
         }));
@@ -107,7 +98,6 @@ var new_conversations_manager = function (fig, my) {
             my.isMessagePending = true;
             
             ajax(my.ajax_fig({
-                //url: ROOT + "conversations/" + messageData.conversationId + "/messages",
                 url: ROOT + "conversations/messages",
                 type: "POST",
                 //dataType: "text",

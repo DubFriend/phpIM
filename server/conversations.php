@@ -124,11 +124,6 @@ class Existing_Conversation_Controller extends Controller {
             "conversation_id" => $this->conversationId,
             "last_id" => $this->lastMessageId
         );
-
-        $getUpdateConfig = array_merge(
-            $updateConfig,
-            array("user" => $this->userType)
-        );
         
         $numUpdates = 0;
         $response = null;
@@ -138,7 +133,10 @@ class Existing_Conversation_Controller extends Controller {
                 $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
             }
             else {
-                $response = $this->Model->get_updates($getUpdateConfig)->to_array();
+                $response = $this->Model->get_updates(array_merge(
+                    $updateConfig,
+                    array("user" => $this->userType)
+                ))->to_array();
             }
         }
         $response = $response !== null ? $response : "Update Response Timeout";

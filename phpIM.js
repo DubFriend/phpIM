@@ -116,23 +116,13 @@ var new_base_messenger = function (fig, my) {
 
         update = function () {
             if(my.isConnected) {
-                
-                //if(lastId) {
-                //    url = ROOT + "conversations/" + conversationId + "/messages_since/" + lastId;
-                //}
-                //else {
-                //    url = ROOT + "conversations/" + conversationId;
-                //}
-
-                console.log("update url : " + my.build_update_url([{id: conversationId, last_id: lastId}]));
-                console.log("lastId : " + lastId);
+                console.log("Update Url : " + my.build_update_url([{id: conversationId, last_id: lastId}]));
                 ajax(my.ajax_fig({
-                    //conversations/{conversationId}/messages_since/{lastId}/client
                     url: my.build_update_url([{id: conversationId, last_id: lastId}]),
                     type: "GET",
-                    dataType: "text",
+                    //dataType: "text",
                     success: function (response) {
-                        console.log("UPDATE RESPONSE : " + JSON.stringify(response));
+                        console.log("Update Response : " + JSON.stringify(response));
                         if(my.updateTimeoutTime > 0) {
                             setTimeout(update, my.updateTimeoutTime);
                         }
@@ -152,14 +142,16 @@ var new_base_messenger = function (fig, my) {
     };
 
     that.connect = function (connectData) {
+        console.log("Connect Data : " + JSON.stringify(connectData));
         if(!my.isConnected) {
             my.isConnected = true;
             ajax(my.ajax_fig({
                 url: ROOT + "conversations",
                 type: "POST",
                 data: connectData,
+                //dataType: "text",
                 success: function (response) {
-                    console.log("CONNECT RESPONSE : " + JSON.stringify(response));
+                    console.log("Connect Response : " + JSON.stringify(response));
                     conversationId = response.id;
                     update();
                 }
@@ -175,40 +167,24 @@ var new_base_messenger = function (fig, my) {
     that.send_message = function (messageData) {
         var sendMessages;
         if(my.isConnected && conversationId && !my.isMessagePending) {
-            console.log("Message Sending");
-            
             messageData.conversation_id = conversationId;
-
             my.messageQueue.push(messageData);
-
             sendMessages = my.messageQueue;
-            //if(my.messageQueue.length > 0) {
-            //    my.messageQueue.push(messageData);
-            //    sendMessages = my.messageQueue;
-            //}
-            //else {
-            //    sendMessages = messageData;
-            //}
-
-            console.log("Message Data : " + JSON.stringify(sendMessages));
+            
+            console.log("Send Message Data : " + JSON.stringify(sendMessages));
 
             my.messageQueue = [];
             my.isMessagePending = true;
-
-            console.log(JSON.stringify(sendMessages));
             
             ajax(my.ajax_fig({
-                //url: ROOT + "conversations/" + conversationId + "/messages",
                 url: ROOT + "conversations/messages",
                 type: "POST",
                 //dataType: "text",
                 data: {messages: sendMessages},
                 success: function (response) {
-
+                    console.log("Send Message Response : " + JSON.stringify(response));
                     lastId = response.id;
                     my.isMessagePending = false;
-                    console.log("MESSAGE RESPONSE : " + JSON.stringify(response));
-                    console.log("Message REsponse Id : " + JSON.stringify(response.id));
                 }
             }));
         }
