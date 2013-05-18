@@ -85,54 +85,7 @@ class Router_Test extends PHPUnit_Framework_TestCase {
         );
         $this->assertEquals(3, $this->Factory->conversationId);
     }
-/*
-    function test_update_first_update_manager_only() {
-        $this->assertEquals(
-            "existing_conversations_controller",
-            $this->route("conversations/3/manager")
-        );
-        $this->assertEquals(3, $this->Factory->conversationId);
-        $this->assertEquals("M", $this->Factory->user);
-    }
 
-    function test_update_first_update_client_only() {
-        $this->assertEquals(
-            "existing_conversations_controller",
-            $this->route("conversations/3/client")
-        );
-        $this->assertEquals(3, $this->Factory->conversationId);
-        $this->assertEquals("C", $this->Factory->user);
-    }
-
-    function test_update_since_last_id() {
-        $this->assertEquals(
-            "existing_conversations_controller",
-            $this->route("conversations/3/messages_since/4")
-        );
-        $this->assertEquals(3, $this->Factory->conversationId);
-        $this->assertEquals(4, $this->Factory->lastMessageId);
-    }
-
-    function test_update_since_last_id_client_only() {
-        $this->assertEquals(
-            "existing_conversations_controller",
-            $this->route("conversations/3/messages_since/4/client")
-        );
-        $this->assertEquals(3, $this->Factory->conversationId);
-        $this->assertEquals(4, $this->Factory->lastMessageId);
-        $this->assertEquals("C", $this->Factory->user);
-    }
-
-    function test_update_since_last_id_manager_only() {
-        $this->assertEquals(
-            "existing_conversations_controller",
-            $this->route("conversations/3/messages_since/4/manager")
-        );
-        $this->assertEquals(3, $this->Factory->conversationId);
-        $this->assertEquals(4, $this->Factory->lastMessageId);
-        $this->assertEquals("M", $this->Factory->user);
-    }
-*/
     /**
      * @expectedException Router_Exception
      * @expectedExceptionMessage invalid base level path

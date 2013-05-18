@@ -102,42 +102,6 @@ class Router {
                 }
                 break;
 
-            /*case "messages_since":
-                $user = null;
-                if(try_array($this->path, 4) === "client") {
-                    $user = "C";
-                }
-                else if(try_array($this->path, 4) === "manager") {
-                    $user = "M";
-                }
-                $Controller = $this->Factory->build_existing_conversations_controller(array(
-                    "conversation_id" => $this->path[1],
-                    "last_id" => try_array($this->path, 3),
-                    "user" => $user
-                ));
-                break;
-
-            case "messages":
-                $Controller = $this->Factory->build_messages_controller(array(
-                    "conversation_id" => try_array($this->path, 1),
-                    "messages_id" => try_array($this->path, 3)
-                ));
-                break;
-
-            case "client":
-                $Controller = $this->Factory->build_existing_conversations_controller(array(
-                    "conversation_id" => $this->path[1],
-                    "user" => "C"
-                ));
-                break;
-                
-            case "manager":
-                $Controller = $this->Factory->build_existing_conversations_controller(array(
-                    "conversation_id" => $this->path[1],
-                    "user" => "M"
-                ));
-                break;
-*/
             default:
                 throw new Router_Exception("invalid conversations path : " . print_r($this->path, true));
         }
