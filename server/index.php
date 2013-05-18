@@ -10,7 +10,6 @@ require ROOT . "conversations.php";
 require ROOT . "messages.php";
 require ROOT . "mustache.php-2.3.0/src/Mustache/Autoloader.php";
 
-
 //session_start();
 //note: session cannot be maintained on long running script (will block concurrent requests)
 //session_write_close();

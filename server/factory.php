@@ -1,5 +1,4 @@
 <?php
-
 interface Factory_Interface {
     function build_manager_controller();
     function build_user_controller();
@@ -62,13 +61,9 @@ class Factory implements Factory_Interface {
         )));
     }
 
-    private function build_new_conversations_model() {
-        return new New_Conversation_Model($this->default_model_fig());
-    }
-
     function build_new_conversations_controller() {
         return new New_Conversation_Controller($this->default_controller_fig(array(
-            "model" => $this->build_new_conversations_model()
+            "model" => new New_Conversation_Model($this->default_model_fig())
         )));
     }
 
@@ -76,8 +71,7 @@ class Factory implements Factory_Interface {
         return new Messages_Controller(array(
             "model" => new Messages_Model($this->default_model_fig()),
             "post" => $this->post,
-            "server" => $this->server,
-            //"conversation_id" => try_array($fig, 'conversation_id')
+            "server" => $this->server
         ));
     }
 

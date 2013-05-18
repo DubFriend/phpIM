@@ -62,8 +62,6 @@
                 type: updateData.type
             },
             {
-                //url: ROOT + "conversations/3",
-                //url: ROOT + "conversations/updates/id=3,last_id=null",
                 url: ROOT + "conversations/updates/" + JSON.stringify([{id:3}]),
                 type: "GET"
             },
@@ -78,8 +76,6 @@
                 type: secondUpdateData.type
             },
             {
-                //url: ROOT + "conversations/3",
-                //url: ROOT + "conversations/updates/id=3,last_id=null",
                 url: ROOT + "conversations/updates/" + JSON.stringify([{id:3}]),
                 type: "GET"
             },
@@ -118,7 +114,6 @@
                 data: data.data
             },
             {
-                //url: ROOT + "conversations/3/messages",
                 url: ROOT + "conversations/messages",
                 type: "POST",
                 data: {messages:[{message: "foo", conversation_id: 3}]}

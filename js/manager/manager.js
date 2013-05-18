@@ -4,7 +4,6 @@
 // - send message to a conversation
 // - get updates for all subscribed conversations
 
-
 var new_conversations_manager = function (fig, my) {
     fig = fig || {};
     my = my || {};

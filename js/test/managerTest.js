@@ -69,9 +69,6 @@
         var data = ajaxData.pop();
         data.success([{id: "foo", other: "bar"}]);
         manager.join_conversation("foo");
-        //deepEqual(manager.conversations_data(), {foo: {id: "foo", other:"bar"}},
-        //    "conversation removed from available conversations"
-        //);
         deepEqual(manager.joined_conversations(), [{id: "foo", other: "bar"}],
             "conversation moved to joined conversations"
         );

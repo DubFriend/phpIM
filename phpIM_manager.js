@@ -4,7 +4,6 @@
 // - send message to a conversation
 // - get updates for all subscribed conversations
 
-
 var new_conversations_manager = function (fig, my) {
     fig = fig || {};
     my = my || {};
@@ -16,14 +15,6 @@ var new_conversations_manager = function (fig, my) {
         is_conversation_joined = function (id) {
             return false;
         },
-
-        /*build_send_message_url = function (messages) {
-            var i,
-                url = ROOT + "conversations/";
-            for(i = 0; i < messages.length; i += 1) {
-
-            }
-        },*/
 
         update = function () {
             if(joinedConversations.length > 0) {
@@ -124,7 +115,8 @@ var new_conversations_manager = function (fig, my) {
     };
 
     return that;
-};;var conversationsManager = new_conversations_manager();
+};
+;var conversationsManager = new_conversations_manager();
 
 $(document).ready(function () {
     $('#get-available-conversations').click(function () {
