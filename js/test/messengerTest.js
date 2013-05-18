@@ -1,25 +1,26 @@
 (function () {
-    var messenger, ajax, ajaxData;
+    var messenger, ajax, ajaxData, my;
 
     module("messenger", {
         setup: function () {
             ajaxData = [];
+            my = {};
             ajax = function (fig) {
                 ajaxData.push(fig);
             };
             messenger = new_messenger({
                 ajax: ajax,
                 maxErrors: 1
-            });
+            }, my);
         }
     });
 
 //----------------------------------- connect ------------------------------------------------
 
     test("messenger.connect({connectData})", function () {
-        deepEqual(messenger.is_connected(), false, "messenger.is_connected false before connect");
+        deepEqual(my.isConnected, false, "isConnected false before connect");
         messenger.connect({username: "bob"});
-        deepEqual(messenger.is_connected(), true, "messenger.is_connected true after connect");
+        deepEqual(my.isConnected, true, "isConnected true after connect");
         
         var data = ajaxData.pop();
         deepEqual(
@@ -37,14 +38,14 @@
         );
 
         data.success({id: 4});
-        deepEqual(messenger.id(), 4, "response sets id");
+        deepEqual(messenger.get_conversation_id(), 4, "response sets id");
     });
 
     test("messenger.disconnect()", function () {
         messenger.connect();
-        deepEqual(messenger.is_connected(), true, "messenger.is_connected true before disconnect");
+        deepEqual(my.isConnected, true, "isConnected true before disconnect");
         messenger.disconnect();
-        deepEqual(messenger.is_connected(), false, "messenger.is_connected false after disconnect");
+        deepEqual(my.isConnected, false, "isConnected false after disconnect");
     });
 
 
@@ -98,7 +99,7 @@
         ajaxData.pop().success({id: 3});
 
         deepEqual(
-            messenger.is_message_pending(), false,
+            my.isMessagePending, false,
             "message pending flag is false before message sent"
         );
 
@@ -121,13 +122,13 @@
         );
 
         deepEqual(
-            messenger.is_message_pending(), true,
+            my.isMessagePending, true,
             "message pending flag is true after message sent"
         );
 
         data.success({"id": 4});
 
-        deepEqual(messenger.is_message_pending(), false,
+        deepEqual(my.isMessagePending, false,
             "message pending flag set to false after response recieved"
         );
     });
@@ -135,7 +136,7 @@
     test("messenger.send_message : not connected", function () {
         messenger.send_message({message: "foo"});
         deepEqual(ajaxData.length, 0, "ajax not executed if not connected");
-        deepEqual(messenger.message_queue_length(), 1, "message added to the queue");
+        deepEqual(my.messageQueue.length, 1, "message added to the queue");
     });
 
     test("messenger.send_message : connection started but not complete", function () {
@@ -143,7 +144,7 @@
         var ajaxDataLength = ajaxData.length;
         messenger.send_message({message: "foo"}); //no ajax, connection not yet complete
         deepEqual(ajaxData.length, ajaxDataLength, "ajax not called");
-        deepEqual(messenger.message_queue_length(), 1, "message added to the queue");
+        deepEqual(my.messageQueue.length, 1, "message added to the queue");
     });
 
     test("messenger.send_message : message allready pending", function () {
@@ -155,7 +156,7 @@
         messenger.send_message({message: "foo"}); //no ajax, allready pending
         deepEqual(ajaxData.length, ajaxDataLength, "ajax not executed if allready pending");
         
-        deepEqual(messenger.message_queue_length(), 1, "message added to message queue");
+        deepEqual(my.messageQueue.length, 1, "message added to message queue");
     });
 
     test("messenger.send_message : sends queued messages", function () {
@@ -169,16 +170,16 @@
             {data: [{message: "queued message"}, {message: "send message"}]},
             "queued messages added to request"
         );
-        deepEqual(messenger.message_queue_length(), 0, "message queue reset");
+        deepEqual(my.messageQueue.length, 0, "message queue reset");
     });
 
     test("max errors reached", function () {
         messenger.connect();
         var data = ajaxData.pop();
         data.error();
-        deepEqual(messenger.is_connected(), true, "still connected after one error");
+        deepEqual(my.isConnected, true, "still connected after one error");
         data.error();
-        deepEqual(messenger.is_connected(), false, "disonnect after maxErrors are reached");
+        deepEqual(my.isConnected, false, "disonnect after maxErrors are reached");
     });
 
 

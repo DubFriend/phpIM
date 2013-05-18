@@ -46,9 +46,8 @@ function try_array(array $array, $key, $default = null) {
 
 //will return a string with $trail removed, if $trail is on the end of the string
 function remove_trailing($string, $trail) {
-    $trailLength = strlen($trail);
-    if(substr($string, -$trailLength) === $trail) {
-        return substr($string, 0, strlen($string) - $trailLength);
+    if(substr($string, strlen($trail) * -1) === $trail) {
+        return substr($string, 0, strlen($string) - strlen($trail));
     }
     else return $string;
 }

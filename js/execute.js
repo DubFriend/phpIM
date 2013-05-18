@@ -33,13 +33,8 @@ $(document).ready(function () {
 
     $('#phpIM-send-message').submit(function (e) {
         e.preventDefault();
-        if(messenger.is_connected()) {
-            console.log("Send Message : " + JSON.stringify(get_message_data()));
-            messenger.send_message(get_message_data());
-        }
-        else {
-            console.log("Cannot send message, connection not established");
-        }
+        console.log("Send Message : " + JSON.stringify(get_message_data()));
+        messenger.send_message(get_message_data());
     });
 
 });

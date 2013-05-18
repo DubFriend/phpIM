@@ -118,9 +118,9 @@ var new_conversations_manager = function (fig) {
         }
     };
 
-    that.send_message = function (messageData, conversationId) {
+    that.send_message = function (messageData) {
         var sendMessages;
-        if(isConnected && conversationId && !isMessagePending) {
+        if(isConnected && !isMessagePending) {
             console.log("Message Sending");
             if(messageQueue.length > 0) {
                 messageQueue.push(messageData);
@@ -134,7 +134,7 @@ var new_conversations_manager = function (fig) {
             isMessagePending = true;
             
             ajax(ajax_fig({
-                url: ROOT + "conversations/" + conversationId + "/messages",
+                url: ROOT + "conversations/" + messageData.conversationId + "/messages",
                 type: "POST",
                 //dataType: "text",
                 data: sendMessages,
@@ -150,8 +150,6 @@ var new_conversations_manager = function (fig) {
             messageQueue.push(messageData);
         }
     };
-
-
 
     return that;
 };;var conversationsManager = new_conversations_manager();
