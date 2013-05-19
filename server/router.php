@@ -59,6 +59,9 @@ class Router {
     private function follow_conversations_path() {
         $Controller = null;
         switch(try_array($this->path, 1)) {
+            case null:
+                $Controller = $this->Factory->build_new_conversations_controller();
+                break;
             case "live":
                 $Controller = $this->Factory->build_live_conversations_controller();
                 break;
@@ -70,7 +73,8 @@ class Router {
                 break;
             default:
                 //treat this level as a conversation_id
-                $Controller = $this->follow_conversations_path_level_2();
+                //$Controller = $this->follow_conversations_path_level_2();
+                throw new Router_Exception("invalid conversations path : " . print_r($this->path, true));
         }
         return $Controller;
     }
@@ -86,26 +90,6 @@ class Router {
             "last_id" => try_array($updates, 'last_id'),
             "user" => try_array($updates, 'user')
         ));
-    }
-
-    private function follow_conversations_path_level_2() {
-        $Controller = null;
-        switch(try_array($this->path, 2)) {
-            case null:
-                if(try_array($this->path, 1)) {
-                    $Controller = $this->Factory->build_existing_conversations_controller(array(
-                        "conversation_id" => $this->path[1]
-                    ));
-                }
-                else {
-                    $Controller = $this->Factory->build_new_conversations_controller();
-                }
-                break;
-
-            default:
-                throw new Router_Exception("invalid conversations path : " . print_r($this->path, true));
-        }
-        return $Controller;
     }
 }
 ?>

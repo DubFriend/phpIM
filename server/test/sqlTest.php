@@ -43,9 +43,8 @@ class Sql_Test extends PHPUnit_Framework_TestCase {
     }
 
     function test_results_foreach_loop() {
-        $ResultsObject = $this->Sql->select("* FROM A");
         $actualResults = array();
-        foreach($ResultsObject as $key => $val) {
+        foreach($this->Sql->select("* FROM A") as $key => $val) {
             $actualResults[$key] = $val;
         }
 
