@@ -68,7 +68,8 @@ class Existing_Conversation_Model extends Model {
     function is_up_to_date(array $fig = array()) {
         $Results = $this->Database->select(
             "id, last_id FROM Conversation " . $this->conversation_where_sql($fig),
-            array_by_column($fig, 'conversation_id')
+            array_by_column($fig, 'id')
+            //array_by_column($fig, 'conversation_id')
         );
         $lastIdArray = array_by_column($fig, 'last_id');
         $resultsIndex = 0;
@@ -99,7 +100,8 @@ class Existing_Conversation_Model extends Model {
 
     function get_updates(array $fig = array()) {
         $sql = "id, message, time_stamp FROM Message WHERE conversation_id = ?";
-        $values = array($fig['conversation_id']);
+        //$values = array($fig['conversation_id']);
+        $values = array($fig['id']);
         if(isset($fig['last_id'])) {
             $sql .= " AND id > ?";
             $values[] = $fig['last_id'];
@@ -143,7 +145,8 @@ class Existing_Conversation_Controller extends Controller {
         $this->Clock->sleep(self::INITIAL_SLEEP_TIME);
 
         $updateConfig = array(
-            "conversation_id" => $this->conversationId,
+            //"conversation_id" => $this->conversationId,
+            "id" => $this->conversationId,
             "last_id" => $this->lastMessageId
         );
 
@@ -158,7 +161,8 @@ class Existing_Conversation_Controller extends Controller {
             else {
                 foreach($conversationsToUpdate as $conv) {
                     $response[$conv] = $this->Model->get_updates(array(
-                        "conversation_id" => $conv,
+                        //"conversation_id" => $conv,
+                        "id" => $conv,
                         "last_id" => $this->lastMessageId,
                         "user" => $this->userType
                     ))->to_array();    
