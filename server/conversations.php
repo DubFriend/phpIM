@@ -93,7 +93,7 @@ class Existing_Conversation_Model extends Model {
         $this->Database->update(
             "Conversation SET last_update_check = '" . date("Y-m-d H:i:s") .
             "' " . $this->conversation_where_sql($fig),
-            array_by_column($fig, 'conversation_id')
+            $fig
         );
     }
 
@@ -117,33 +117,36 @@ class Existing_Conversation_Model extends Model {
 class Existing_Conversation_Controller extends Controller {
     const INITIAL_SLEEP_TIME = 1000000, //1000000 == 1 second
           UPDATE_SLEEP_TIME  = 1000000,
-          MAX_NUM_UPDATES = 30;
+          MAX_NUM_UPDATES = 5;
 
     private $Clock,
             $conversationId,
             $lastMessageId,
-            $userType;
+            $userType,
+
+            $updates;
 
     function __construct(array $fig = array()) {
         parent::__construct($fig);
         $this->Clock = try_array($fig, "clock", new Clock());
-        $this->conversationId = try_array($fig, "conversation_id");
-        $this->lastMessageId = try_array($fig, "last_id");
-        $this->userType = try_array($fig, "user");
+        $this->updates = try_array($fig, 'updates');
+        
+        $firstUpdate = $this->updates[0];
+        $this->conversationId = try_array($firstUpdate, "id");
+        $this->lastMessageId = try_array($firstUpdate, "last_id");
+        $this->userType = try_array($firstUpdate, "user");
     }
 
     protected function get() {
-        $this->Model->update_last_update_check(array(
-            array("conversation_id" => $this->conversationId)
-        ));
+        $this->Model->update_last_update_check(array_by_column($this->updates, "id"));
 
         $this->Clock->sleep(self::INITIAL_SLEEP_TIME);
-        
+
         $updateConfig = array(
             "conversation_id" => $this->conversationId,
             "last_id" => $this->lastMessageId
         );
-        
+
         $numUpdates = 0;
         $response = array();
         while($numUpdates < self::MAX_NUM_UPDATES) {
@@ -163,7 +166,7 @@ class Existing_Conversation_Controller extends Controller {
                 break;
             }
         }
-        
+
         $response = $response !== array() ? $response : "Update Response Timeout";
         return json_encode($response);
     }

@@ -7,7 +7,8 @@ require_once "router.php";
 class Factory_Mock implements Factory_Interface {
     public $conversationId,
            $lastMessageId,
-           $user;
+           $user,
+           $updates;
     
     function build_manager_controller() {
         return "manager_controller";
@@ -22,9 +23,10 @@ class Factory_Mock implements Factory_Interface {
     }
 
     function build_existing_conversations_controller(array $fig = array()) {
-        $this->conversationId = try_array($fig, 'conversation_id');
-        $this->lastMessageId = try_array($fig, 'last_id');
-        $this->user = try_array($fig, 'user');
+        $this->updates = $fig;
+        //$this->conversationId = try_array($fig, 'conversation_id');
+        //$this->lastMessageId = try_array($fig, 'last_id');
+        //$this->user = try_array($fig, 'user');
         return "existing_conversations_controller";
     }
 
@@ -83,7 +85,7 @@ class Router_Test extends PHPUnit_Framework_TestCase {
             "existing_conversations_controller",
             $this->route("conversations/updates/" . json_encode(array(array("id" => 3))))
         );
-        $this->assertEquals(3, $this->Factory->conversationId);
+        $this->assertEquals(3, $this->Factory->updates['updates'][0]['id']);
     }
 
     /**

@@ -60,12 +60,13 @@ class Router {
     private function follow_conversations_updates_path() {
         $updates = json_decode(try_array($this->path, 2), true);
         //multi update needs to be handled for manager
-        $updates = $updates[0];
+        //$updates = $updates[0];
 
         return $this->Factory->build_existing_conversations_controller(array(
-            "conversation_id" => try_array($updates, 'id'),
-            "last_id" => try_array($updates, 'last_id'),
-            "user" => try_array($updates, 'user')
+            "updates" => $updates
+            //"conversation_id" => try_array($updates, 'id'),
+            //"last_id" => try_array($updates, 'last_id'),
+            //"user" => try_array($updates, 'user')
         ));
     }
 }

@@ -153,7 +153,7 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
 
     function test_last_update_check_is_updated() {
         $this->Model->update_last_update_check(array(
-            array("conversation_id" => 'conv_id')
+            'conv_id'//array("conversation_id" => 'conv_id')
         ));
 
         $Results = $this->Database->query(
@@ -371,9 +371,11 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
     function build_controller_override(array $fig = array()) {
         return new Existing_Conversation_Controller(array(
             "clock" => new Clock_Mock(),
-            "last_id" => try_array($fig, "last_id", 1),
-            "user" => "M",
-            "conversation_id" => try_array($fig, "conversation_id", "conv_id"),
+            "updates" => array(array(
+                "last_id" => try_array($fig, "last_id", 1),
+                "user" => "M",
+                "id" => try_array($fig, "conversation_id", "conv_id")
+            )),
             "server" => try_array($fig, "server", array(
                 "REQUEST_METHOD" => try_array($fig, "REQUEST_METHOD", "GET")
             )),
@@ -389,7 +391,7 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
     function test_get_updates_last_update_check() {
         $response = $this->Controller->respond();
         $this->assertEquals(
-            array(array('conversation_id' => 'conv_id')),
+            array('conv_id'),
             $this->Model->updateLastUpdateFig
         );
     }
