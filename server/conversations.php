@@ -82,8 +82,11 @@ class Existing_Conversation_Model extends Model {
     function update_last_update_check(array $fig = array()) {
         //foreach($fig as $conversation) {
         $this->Database->update(
-            "Conversation SET last_update_check = '" . date("Y-m-d H:i:s") . "' WHERE id = ?",
-            array($fig['conversation_id'])
+            "Conversation SET last_update_check = '" .
+                date("Y-m-d H:i:s") . "' " .
+                $this->conversation_where_sql($fig),// WHERE id = ?",
+            array_by_column($fig, 'conversation_id')
+            //array($fig['conversation_id'])
         );
         //}
     }
@@ -125,7 +128,7 @@ class Existing_Conversation_Controller extends Controller {
 
     protected function get() {
         $this->Model->update_last_update_check(array(
-            "conversation_id" => $this->conversationId
+            array("conversation_id" => $this->conversationId)
         ));
 
         $this->Clock->sleep(self::INITIAL_SLEEP_TIME);

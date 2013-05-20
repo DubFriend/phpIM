@@ -153,7 +153,7 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
 
     function test_last_update_check_is_updated() {
         $this->Model->update_last_update_check(array(
-            "conversation_id" => 'conv_id'
+            array("conversation_id" => 'conv_id')
         ));
 
         $Results = $this->Database->query(
@@ -380,7 +380,7 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
     function test_get_updates_last_update_check() {
         $response = $this->Controller->respond();
         $this->assertEquals(
-            array('conversation_id' => 'conv_id'),
+            array(array('conversation_id' => 'conv_id')),
             $this->Model->updateLastUpdateFig
         );
     }
