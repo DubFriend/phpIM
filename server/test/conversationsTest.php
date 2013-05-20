@@ -336,7 +336,7 @@ class Existing_Conversation_Model_Mock {
         $this->isUpdatedFig = $fig;
         $this->numUpdatedChecks += 1;
         $this->isUpdatedCountdown -= 1;
-        return $this->isUpdatedCountdown > 0 ? array() : array("foo");
+        return $this->isUpdatedCountdown > 0 ? array() : array("conv_id");
     }
 
     function update_last_update_check(array $fig = array()) {
@@ -383,7 +383,7 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
 
     function test_get() {
         $response = $this->Controller->respond();
-        $this->assertEquals(json_encode("mock update"), $response);
+        $this->assertEquals(json_encode(array("conv_id" => "mock update")), $response);
     }
 
     function test_get_updates_last_update_check() {

@@ -65,10 +65,6 @@ class Existing_Conversation_Model extends Model {
         return $this->where_column_equals_multiple_values_sql("id", count($conversations));
     }
 
-    //private function message_where_sql(array $conversations) {
-    //    return $this->where_column_equals_multiple_values_sql("conversation_id", count($conversations));
-    //}
-
     function is_up_to_date(array $fig = array()) {
         $Results = $this->Database->select(
             "id, last_id FROM Conversation " . $this->conversation_where_sql($fig),
@@ -82,13 +78,15 @@ class Existing_Conversation_Model extends Model {
                 throw new Exception("Invalid conversation_id");
             }
             else if($Update['last_id'] > $lastIdArray[$resultsIndex]) {
+                /*$conversationsToUpdate[] = array(
+                    "id" => $Update['id'],
+                    "last_id" => $Update['last_id']
+                );*/
                 $conversationsToUpdate[] = $Update['id'];
-                //return false;
             }
             $resultsIndex += 1;
         }
         return $conversationsToUpdate;
-        //return true;
     }
 
     function update_last_update_check(array $fig = array()) {
@@ -147,27 +145,26 @@ class Existing_Conversation_Controller extends Controller {
         );
         
         $numUpdates = 0;
-        $response = null;
+        $response = array();
         while($numUpdates < self::MAX_NUM_UPDATES) {
             $numUpdates += 1;
-
             $conversationsToUpdate = $this->Model->is_up_to_date(array($updateConfig));
-            //if($this->Model->is_up_to_date(array($updateConfig))) {
             if(count($conversationsToUpdate) === 0) {
                 $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
             }
             else {
-                //foreach($conversationsToUpdate as $conv) {
-                    $response = $this->Model->get_updates(array_merge(
-                        $updateConfig,
-                        array("user" => $this->userType)
-                    ))->to_array();
-                //}
+                foreach($conversationsToUpdate as $conv) {
+                    $response[$conv] = $this->Model->get_updates(array(
+                        "conversation_id" => $conv,
+                        "last_id" => $this->lastMessageId,
+                        "user" => $this->userType
+                    ))->to_array();    
+                }
                 break;
             }
         }
-        $response = $response !== null ? $response : "Update Response Timeout";
-
+        
+        $response = $response !== array() ? $response : "Update Response Timeout";
         return json_encode($response);
     }
 }
