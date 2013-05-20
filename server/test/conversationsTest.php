@@ -152,9 +152,7 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
     }
 
     function test_last_update_check_is_updated() {
-        $this->Model->update_last_update_check(array(
-            'conv_id'//array("conversation_id" => 'conv_id')
-        ));
+        $this->Model->update_last_update_check(array('conv_id'));
 
         $Results = $this->Database->query(
             "SELECT last_update_check FROM Conversation WHERE id = 'conv_id'"
@@ -244,7 +242,6 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
 
     function test_get_updates() {
         $updates = $this->Model->get_updates(array(
-            //"conversation_id" => 'conv_id',
             "id" => 'conv_id',
             "user" => 'C',
             "last_id" => 1
@@ -264,7 +261,6 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
     
     function test_get_updates_no_updates() {
         $updates = $this->Model->get_updates(array(
-            //"conversation_id" => 'conv_id',
             "id" => 'conv_id',
             "user" => 'C',
             "last_id" => 2
@@ -274,7 +270,6 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
 
     function test_get_updates_own_updates() {
         $updates = $this->Model->get_updates(array(
-            //"conversation_id" => 'conv_id',
             "id" => 'conv_id',
             "user" => 'M',
             "last_id" => 1
@@ -285,7 +280,6 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
     function test_get_updates_all_manager_messages() {
         $updates = $this->Model->get_updates(array(
             "id" => 'conv_id',
-            //"conversation_id" => 'conv_id',
             "user" => 'M'
         ));
 
@@ -303,7 +297,6 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
 
     function test_get_updates_for_any_user() {
         $updates = $this->Model->get_updates(array(
-            //"conversation_id" => 'conv_id'
             "id" => 'conv_id'
         ));
 
@@ -412,7 +405,8 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array(array(
                 "id" => 'conv_id',
-                "last_id" => 1
+                "last_id" => 1,
+                "user" => "M"
             )),
             $this->Model->isUpdatedFig
         );

@@ -69,7 +69,6 @@ class Existing_Conversation_Model extends Model {
         $Results = $this->Database->select(
             "id, last_id FROM Conversation " . $this->conversation_where_sql($fig),
             array_by_column($fig, 'id')
-            //array_by_column($fig, 'conversation_id')
         );
         $lastIdArray = array_by_column($fig, 'last_id');
         $resultsIndex = 0;
@@ -79,10 +78,6 @@ class Existing_Conversation_Model extends Model {
                 throw new Exception("Invalid conversation_id");
             }
             else if($Update['last_id'] > $lastIdArray[$resultsIndex]) {
-                /*$conversationsToUpdate[] = array(
-                    "id" => $Update['id'],
-                    "last_id" => $Update['last_id']
-                );*/
                 $conversationsToUpdate[] = $Update['id'];
             }
             $resultsIndex += 1;
@@ -100,7 +95,6 @@ class Existing_Conversation_Model extends Model {
 
     function get_updates(array $fig = array()) {
         $sql = "id, message, time_stamp FROM Message WHERE conversation_id = ?";
-        //$values = array($fig['conversation_id']);
         $values = array($fig['id']);
         if(isset($fig['last_id'])) {
             $sql .= " AND id > ?";
@@ -122,55 +116,38 @@ class Existing_Conversation_Controller extends Controller {
           MAX_NUM_UPDATES = 5;
 
     private $Clock,
-            $conversationId,
-            $lastMessageId,
-            $userType,
-
             $updates;
 
     function __construct(array $fig = array()) {
         parent::__construct($fig);
         $this->Clock = try_array($fig, "clock", new Clock());
         $this->updates = try_array($fig, 'updates');
-        
-        $firstUpdate = $this->updates[0];
-        $this->conversationId = try_array($firstUpdate, "id");
-        $this->lastMessageId = try_array($firstUpdate, "last_id");
-        $this->userType = try_array($firstUpdate, "user");
     }
 
     protected function get() {
         $this->Model->update_last_update_check(array_by_column($this->updates, "id"));
-
         $this->Clock->sleep(self::INITIAL_SLEEP_TIME);
-
-        $updateConfig = array(
-            //"conversation_id" => $this->conversationId,
-            "id" => $this->conversationId,
-            "last_id" => $this->lastMessageId
-        );
-
         $numUpdates = 0;
         $response = array();
         while($numUpdates < self::MAX_NUM_UPDATES) {
             $numUpdates += 1;
-            $conversationsToUpdate = $this->Model->is_up_to_date(array($updateConfig));
+            $conversationsToUpdate = $this->Model->is_up_to_date($this->updates);
             if(count($conversationsToUpdate) === 0) {
                 $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
             }
             else {
+                $updateIndex = 0;
                 foreach($conversationsToUpdate as $conv) {
                     $response[$conv] = $this->Model->get_updates(array(
-                        //"conversation_id" => $conv,
                         "id" => $conv,
-                        "last_id" => $this->lastMessageId,
-                        "user" => $this->userType
-                    ))->to_array();    
+                        "last_id" => try_array($this->updates[$updateIndex], 'last_id'),
+                        "user" => try_array($this->updates[$updateIndex], 'user')
+                    ))->to_array();
+                    $updateIndex += 1;    
                 }
                 break;
             }
         }
-
         $response = $response !== array() ? $response : "Update Response Timeout";
         return json_encode($response);
     }
@@ -192,9 +169,9 @@ class Conversations_Model extends Model {
         $updateSleepTime = Existing_Conversation_Controller::UPDATE_SLEEP_TIME / 1000000;
         $maxNumUpdates = Existing_Conversation_Controller::MAX_NUM_UPDATES;
 
-        $this->maxLiveAge =  $initialSleepTime + 
-                            ($updateSleepTime * $maxNumUpdates) +
-                             self::MAX_LIVE_AGE_TIME_BUFFER;
+        $this->maxLiveAge = $initialSleepTime + 
+                           ($updateSleepTime * $maxNumUpdates) +
+                            self::MAX_LIVE_AGE_TIME_BUFFER;
     }
 
     function get_live_conversations() {
