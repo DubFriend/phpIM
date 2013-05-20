@@ -49,23 +49,23 @@ class New_Conversation_Controller extends Controller {
 
 
 
+
 class Existing_Conversation_Model extends Model {
 
-    function is_up_to_date(array $fig = array()) {
-        $isUpToDate = true;
-
-        $idArray = $idValueArray = $lastIdArray = array();
-        foreach($fig as $conversation) {
+    private function conversation_where_sql(array $conversations) {
+        $idArray = array();
+        foreach($conversations as $conv) {
             $idArray[] = "id = ?";
-            $idValueArray[] = $conversation['conversation_id'];
-            $lastIdArray[] = try_array($conversation, 'last_id');
         }
+        return "WHERE " . implode(" OR ", $idArray);
+    }
 
+    function is_up_to_date(array $fig = array()) {
         $Results = $this->Database->select(
-            "id, last_id FROM Conversation WHERE " . implode(" OR ", $idArray),
-            $idValueArray
+            "id, last_id FROM Conversation " . $this->conversation_where_sql($fig),
+            array_by_column($fig, 'conversation_id')
         );
-
+        $lastIdArray = array_by_column($fig, 'last_id');
         $resultsIndex = 0;
         foreach($Results as $Update) {
             if(!$Update) {
@@ -76,37 +76,16 @@ class Existing_Conversation_Model extends Model {
             }
             $resultsIndex += 1;
         }
-
         return true;
-        
-/*
-
-        $Results = $this->Database->select(
-            "last_id FROM Conversation WHERE id = ?",
-            array($fig['conversation_id'])
-        )->next();
-        
-        if(!$Results) {
-            throw new Exception("Invalid conversation_id");
-        }
-        else if($Results['last_id'] === null) {
-            return true;
-        }
-        else if(isset($fig['last_id'])) {
-            return ($Results['last_id'] <= $fig['last_id']);
-        }
-        else {
-            return false;
-        }
-*/
-
     }
 
     function update_last_update_check(array $fig = array()) {
+        //foreach($fig as $conversation) {
         $this->Database->update(
             "Conversation SET last_update_check = '" . date("Y-m-d H:i:s") . "' WHERE id = ?",
             array($fig['conversation_id'])
         );
+        //}
     }
 
     function get_updates(array $fig = array()) {

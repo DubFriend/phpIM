@@ -52,6 +52,15 @@ function remove_trailing($string, $trail) {
     else return $string;
 }
 
+function array_by_column($array, $columnName) { 
+    $column = array();
+    foreach($array as $subArray) {
+        $column[] = try_array($subArray, $columnName);
+    }
+    return $column;
+}
+
+
 
 function debug($message) {
     if(IS_DEBUG_MESSAGES_ON) {
