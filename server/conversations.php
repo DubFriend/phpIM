@@ -52,13 +52,22 @@ class New_Conversation_Controller extends Controller {
 
 class Existing_Conversation_Model extends Model {
 
-    private function conversation_where_sql(array $conversations) {
+
+    private function where_column_equals_multiple_values_sql($idColumnName, $numberOfIds) {
         $idArray = array();
-        foreach($conversations as $conv) {
-            $idArray[] = "id = ?";
+        for($i = 0; $i < $numberOfIds; $i += 1) {
+            $idArray[] = "$idColumnName = ?";
         }
         return "WHERE " . implode(" OR ", $idArray);
     }
+
+    private function conversation_where_sql(array $conversations) {
+        return $this->where_column_equals_multiple_values_sql("id", count($conversations));
+    }
+
+    //private function message_where_sql(array $conversations) {
+    //    return $this->where_column_equals_multiple_values_sql("conversation_id", count($conversations));
+    //}
 
     function is_up_to_date(array $fig = array()) {
         $Results = $this->Database->select(
@@ -67,28 +76,27 @@ class Existing_Conversation_Model extends Model {
         );
         $lastIdArray = array_by_column($fig, 'last_id');
         $resultsIndex = 0;
+        $conversationsToUpdate = array();
         foreach($Results as $Update) {
             if(!$Update) {
                 throw new Exception("Invalid conversation_id");
             }
             else if($Update['last_id'] > $lastIdArray[$resultsIndex]) {
-                return false;
+                $conversationsToUpdate[] = $Update['id'];
+                //return false;
             }
             $resultsIndex += 1;
         }
-        return true;
+        return $conversationsToUpdate;
+        //return true;
     }
 
     function update_last_update_check(array $fig = array()) {
-        //foreach($fig as $conversation) {
         $this->Database->update(
-            "Conversation SET last_update_check = '" .
-                date("Y-m-d H:i:s") . "' " .
-                $this->conversation_where_sql($fig),// WHERE id = ?",
+            "Conversation SET last_update_check = '" . date("Y-m-d H:i:s") .
+            "' " . $this->conversation_where_sql($fig),
             array_by_column($fig, 'conversation_id')
-            //array($fig['conversation_id'])
         );
-        //}
     }
 
     function get_updates(array $fig = array()) {
@@ -142,14 +150,20 @@ class Existing_Conversation_Controller extends Controller {
         $response = null;
         while($numUpdates < self::MAX_NUM_UPDATES) {
             $numUpdates += 1;
-            if($this->Model->is_up_to_date(array($updateConfig))) {
+
+            $conversationsToUpdate = $this->Model->is_up_to_date(array($updateConfig));
+            //if($this->Model->is_up_to_date(array($updateConfig))) {
+            if(count($conversationsToUpdate) === 0) {
                 $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
             }
             else {
-                $response = $this->Model->get_updates(array_merge(
-                    $updateConfig,
-                    array("user" => $this->userType)
-                ))->to_array();
+                //foreach($conversationsToUpdate as $conv) {
+                    $response = $this->Model->get_updates(array_merge(
+                        $updateConfig,
+                        array("user" => $this->userType)
+                    ))->to_array();
+                //}
+                break;
             }
         }
         $response = $response !== null ? $response : "Update Response Timeout";
@@ -174,7 +188,9 @@ class Conversations_Model extends Model {
         $updateSleepTime = Existing_Conversation_Controller::UPDATE_SLEEP_TIME / 1000000;
         $maxNumUpdates = Existing_Conversation_Controller::MAX_NUM_UPDATES;
 
-        $this->maxLiveAge =  $initialSleepTime + ($updateSleepTime * $maxNumUpdates) + self::MAX_LIVE_AGE_TIME_BUFFER;
+        $this->maxLiveAge =  $initialSleepTime + 
+                            ($updateSleepTime * $maxNumUpdates) +
+                             self::MAX_LIVE_AGE_TIME_BUFFER;
     }
 
     function get_live_conversations() {

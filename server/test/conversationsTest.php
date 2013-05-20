@@ -168,23 +168,30 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
     }
 
     function test_is_up_to_date_true() {
-        $this->assertTrue($this->Model->is_up_to_date(array(
-            array("conversation_id" => 'conv_id',
-            "last_id" => 2)
+        $this->assertEquals(
+            array(),
+            $this->Model->is_up_to_date(array(
+                array("conversation_id" => 'conv_id',
+                "last_id" => 2
+            )
         )));
     }
 
     function test_is_up_to_date_false() {
-        $this->assertFalse($this->Model->is_up_to_date(array(
-            array("conversation_id" => 'conv_id',
-            "last_id" => 1)
-        )));
+        $this->assertEquals(
+            array('conv_id'),
+            $this->Model->is_up_to_date(array(array(
+                "conversation_id" => 'conv_id',
+                "last_id" => 1
+            )))
+        );
     }
 
     function test_is_up_to_date_last_id_not_sent() {
-        $this->assertFalse($this->Model->is_up_to_date(array(
-            array("conversation_id" => 'conv_id')
-        )));
+        $this->assertEquals(
+            array('conv_id'),
+            $this->Model->is_up_to_date(array(array("conversation_id" => 'conv_id')))
+        );
     }
 
     function test_is_up_to_date_last_id_not_set() {
@@ -192,13 +199,14 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
             "UPDATE Conversation SET last_id = NULL
              WHERE id = 'conv_id'"
         );
-        $this->assertTrue($this->Model->is_up_to_date(array(
-            array("conversation_id" => 'conv_id')
-        )));
-        $this->assertTrue($this->Model->is_up_to_date(array(
-            array("conversation_id" => 'conv_id',
-            "last_id" => 1) //this wouldnt be set in this case, but here as a corner-case
-        )));
+        $this->assertEquals(
+            array(),
+            $this->Model->is_up_to_date(array(array("conversation_id" => 'conv_id')))
+        );
+        $this->assertEquals(
+            array(),
+            $this->Model->is_up_to_date(array(array("conversation_id" => 'conv_id', "last_id" => 1)))
+        );
     }
 
     function test_is_up_to_date_both_ids_not_set() {
@@ -206,9 +214,10 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
             "UPDATE Conversation SET last_id = NULL
              WHERE id = 'conv_id'"
         );
-        $this->assertTrue($this->Model->is_up_to_date(array(
-            array("conversation_id" => 'conv_id')
-        )));
+        $this->assertEquals(
+            array(),
+            $this->Model->is_up_to_date(array(array("conversation_id" => 'conv_id')))
+        );
     }
 
     /**
@@ -327,7 +336,7 @@ class Existing_Conversation_Model_Mock {
         $this->isUpdatedFig = $fig;
         $this->numUpdatedChecks += 1;
         $this->isUpdatedCountdown -= 1;
-        return $this->isUpdatedCountdown > 0;
+        return $this->isUpdatedCountdown > 0 ? array() : array("foo");
     }
 
     function update_last_update_check(array $fig = array()) {
