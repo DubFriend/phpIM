@@ -70,14 +70,17 @@ class Existing_Conversation_Model extends Model {
             "id, last_id FROM Conversation " . $this->conversation_where_sql($fig),
             array_by_column($fig, 'id')
         );
+
+        if($Results->count() === "0") {
+            throw new Exception("Invalid conversation_id");
+        }
+        
         $lastIdArray = array_by_column($fig, 'last_id');
         $resultsIndex = 0;
         $conversationsToUpdate = array();
+        
         foreach($Results as $Update) {
-            if(!$Update) {
-                throw new Exception("Invalid conversation_id");
-            }
-            else if($Update['last_id'] > $lastIdArray[$resultsIndex]) {
+            if($Update['last_id'] > $lastIdArray[$resultsIndex]) {
                 $conversationsToUpdate[] = $Update['id'];
             }
             $resultsIndex += 1;

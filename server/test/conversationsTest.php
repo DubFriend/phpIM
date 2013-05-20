@@ -152,10 +152,20 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
     }
 
     function test_last_update_check_is_updated() {
-        $this->Model->update_last_update_check(array('conv_id'));
+        $this->Model->update_last_update_check(array('conv_id', 'conv_id_2'));
 
         $Results = $this->Database->query(
             "SELECT last_update_check FROM Conversation WHERE id = 'conv_id'"
+        );
+        $row = $Results->fetch(PDO::FETCH_ASSOC);
+
+        $this->assertEquals(
+            date("Y-m-d H:i:s"),
+            $row['last_update_check']
+        );
+
+        $Results = $this->Database->query(
+            "SELECT last_update_check FROM Conversation WHERE id = 'conv_id_2'"
         );
         $row = $Results->fetch(PDO::FETCH_ASSOC);
 
@@ -169,8 +179,7 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array(),
             $this->Model->is_up_to_date(array(
-                array("conversation_id" => 'conv_id',
-                "last_id" => 2
+                array("id" => 'conv_id', "last_id" => 2
             )
         )));
     }
@@ -182,6 +191,16 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
                 "id" => 'conv_id',
                 "last_id" => 1
             )))
+        );
+    }
+
+    function test_is_up_to_date_multiple_updates() {
+        $this->assertEquals(
+            array("conv_id", "conv_id_2"),
+            $this->Model->is_up_to_date(array(
+                array("id" => "conv_id", "last_id" => 1),
+                array("id" => "conv_id_2", "last_id" => 2)
+            ))
         );
     }
 
@@ -222,23 +241,8 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
      * @expectedException Exception
      */
     function test_is_up_to_date_invalid_conversation_id() {
-        $this->Model->is_up_to_date(array("conversationId" => 'wrong'));
+        $this->Model->is_up_to_date(array(array("id" => 'wrong')));
     }
-
-
-/*
-    function test_is_up_to_date_on_multiple_conversations() {
-        $this->Database->query(
-            "INSERT INTO Conversation (id, last_update_check, last_id)
-             VALUES ('conv_id_2', '2013-01-01 10:10:10', 3)"
-        );
-        $this->assertTrue($this->Model->is_up_to_date(array(
-
-        )));
-
-    }
-*/
-
 
     function test_get_updates() {
         $updates = $this->Model->get_updates(array(
@@ -366,14 +370,14 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         $this->Controller = $this->build_controller_override();
     }
 
-    function build_controller_override(array $fig = array()) {
+    private function build_controller_override(array $fig = array()) {
         return new Existing_Conversation_Controller(array(
             "clock" => new Clock_Mock(),
-            "updates" => array(array(
+            "updates" => try_array($fig, "updates", array(array(
                 "last_id" => try_array($fig, "last_id", 1),
                 "user" => "M",
                 "id" => try_array($fig, "conversation_id", "conv_id")
-            )),
+            ))),
             "server" => try_array($fig, "server", array(
                 "REQUEST_METHOD" => try_array($fig, "REQUEST_METHOD", "GET")
             )),
@@ -381,9 +385,28 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         ));
     }
 
+    private function multiple_conversation_updates() {
+        return array(
+            array("last_id" => 1, "user" => "M", "id" => "conv_id"),
+            array("last_id" => 2, "user" => "M", "id" => "conv_id_2")
+        );
+    }
+
     function test_get() {
         $response = $this->Controller->respond();
         $this->assertEquals(json_encode(array("conv_id" => "mock update")), $response);
+    }
+
+    function test_get_multiple() {
+        $Controller = $this->build_controller_override(array(
+            "updates" => $this->multiple_conversation_updates()
+        ));
+
+        $response = $Controller->respond();
+        $this->assertEquals(json_encode(array(
+            "conv_id" => "mock_update",
+            "conv_id_2" => "mock_update"
+        )), $response);
     }
 
     function test_get_updates_last_update_check() {

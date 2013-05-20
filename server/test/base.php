@@ -39,6 +39,11 @@ function insert_default_rows($Database) {
     );
 
     $Database->query(
+        "INSERT INTO Conversation (id, last_update_check, last_id)
+         VALUES ('conv_id_2', '2013-01-01 10:00:00', 3)"
+    );
+
+    $Database->query(
         "INSERT INTO Message (id, conversation_id, user, message, time_stamp)
          VALUES (1, 'conv_id', 'M', 'manager message', '2013-01-01 10:10:09')"
     );
