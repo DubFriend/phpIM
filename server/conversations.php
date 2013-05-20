@@ -52,6 +52,35 @@ class New_Conversation_Controller extends Controller {
 class Existing_Conversation_Model extends Model {
 
     function is_up_to_date(array $fig = array()) {
+        $isUpToDate = true;
+
+        $idArray = $idValueArray = $lastIdArray = array();
+        foreach($fig as $conversation) {
+            $idArray[] = "id = ?";
+            $idValueArray[] = $conversation['conversation_id'];
+            $lastIdArray[] = try_array($conversation, 'last_id');
+        }
+
+        $Results = $this->Database->select(
+            "id, last_id FROM Conversation WHERE " . implode(" OR ", $idArray),
+            $idValueArray
+        );
+
+        $resultsIndex = 0;
+        foreach($Results as $Update) {
+            if(!$Update) {
+                throw new Exception("Invalid conversation_id");
+            }
+            else if($Update['last_id'] > $lastIdArray[$resultsIndex]) {
+                return false;
+            }
+            $resultsIndex += 1;
+        }
+
+        return true;
+        
+/*
+
         $Results = $this->Database->select(
             "last_id FROM Conversation WHERE id = ?",
             array($fig['conversation_id'])
@@ -69,6 +98,8 @@ class Existing_Conversation_Model extends Model {
         else {
             return false;
         }
+*/
+
     }
 
     function update_last_update_check(array $fig = array()) {
@@ -129,7 +160,7 @@ class Existing_Conversation_Controller extends Controller {
         $response = null;
         while($numUpdates < self::MAX_NUM_UPDATES) {
             $numUpdates += 1;
-            if($this->Model->is_up_to_date($updateConfig)) {
+            if($this->Model->is_up_to_date(array($updateConfig))) {
                 $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
             }
             else {

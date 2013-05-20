@@ -169,21 +169,21 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
 
     function test_is_up_to_date_true() {
         $this->assertTrue($this->Model->is_up_to_date(array(
-            "conversation_id" => 'conv_id',
-            "last_id" => 2
+            array("conversation_id" => 'conv_id',
+            "last_id" => 2)
         )));
     }
 
     function test_is_up_to_date_false() {
         $this->assertFalse($this->Model->is_up_to_date(array(
-            "conversation_id" => 'conv_id',
-            "last_id" => 1
+            array("conversation_id" => 'conv_id',
+            "last_id" => 1)
         )));
     }
 
     function test_is_up_to_date_last_id_not_sent() {
         $this->assertFalse($this->Model->is_up_to_date(array(
-            "conversation_id" => 'conv_id'
+            array("conversation_id" => 'conv_id')
         )));
     }
 
@@ -193,11 +193,11 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
              WHERE id = 'conv_id'"
         );
         $this->assertTrue($this->Model->is_up_to_date(array(
-            "conversation_id" => 'conv_id'
+            array("conversation_id" => 'conv_id')
         )));
         $this->assertTrue($this->Model->is_up_to_date(array(
-            "conversation_id" => 'conv_id',
-            "last_id" => 1 //this wouldnt be set in this case, but here as a corner-case
+            array("conversation_id" => 'conv_id',
+            "last_id" => 1) //this wouldnt be set in this case, but here as a corner-case
         )));
     }
 
@@ -207,7 +207,7 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
              WHERE id = 'conv_id'"
         );
         $this->assertTrue($this->Model->is_up_to_date(array(
-            "conversation_id" => 'conv_id'
+            array("conversation_id" => 'conv_id')
         )));
     }
 
@@ -217,6 +217,21 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
     function test_is_up_to_date_invalid_conversation_id() {
         $this->Model->is_up_to_date(array("conversationId" => 'wrong'));
     }
+
+
+/*
+    function test_is_up_to_date_on_multiple_conversations() {
+        $this->Database->query(
+            "INSERT INTO Conversation (id, last_update_check, last_id)
+             VALUES ('conv_id_2', '2013-01-01 10:10:10', 3)"
+        );
+        $this->assertTrue($this->Model->is_up_to_date(array(
+
+        )));
+
+    }
+*/
+
 
     function test_get_updates() {
         $updates = $this->Model->get_updates(array(
@@ -379,10 +394,10 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
     function test_is_updated_sent_parameters() {
         $response = $this->Controller->respond();
         $this->assertEquals(
-            array(
+            array(array(
                 "conversation_id" => 'conv_id',
                 "last_id" => 1
-            ),
+            )),
             $this->Model->isUpdatedFig
         );
     }

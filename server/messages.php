@@ -1,7 +1,6 @@
 <?php
 class Messages_Model extends Model {
     function add_message(array $fig = array()) {
-        
         //check that conversation exists
         if($this->Database->select(
             "id FROM Conversation WHERE id = ?",
