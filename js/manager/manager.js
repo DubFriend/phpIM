@@ -64,11 +64,11 @@ var new_conversations_manager = function (fig, my) {
             url: ROOT + "conversations/live",
             type: "GET",
             success: function (response) {
-                console.log("UPDATE RESPONSE : " + JSON.stringify(response));
                 var i;
                 for(i = 0; i < response.length; i += 1) {
                     availableConversations[response[i].id] = response[i];
                 }
+                console.log("Available Conversations : " + JSON.stringify(availableConversations));
             }
         }));
     };
@@ -79,6 +79,7 @@ var new_conversations_manager = function (fig, my) {
             conversation.id = id;
             joinedConversations.push(conversation);
         }
+        console.log("Joined Conversations : " + JSON.stringify(joinedConversations));
     };
 
     that.send_message = function (messageData) {

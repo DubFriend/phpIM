@@ -105,7 +105,7 @@ var new_base_messenger = function (fig, my) {
                 ajax(my.ajax_fig({
                     url: my.build_update_url([{id: conversationId, last_id: lastId}]),
                     type: "GET",
-                    //dataType: "text",
+                    dataType: "text",
                     success: function (response) {
                         console.log("Update Response : " + JSON.stringify(response));
                         if(my.updateTimeoutTime > 0) {

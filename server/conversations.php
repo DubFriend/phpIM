@@ -156,6 +156,8 @@ class Existing_Conversation_Controller extends Controller {
     }
 }
 
+
+
 //NOTE: this class depends on Existing_Conversation_Controller's class constants
 class Conversations_Model extends Model {
     //max age in seconds of a conversations last update

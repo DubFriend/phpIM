@@ -67,6 +67,8 @@ class Manager_View extends Bootstrap_View {
                     "</button>" .
                 "</div>" .
             "{{/available}}" .
+            "<input id='conversation-id' placeholder='conversation id'/>" .
+            "<button id='join-conversation'>Join Conversation</button>" .
         "</div>";
     }
 

@@ -338,7 +338,7 @@ class Existing_Conversation_Model_Mock {
         $this->isUpdatedFig = $fig;
         $this->numUpdatedChecks += 1;
         $this->isUpdatedCountdown -= 1;
-        return $this->isUpdatedCountdown > 0 ? array() : array("conv_id");
+        return $this->isUpdatedCountdown > 0 ? array() : array_by_column($fig, 'id');//array("conv_id");
     }
 
     function update_last_update_check(array $fig = array()) {
@@ -373,11 +373,9 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
     private function build_controller_override(array $fig = array()) {
         return new Existing_Conversation_Controller(array(
             "clock" => new Clock_Mock(),
-            "updates" => try_array($fig, "updates", array(array(
-                "last_id" => try_array($fig, "last_id", 1),
-                "user" => "M",
-                "id" => try_array($fig, "conversation_id", "conv_id")
-            ))),
+            "updates" => try_array($fig, "updates", array(
+                array("last_id" => 1, "user" => "M", "id" => "conv_id")
+            )),
             "server" => try_array($fig, "server", array(
                 "REQUEST_METHOD" => try_array($fig, "REQUEST_METHOD", "GET")
             )),
@@ -401,12 +399,14 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         $Controller = $this->build_controller_override(array(
             "updates" => $this->multiple_conversation_updates()
         ));
-
+        
         $response = $Controller->respond();
-        $this->assertEquals(json_encode(array(
-            "conv_id" => "mock_update",
-            "conv_id_2" => "mock_update"
-        )), $response);
+        $this->assertEquals(
+            json_encode(array("conv_id" => "mock update", "conv_id_2" => "mock update"), true),
+            $response
+        );
+
+        $this->assertEquals($this->multiple_conversation_updates(), $this->Model->isUpdatedFig);
     }
 
     function test_get_updates_last_update_check() {
