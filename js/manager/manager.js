@@ -17,12 +17,29 @@ var new_conversations_manager = function (fig, my) {
         },
 
         update = function () {
+            console.log("Update Url : " + my.build_update_url(joinedConversations));
             if(joinedConversations.length > 0) {
                 ajax(my.ajax_fig({
                     url: my.build_update_url(joinedConversations),
                     type: "GET",
                     success: function (response) {
                         console.log("UPDATE RESPONSE : " + JSON.stringify(response));
+                        var r, i, conversationId;
+                        //update last_id's on available conversations.
+                        for(r in response) {
+                            if(availableConversations[r]) {
+                                availableConversations[r].last_id = response[r][0].id;
+                            }
+                        }
+                        
+                        //copy updated last_id's from availableConversations to joinedConversations
+                        for(i = 0; i < joinedConversations.length; i += 1) {
+                            conversationId = joinedConversations[i].id;
+                            if(conversationId) {
+                                joinedConversations[i].last_id = availableConversations[conversationId].last_id;
+                            }
+                        }
+
                         if(my.isConnected) {
                             update();
                         }

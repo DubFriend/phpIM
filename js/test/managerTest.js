@@ -74,21 +74,52 @@
         );
     });
 
-    test("connect()", function () {
+    var multi_conversaton_setup = function () {
         manager.get_available_conversations();
-        var conversations = [{id: "id", last_id: "last_id"}, {id: "id2", last_id: "last_id2"}];
-        ajaxData.pop().success(conversations);
+        ajaxData.pop().success(get_multiple_conversations());
         manager.join_conversation("id");
         manager.join_conversation("id2");
+    };
+
+    var get_multiple_conversations = function () {
+        return [{id: "id", last_id: "last_id"}, {id: "id2", last_id: "last_id2"}];
+    };
+
+    test("connect()", function () {
+        multi_conversaton_setup();
 
         manager.connect();
         var data = ajaxData.pop();
-        deepEqual(data.url, ROOT + "conversations/updates/" + JSON.stringify(conversations), "url is set");
+        deepEqual(data.url, ROOT + "conversations/updates/" + JSON.stringify(get_multiple_conversations()), "url is set");
         deepEqual(data.type, "GET", "http method type is set");
 
         data.success({data: "response_data"});
         var secondData = ajaxData.pop();
         ok(secondData, "update is called recursively on success response");
+    });
+
+    test("update, last_id gets updated", function () {
+        multi_conversaton_setup();
+        manager.connect();
+        ajaxData.pop().success({"id":[{id:"updated_last_id"}]});
+        var conversationsData = manager.conversations_data();
+        var joinedConversationsData = manager.joined_conversations();
+        deepEqual(
+            conversationsData.id.last_id,
+            "updated_last_id",
+            "conversationData updated"
+        );
+        deepEqual(
+            joinedConversationsData[0].last_id,
+            "updated_last_id",
+            "joinedConversation updated"
+        );
+        //make sure other conversation is unchanged
+        deepEqual(
+            conversationsData.id2.last_id,
+            "last_id2",
+            "unupdated Id is not updated"
+        );
     });
 
     test("send_message(messageData)", function () {
