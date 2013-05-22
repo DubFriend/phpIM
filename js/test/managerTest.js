@@ -114,11 +114,20 @@
             "updated_last_id",
             "joinedConversation updated"
         );
-        //make sure other conversation is unchanged
         deepEqual(
             conversationsData.id2.last_id,
             "last_id2",
             "unupdated Id is not updated"
+        );
+    });
+
+    test("update, no updates", function () {
+        multi_conversaton_setup();
+        manager.connect();
+        ajaxData.pop().success("no updates");
+        deepEqual(
+            manager.joined_conversations(),
+            get_multiple_conversations()
         );
     });
 
