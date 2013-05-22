@@ -119,6 +119,7 @@
             "last_id2",
             "unupdated Id is not updated"
         );
+        manager.disconnect();
     });
 
     test("update, no updates", function () {
@@ -127,9 +128,12 @@
         ajaxData.pop().success("no updates");
         deepEqual(
             manager.joined_conversations(),
-            get_multiple_conversations()
+            get_multiple_conversations(),
+            "conversations are unchanged"
         );
+        manager.disconnect();
     });
+
 
     test("send_message(messageData)", function () {
         manager.connect();
@@ -140,6 +144,7 @@
         deepEqual(data.type, "POST", "http method type set");
         deepEqual(data.data, messageData, "post data is set");
         deepEqual(my.isMessagePending, true, "messagePending flag set to true");
+        manager.disconnect();
     });
 
 }());

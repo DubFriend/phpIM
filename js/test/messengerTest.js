@@ -198,6 +198,7 @@
         messenger.unsubscribe(subscriber);
         messenger.publish("bar");
         deepEqual(subscriber.data, "foo", "unsubscribed subscriber does not recieve update");
+
     });
 
 }());

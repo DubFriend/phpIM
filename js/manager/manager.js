@@ -47,10 +47,12 @@ var new_conversations_manager = function (fig, my) {
                 }));
             }
             else {
-                console.log("No Joined Conversations, No Update.");
-                setTimeout(function () {
-                    update();
-                }, 1000);
+                if(my.isConnected) {
+                    console.log("No Joined Conversations, No Update.");
+                    setTimeout(function () {
+                        update();
+                    }, 1000);
+                }
             }
         };
 
