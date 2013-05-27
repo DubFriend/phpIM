@@ -116,7 +116,7 @@ class Existing_Conversation_Model extends Model {
 class Existing_Conversation_Controller extends Controller {
     const INITIAL_SLEEP_TIME = 1000000, //1000000 == 1 second
           UPDATE_SLEEP_TIME  = 1000000,
-          MAX_NUM_UPDATES = 5;
+          MAX_NUM_UPDATES = 25;
 
     private $Clock,
             $updates;

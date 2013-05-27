@@ -1,8 +1,7 @@
 var AJAX_DATA_TYPE = "json",
     AJAX_TIMEOUT_MILLISECONDS = 60000,
-    ROOT = "/phpIM/index.php/";
-
-//console.log = function () {};
+    ROOT = "/phpIM/index.php/",
+    MANAGER_CHECK_JOINED_TIMEOUT = 5000;
 ;if(typeof Object.prototype.create !== 'function') {
     Object.create = function (o) {
         var F = function () {};
@@ -62,7 +61,7 @@ var new_base_messenger = function (fig, my) {
                         maxErrors = fig.maxErrors || 3;
 
                     return function (XMLHttpRequest, textStatus, errorThrown) {
-                        console.log("ERROR #" + numErrors + " : " + textStatus + " : " + errorThrown);
+                        console.log("ERROR #" + numErrors + " : " + textStatus + " : " + errorThrown + "\n");
                         numErrors += 1;
                         if(numErrors > maxErrors) {
                             my.isConnected = false;
@@ -70,7 +69,7 @@ var new_base_messenger = function (fig, my) {
                     };
                 }()),
                 complete: function (jqXHR,  textStatus) {
-                    console.log("COMPLETE : " + textStatus);
+                    console.log("COMPLETE : " + textStatus + "\n");
                     if(my.messageQueue.length > 0) {
                         that.send(my.messageQueue);
                     }
@@ -101,13 +100,13 @@ var new_base_messenger = function (fig, my) {
 
         update = function () {
             if(my.isConnected) {
-                console.log("Update Url : " + my.build_update_url([{id: conversationId, last_id: lastId}]));
+                console.log("Update Url : " + my.build_update_url([{id: conversationId, last_id: lastId}]) + "\n");
                 ajax(my.ajax_fig({
                     url: my.build_update_url([{id: conversationId, last_id: lastId}]),
                     type: "GET",
                     dataType: "text",
                     success: function (response) {
-                        console.log("Update Response : " + JSON.stringify(response));
+                        console.log("Update Response : " + JSON.stringify(response) + "\n");
                         if(my.updateTimeoutTime > 0) {
                             setTimeout(update, my.updateTimeoutTime);
                         }
@@ -127,7 +126,7 @@ var new_base_messenger = function (fig, my) {
     };
 
     that.connect = function (connectData) {
-        console.log("Connect Data : " + JSON.stringify(connectData));
+        console.log("Connect Data : " + JSON.stringify(connectData) + "\n");
         if(!my.isConnected) {
             my.isConnected = true;
             ajax(my.ajax_fig({
@@ -136,7 +135,7 @@ var new_base_messenger = function (fig, my) {
                 data: connectData,
                 //dataType: "text",
                 success: function (response) {
-                    console.log("Connect Response : " + JSON.stringify(response));
+                    console.log("Connect Response : " + JSON.stringify(response) + "\n");
                     conversationId = response.id;
                     update();
                 }
@@ -156,7 +155,7 @@ var new_base_messenger = function (fig, my) {
             my.messageQueue.push(messageData);
             sendMessages = my.messageQueue;
             
-            console.log("Send Message Data : " + JSON.stringify(sendMessages));
+            console.log("Send Message Data : " + JSON.stringify(sendMessages) + "\n");
 
             my.messageQueue = [];
             my.isMessagePending = true;
@@ -167,14 +166,14 @@ var new_base_messenger = function (fig, my) {
                 //dataType: "text",
                 data: {messages: sendMessages},
                 success: function (response) {
-                    console.log("Send Message Response : " + JSON.stringify(response));
+                    console.log("Send Message Response : " + JSON.stringify(response) + "\n");
                     lastId = response.id;
                     my.isMessagePending = false;
                 }
             }));
         }
         else {
-            console.log("Could Not send Message");
+            console.log("Could Not send Message\n");
             my.messageQueue.push(messageData);
         }
     };
@@ -182,21 +181,15 @@ var new_base_messenger = function (fig, my) {
     return that;
 };
 ;var get_message_data = function () {
-        return {
-            message: $('#phpIM-send-message [name="message"]').val()
-        };
+        return { message: $('#phpIM-send-message [name="message"]').val() };
     },
 
     get_connect_data = function () {
-        return {
-            username: $('phpIM-connect [name="username"]').val()
-        };
+        return { username: $('#phpIM-connect [name="username"]').val() };
     },
 
     append_message = function (message) {
-        $('#phpIM-message-area').append(
-            "<p>" + JSON.stringify(message) + "</p>"
-        );
+        $('#phpIM-message-area').append("<p>" + JSON.stringify(message) + "</p>");
     },
     
     messenger = new_messenger();
@@ -205,7 +198,7 @@ $(document).ready(function () {
 
     $('#phpIM-disconnect').click(function (e) {
         e.preventDefault();
-        console.log("Disconnect");
+        console.log("Disconnect\n");
         messenger.disconnect();
     });
 
@@ -216,7 +209,7 @@ $(document).ready(function () {
 
     $('#phpIM-send-message').submit(function (e) {
         e.preventDefault();
-        console.log("Send Message : " + JSON.stringify(get_message_data()));
+        console.log("Send Message : " + JSON.stringify(get_message_data()) + "\n");
         messenger.send_message(get_message_data());
     });
 

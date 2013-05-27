@@ -23,7 +23,7 @@ var new_conversations_manager = function (fig, my) {
                     url: my.build_update_url(joinedConversations),
                     type: "GET",
                     success: function (response) {
-                        console.log("UPDATE RESPONSE : " + JSON.stringify(response));
+                        console.log("UPDATE RESPONSE : " + JSON.stringify(response) + "\n");
                         var r, i, conversationId;
                         //update last_id's on available conversations.
                         for(r in response) {
@@ -48,10 +48,10 @@ var new_conversations_manager = function (fig, my) {
             }
             else {
                 if(my.isConnected) {
-                    console.log("No Joined Conversations, No Update.");
+                    console.log("No Joined Conversations, No Update.\n");
                     setTimeout(function () {
                         update();
-                    }, 1000);
+                    }, MANAGER_CHECK_JOINED_TIMEOUT);
                 }
             }
         };
@@ -87,7 +87,7 @@ var new_conversations_manager = function (fig, my) {
                 for(i = 0; i < response.length; i += 1) {
                     availableConversations[response[i].id] = response[i];
                 }
-                console.log("Available Conversations : " + JSON.stringify(availableConversations));
+                console.log("Available Conversations : " + JSON.stringify(availableConversations) + "\n");
             }
         }));
     };
@@ -98,13 +98,13 @@ var new_conversations_manager = function (fig, my) {
             conversation.id = id;
             joinedConversations.push(conversation);
         }
-        console.log("Joined Conversations : " + JSON.stringify(joinedConversations));
+        console.log("Joined Conversations : " + JSON.stringify(joinedConversations) + "\n");
     };
 
     that.send_message = function (messageData) {
         var sendMessages;
         if(my.isConnected && !my.isMessagePending) {
-            console.log("Message Sending");
+            console.log("Message Sending\n");
             if(my.messageQueue.length > 0) {
                 my.messageQueue.push(messageData);
                 sendMessages = my.messageQueue;
@@ -124,12 +124,12 @@ var new_conversations_manager = function (fig, my) {
                 success: function (response) {
                     lastId = response.id;
                     my.isMessagePending = false;
-                    console.log("MESSAGE RESPONSE : " + JSON.stringify(response));
+                    console.log("Message Response : " + JSON.stringify(response) + "\n");
                 }
             }));
         }
         else {
-            console.log("Could Not send Message");
+            console.log("Could Not send Message\n");
             my.messageQueue.push(messageData);
         }
     };

@@ -9,7 +9,6 @@ $(document).ready(function () {
 
     $('#join-conversation').click(function () {
     	var id = $('#conversation-id').val();
-    	console.log(id);
     	conversationsManager.get_available_conversations();
     	conversationsManager.join_conversation(id);
     });

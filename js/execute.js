@@ -1,19 +1,13 @@
 var get_message_data = function () {
-        return {
-            message: $('#phpIM-send-message [name="message"]').val()
-        };
+        return { message: $('#phpIM-send-message [name="message"]').val() };
     },
 
     get_connect_data = function () {
-        return {
-            username: $('phpIM-connect [name="username"]').val()
-        };
+        return { username: $('#phpIM-connect [name="username"]').val() };
     },
 
     append_message = function (message) {
-        $('#phpIM-message-area').append(
-            "<p>" + JSON.stringify(message) + "</p>"
-        );
+        $('#phpIM-message-area').append("<p>" + JSON.stringify(message) + "</p>");
     },
     
     messenger = new_messenger();
@@ -22,7 +16,7 @@ $(document).ready(function () {
 
     $('#phpIM-disconnect').click(function (e) {
         e.preventDefault();
-        console.log("Disconnect");
+        console.log("Disconnect\n");
         messenger.disconnect();
     });
 
@@ -33,7 +27,7 @@ $(document).ready(function () {
 
     $('#phpIM-send-message').submit(function (e) {
         e.preventDefault();
-        console.log("Send Message : " + JSON.stringify(get_message_data()));
+        console.log("Send Message : " + JSON.stringify(get_message_data()) + "\n");
         messenger.send_message(get_message_data());
     });
 

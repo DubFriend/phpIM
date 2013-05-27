@@ -57,7 +57,7 @@ var new_base_messenger = function (fig, my) {
                         maxErrors = fig.maxErrors || 3;
 
                     return function (XMLHttpRequest, textStatus, errorThrown) {
-                        console.log("ERROR #" + numErrors + " : " + textStatus + " : " + errorThrown);
+                        console.log("ERROR #" + numErrors + " : " + textStatus + " : " + errorThrown + "\n");
                         numErrors += 1;
                         if(numErrors > maxErrors) {
                             my.isConnected = false;
@@ -65,7 +65,7 @@ var new_base_messenger = function (fig, my) {
                     };
                 }()),
                 complete: function (jqXHR,  textStatus) {
-                    console.log("COMPLETE : " + textStatus);
+                    console.log("COMPLETE : " + textStatus + "\n");
                     if(my.messageQueue.length > 0) {
                         that.send(my.messageQueue);
                     }
