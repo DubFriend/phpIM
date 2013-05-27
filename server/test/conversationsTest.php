@@ -390,6 +390,8 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         );
     }
 
+
+
     function test_get() {
         $response = $this->Controller->respond();
         $this->assertEquals(json_encode(array("conv_id" => "mock update")), $response);
@@ -400,6 +402,22 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
             "updates" => $this->multiple_conversation_updates()
         ));
         
+        $response = $Controller->respond();
+        $this->assertEquals(
+            json_encode(array("conv_id" => "mock update", "conv_id_2" => "mock update"), true),
+            $response
+        );
+
+        $this->assertEquals($this->multiple_conversation_updates(), $this->Model->isUpdatedFig);
+    }
+
+    //fix for a subtle bug that cropped up in conversations controller (update_id's got mixed up)
+    function test_get_multiple_mixed_order() {
+        $conversations = $this->multiple_conversation_updates();
+        $Controller = $this->build_controller_override(array(
+            "updates" => array($conversations[1], $conversations[0])
+        ));
+
         $response = $Controller->respond();
         $this->assertEquals(
             json_encode(array("conv_id" => "mock update", "conv_id_2" => "mock update"), true),

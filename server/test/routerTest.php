@@ -24,9 +24,6 @@ class Factory_Mock implements Factory_Interface {
 
     function build_existing_conversations_controller(array $fig = array()) {
         $this->updates = $fig;
-        //$this->conversationId = try_array($fig, 'conversation_id');
-        //$this->lastMessageId = try_array($fig, 'last_id');
-        //$this->user = try_array($fig, 'user');
         return "existing_conversations_controller";
     }
 

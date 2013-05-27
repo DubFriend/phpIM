@@ -25,6 +25,8 @@ class New_Conversation_Model extends Model {
 }
 
 
+
+
 class New_Conversation_Controller extends Controller {
     const MIN_SIGNATURE_LENGTH = 7;
 
@@ -85,7 +87,9 @@ class Existing_Conversation_Model extends Model {
             }
             $resultsIndex += 1;
         }
+
         return $conversationsToUpdate;
+        //return $conversationsToUpdate->to_array();
     }
 
     function update_last_update_check(array $fig = array()) {
@@ -140,6 +144,7 @@ class Existing_Conversation_Controller extends Controller {
             }
             else {
                 $updateIndex = 0;
+                //TEST FOR MIXED ORDER.
                 foreach($conversationsToUpdate as $conv) {
                     $response[$conv] = $this->Model->get_updates(array(
                         "id" => $conv,
