@@ -123,12 +123,17 @@ class Existing_Conversation_Controller extends Controller {
           MAX_NUM_UPDATES = 25;
 
     private $Clock,
-            $updates;
+            $updates,
+            $updatesLookup;
 
     function __construct(array $fig = array()) {
         parent::__construct($fig);
         $this->Clock = try_array($fig, "clock", new Clock());
         $this->updates = try_array($fig, 'updates');
+
+        foreach($this->updates as $update) {
+            $this->updatesLookup[$update['id']] = $update;
+        }
     }
 
     protected function get() {
@@ -148,8 +153,10 @@ class Existing_Conversation_Controller extends Controller {
                 foreach($conversationsToUpdate as $conv) {
                     $response[$conv] = $this->Model->get_updates(array(
                         "id" => $conv,
-                        "last_id" => try_array($this->updates[$updateIndex], 'last_id'),
-                        "user" => try_array($this->updates[$updateIndex], 'user')
+                        //"last_id" => try_array($this->updates[$updateIndex], 'last_id'),
+                        //"user" => try_array($this->updates[$updateIndex], 'user')
+                        "last_id" => try_array($this->updatesLookup[$conv], 'last_id'),
+                        "user" => try_array($this->updatesLookup[$conv], 'user')
                     ))->to_array();
                     $updateIndex += 1;    
                 }

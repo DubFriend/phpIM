@@ -379,7 +379,7 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
             "server" => try_array($fig, "server", array(
                 "REQUEST_METHOD" => try_array($fig, "REQUEST_METHOD", "GET")
             )),
-            "model" => $this->Model
+            "model" => try_array($fig, "model", $this->Model)
         ));
     }
 
@@ -411,21 +411,7 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals($this->multiple_conversation_updates(), $this->Model->isUpdatedFig);
     }
 
-    //fix for a subtle bug that cropped up in conversations controller (update_id's got mixed up)
-    function test_get_multiple_mixed_order() {
-        $conversations = $this->multiple_conversation_updates();
-        $Controller = $this->build_controller_override(array(
-            "updates" => array($conversations[1], $conversations[0])
-        ));
 
-        $response = $Controller->respond();
-        $this->assertEquals(
-            json_encode(array("conv_id" => "mock update", "conv_id_2" => "mock update"), true),
-            $response
-        );
-
-        $this->assertEquals($this->multiple_conversation_updates(), $this->Model->isUpdatedFig);
-    }
 
     function test_get_updates_last_update_check() {
         $response = $this->Controller->respond();
