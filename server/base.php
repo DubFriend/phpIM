@@ -37,16 +37,17 @@ abstract class Bootstrap_Model extends Model {
                     PUBLIC_ROOT . "jquery/jquery-1.10.0.js",
                     PUBLIC_ROOT . "mustache.js",
                     PUBLIC_ROOT . "js/define.js",
-                    PUBLIC_ROOT . "js/lib.js",
-                    PUBLIC_ROOT . "js/messenger.js",
-                    PUBLIC_ROOT . "js/execute.js"
+                    PUBLIC_ROOT . "js/lib.js"
+                    //,
+                    //PUBLIC_ROOT . "js/messenger.js",
+                    //PUBLIC_ROOT . "js/execute.js"
                 );
                 break;
             case "production":
                 $js = array(
                     PUBLIC_ROOT . "jquery/jquery-1.10.0.min.js",
                     PUBLIC_ROOT . "mustache.js",
-                    PUBLIC_ROOT . "phpIM.min.js"
+                    //PUBLIC_ROOT . "phpIM.min.js"
                 );
                 break;
             default:

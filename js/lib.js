@@ -85,3 +85,41 @@ var new_base_messenger = function (fig, my) {
 
     return that;
 };
+
+
+var new_messenger_view = function () {
+    var that = {},
+        messageTemplate = '' +
+        '<h3>{{conversationId}}</h3>' +
+        '{{#messages}}' +
+        '<div class="message">' +
+            '<p>{{message}}</p>' +
+            '<p>{{id}}</p>' +
+            '<p>{{time_stamp}}</p>' +
+        '</div>' +
+        '{{/messages}}';
+
+    that.update = function (data) {
+        console.log("View Data : " + JSON.stringify(data));
+
+        var messages = data.messages,
+            conversationId;
+
+        if(messages) {
+            //TODO, handle multiple conversation areas.
+            for(conversationId in messages) {
+                if(messages[conversationId] instanceof Array) {
+                    $('#phpIM-message-area').append(Mustache.render(
+                        messageTemplate, 
+                        {
+                            "conversationId": conversationId,
+                            "messages": messages[conversationId]
+                        }
+                    ));
+                }
+            }
+        }
+    };
+
+    return that;
+};

@@ -18,6 +18,8 @@ module.exports = function(grunt) {
             },
             manager: {
                 src: [
+                    'js/define.js',
+                    'js/lib.js',
                     'js/manager/manager.js',
                     'js/manager/execute.js'
                 ],

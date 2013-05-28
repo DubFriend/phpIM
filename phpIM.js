@@ -89,7 +89,8 @@ var new_base_messenger = function (fig, my) {
 
     return that;
 };
-;
+
+
 var new_messenger_view = function () {
     var that = {},
         messageTemplate = '' +
@@ -126,9 +127,7 @@ var new_messenger_view = function () {
 
     return that;
 };
-
-
-
+;
 var new_messenger = function (fig, my) {
     fig = fig || {};
     my = my || {};

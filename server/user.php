@@ -3,8 +3,31 @@ class User_Model extends Bootstrap_Model {
     function initial_data() {
         return array(
             "chat" => $this->get_chat_box_data(),
-            "js" => $this->get_base_javascript()
+            "js" => array_merge(
+                $this->get_base_javascript(),
+                $this->get_user_javascript()
+            )
         );
+    }
+
+    private function get_user_javascript() {
+        $js = null;
+        switch(DEPLOYMENT) {
+            case "development":
+                $js = array(
+                    PUBLIC_ROOT . "js/messenger.js",
+                    PUBLIC_ROOT . "js/execute.js"
+                );
+                break;
+            case "production":
+                $js = array(
+                    PUBLIC_ROOT . "phpIM.min.js"
+                );
+                break;
+            default:
+                throw new Exception("invalid deployment type");
+        }
+        return $js;
     }
 }
 

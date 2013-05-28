@@ -26,6 +26,7 @@ class Manager_Model extends Bootstrap_Model {
                 $js = array(
                     PUBLIC_ROOT . "phpIM_manager.min.js"
                 );
+                break;
             default:
                 throw new Exception("invalid deployment type");
         }
