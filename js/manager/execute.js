@@ -1,7 +1,10 @@
 var conversationsManager = new_conversations_manager(),
-	messengerView = new_messenger_view();
+	messengerView = new_messenger_view(),
+	chatView = new_chatbox_view();
 
-conversationsManager.subscribe(messengerView);
+//conversationsManager.subscribe(messengerView);
+
+conversationsManager.subscribe(chatView);
 
 conversationsManager.connect();
 

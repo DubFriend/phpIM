@@ -44,7 +44,6 @@ class Manager_View extends Bootstrap_View {
         "<html>" .
             $this->Templator->render($this->template_head(), try_array($data, "head", array())) .
             "<body>" .
-                $this->Templator->render($this->template_chat_box(), try_array($data, "chat", array())) .
                 $this->Templator->render(
                     $this->template_conversations(),
                     try_array($data, "conversation")

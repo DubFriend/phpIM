@@ -1,4 +1,60 @@
 
+
+var new_chatbox_view = function () {
+    var that = {},
+        chatTemplate = '' +
+        "<div id='phpIM-conversation-{{conversationId}}'>" +
+            "<div class='phpIM-message-area'>" +
+            "</div>" +
+            
+            "<h3>{{conversationId}}</h3>" +
+
+            "<form class='phpIM-send-message'>" +
+                "<textarea name='message' placeholder='message'></textarea>" +
+                "<input type='submit' value='send'/>" +
+            "</form>" +
+        "</div>";
+
+
+    that.render = function (id) {
+        console.log("Chatbox View Data : " + JSON.stringify(data));
+        $('#phpIM-conversations').append(Mustache.render(
+            chatTemplate, {conversationId: id}
+        ));
+    };
+
+    that.update = function (data) {
+        console.log("Chatbox View Data : " + JSON.stringify(data));
+        var id;
+        if(data.newConversation) {
+            id = data.newConversation.id;
+            $("#phpIM-conversations").append(Mustache.render(
+                chatTemplate,
+                {
+                    "conversationId": id
+                }
+            ));
+        }
+    };
+
+    return that; 
+};
+
+var new_conversations_controller = function () {
+    var that = {};
+
+    
+
+    that.update = function (data) {
+        console.log("Chatbox Controller Data : " + JSON.stringify(data));
+        if(data.newConversation && data.newConversation.id) {
+            
+        }
+    };
+
+    return that;
+};
+
 // - get available conversations
 // - subscribe to conversation
 // - send message to a conversation
@@ -104,6 +160,13 @@ var new_conversations_manager = function (fig, my) {
     that.join_conversation = function(id) {
         var conversation = JSON.parse(JSON.stringify(availableConversations[id]));
         if(!is_conversation_joined(id) && conversation) {
+            
+            that.publish({
+                newConversation: {
+                    id: id
+                }
+            });
+
             conversation.id = id;
             joinedConversations.push(conversation);
         }

@@ -126,8 +126,7 @@ var new_messenger_view = function () {
     };
 
     return that;
-};
-;
+};;
 var new_messenger = function (fig, my) {
     fig = fig || {};
     my = my || {};
