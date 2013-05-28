@@ -35,6 +35,7 @@ abstract class Bootstrap_Model extends Model {
                 $js = array(
                     //PUBLIC_ROOT . "jquery-1.9.1.min.js",
                     PUBLIC_ROOT . "jquery/jquery-1.10.0.js",
+                    PUBLIC_ROOT . "mustache.js",
                     PUBLIC_ROOT . "js/define.js",
                     PUBLIC_ROOT . "js/lib.js",
                     PUBLIC_ROOT . "js/messenger.js",
@@ -44,6 +45,7 @@ abstract class Bootstrap_Model extends Model {
             case "production":
                 $js = array(
                     PUBLIC_ROOT . "jquery/jquery-1.10.0.min.js",
+                    PUBLIC_ROOT . "mustache.js",
                     PUBLIC_ROOT . "phpIM.min.js"
                 );
                 break;

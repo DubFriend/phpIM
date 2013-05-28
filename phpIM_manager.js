@@ -3,162 +3,6 @@
 // - subscribe to conversation
 // - send message to a conversation
 // - get updates for all subscribed conversations
-
-
-
-/*
-UPDATE RESPONSE : {"b877e19894bb1155cb3e653019ec38fef9eba398db396fca3eca9fe57af4ab660":[{"id":"171","message":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB","time_stamp":null}]}
- manager.js:26
-Update Url : /phpIM/index.php/conversations/updates/[
-    {
-        "id":"34b0f42bc0559f3a479a09dbdead8483da55e72dbc5188eb7bd706dfc407f8759",
-        "manager_id":null,
-        "username":"",
-        "last_update_check":"2013-05-26 21:54:49",
-        "last_id":"170"
-    },
-    {
-        "id":"b877e19894bb1155cb3e653019ec38fef9eba398db396fca3eca9fe57af4ab660",
-        "manager_id":null,
-        "username":"",
-        "last_update_check":"2013-05-26 21:55:18",
-        "last_id":"171"
-    },
-    {
-        "id":"315cffe78ce57f11ec7ddad0b09df5a7d165a41b0c5abc4b3c419ed9866452ba6",
-        "manager_id":null,
-        "username":"",
-        "last_update_check":"2013-05-26 21:56:44",
-        "last_id":null
-    }
-]   manager.js:20
-
-COMPLETE : success lib.js:68
-*/
-
-
-
-
-/*
-Update Url : /phpIM/index.php/conversations/updates/[
-    {
-        "id":"84930eb427aaae5fed909e7a75f3c760b91b6d8419f7fc317552d2e39c8a8703d",
-        "manager_id":null,
-        "username":"",
-        "last_update_check":"2013-05-26 22:22:11",
-        "last_id":"179"
-    },
-    {
-        "id":"0f36b480a1c6565fcf04c21fa1aca1aa1a38e939b558311b38c180eeaf555b2a3",
-        "manager_id":null,
-        "username":"",
-        "last_update_check":"2013-05-26 22:22:49",
-        "last_id":null
-    }
-] manager.js:53
-
-COMPLETE : success lib.js:68
-
-UPDATE RESPONSE : {
-    "0f36b480a1c6565fcf04c21fa1aca1aa1a38e939b558311b38c180eeaf555b2a3":[
-        {
-            "id":"180",
-            "message":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            "time_stamp":null
-        }
-    ],
-
-    //why so many messages?
-    "84930eb427aaae5fed909e7a75f3c760b91b6d8419f7fc317552d2e39c8a8703d":[
-        {
-            "id":"175",
-            "message":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-            "time_stamp":null
-        },
-        {
-            "id":"176",
-            "message":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-            "time_stamp":null
-        },
-        {
-            "id":"177",
-            "message":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-            "time_stamp":null
-        },
-        {
-            "id":"178",
-            "message":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-            "time_stamp":null
-        },
-        {
-            "id":"179",
-            "message":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-            "time_stamp":null
-        }
-    ]
-} manager.js:59
-
-
-//endless repeat here ...
-
-Update Url : /phpIM/index.php/conversations/updates/[
-    {
-        "id":"84930eb427aaae5fed909e7a75f3c760b91b6d8419f7fc317552d2e39c8a8703d",
-        "manager_id":null,
-        "username":"",
-        "last_update_check":"2013-05-26 22:22:11",
-        "last_id":"175"
-    },
-    {
-        "id":"0f36b480a1c6565fcf04c21fa1aca1aa1a38e939b558311b38c180eeaf555b2a3",
-        "manager_id":null,
-        "username":"",
-        "last_update_check":"2013-05-26 22:22:49",
-        "last_id":"180"
-    }
-] manager.js:53
-
-COMPLETE : success lib.js:68
-
-UPDATE RESPONSE : {
-    "0f36b480a1c6565fcf04c21fa1aca1aa1a38e939b558311b38c180eeaf555b2a3":[
-        {
-            "id":"180",
-            "message":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            "time_stamp":null
-        }
-    ]
-} manager.js:59
-
-Update Url : /phpIM/index.php/conversations/updates/[
-    {
-        "id":"84930eb427aaae5fed909e7a75f3c760b91b6d8419f7fc317552d2e39c8a8703d",
-        "manager_id":null,
-        "username":"",
-        "last_update_check":"2013-05-26 22:22:11",
-        "last_id":"175"
-    },
-    {
-        "id":"0f36b480a1c6565fcf04c21fa1aca1aa1a38e939b558311b38c180eeaf555b2a3",
-        "manager_id":null,
-        "username":"",
-        "last_update_check":"2013-05-26 22:22:49",
-        "last_id":"180"
-    }
-] manager.js:53
-
-COMPLETE : success lib.js:68
-
-UPDATE RESPONSE : {"0f36b480a1c6565fcf04c21fa1aca1aa1a38e939b558311b38c180eeaf555b2a3":[{"id":"180","message":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","time_stamp":null}]}
- manager.js:59
-Update Url : /phpIM/index.php/conversations/updates/[{"id":"84930eb427aaae5fed909e7a75f3c760b91b6d8419f7fc317552d2e39c8a8703d","manager_id":null,"username":"","last_update_check":"2013-05-26 22:22:11","last_id":"175"},{"id":"0f36b480a1c6565fcf04c21fa1aca1aa1a38e939b558311b38c180eeaf555b2a3","manager_id":null,"username":"","last_update_check":"2013-05-26 22:22:49","last_id":"180"}] manager.js:53
-COMPLETE : success
- lib.js:68
-UPDATE RESPONSE : {"0f36b480a1c6565fcf04c21fa1aca1aa1a38e939b558311b38c180eeaf555b2a3":[{"id":"180","message":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","time_stamp":null}]}
-
-
-*/
-
 var new_conversations_manager = function (fig, my) {
     fig = fig || {};
     my = my || {};
@@ -179,6 +23,9 @@ var new_conversations_manager = function (fig, my) {
                     type: "GET",
                     success: function (response) {
                         console.log("UPDATE RESPONSE : " + JSON.stringify(response) + "\n");
+
+                        that.publish({messages:response});
+                        
                         var r, i, conversationId, lastResponse;
                         //update last_id's on available conversations.
                         for(r in response) {
@@ -298,7 +145,10 @@ var new_conversations_manager = function (fig, my) {
 
     return that;
 };
-;var conversationsManager = new_conversations_manager();
+;var conversationsManager = new_conversations_manager(),
+	messengerView = new_messenger_view();
+
+conversationsManager.subscribe(messengerView);
 
 conversationsManager.connect();
 

@@ -12,6 +12,20 @@ var get_message_data = function () {
     
     messenger = new_messenger();
 
+    var messageView = new_messenger_view();
+    
+    messenger.subscribe(messageView);
+
+    messageView.update({ 
+        messages: {
+            "conversation_id":[{
+                id:"test_id",
+                message: "test message",
+                time_stamp: "test_time_stamp"
+            }]
+        }
+    });
+
 $(document).ready(function () {
 
     $('#phpIM-disconnect').click(function (e) {
@@ -30,5 +44,6 @@ $(document).ready(function () {
         console.log("Send Message : " + JSON.stringify(get_message_data()) + "\n");
         messenger.send_message(get_message_data());
     });
+
 
 });

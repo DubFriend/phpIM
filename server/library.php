@@ -38,9 +38,9 @@ function nested_block_string_positions($string, $open, $close) {
 //lightweight session wrapper.
 class Session {
 
-    //function __construct() {
-    //    session_start();
-    //}
+    function start() {
+        session_start();
+    }
     
     function get($key) {
         return isset($_SESSION[$key]) ? $_SESSION[$key] : null;

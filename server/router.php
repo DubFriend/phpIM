@@ -32,7 +32,6 @@ class Router {
 
     //tokenize on '/' character excepting json sections (checks for {} and [])
     private function parse_route($path) {
-        
 /*
         if(strlen($path) > 0) {
             $stack = $tokens = array();
@@ -42,18 +41,10 @@ class Router {
             $firstSquare = strpos($path, "[");
             $firstCurly = strpos($path, "{");
             
-            if($firstSquare !== false and $firstCurly !== false) {
-
-            }
-            else if($firstSquare !== false) {
-
-            }
-            else if($firstCurly !== false) {
-
-            }
-            else {
-
-            }
+            if($firstSquare !== false and $firstCurly !== false) {}
+            else if($firstSquare !== false) {}
+            else if($firstCurly !== false) {}
+            else {}
 
             return array_merge(
                 $tokens,
@@ -64,13 +55,8 @@ class Router {
             //recursion termination condition
             return array();
         }
-
-
         //parse remaining string normally
-
-
         //insert removed json sections into the array.
-
 */
         return explode("/", $path);
     }

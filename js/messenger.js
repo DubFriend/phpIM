@@ -1,9 +1,42 @@
-/*
-var new_messenger_view = function () {
-    var messageTemplate
-}
 
-*/
+var new_messenger_view = function () {
+    var that = {},
+        messageTemplate = '' +
+        '<h3>{{conversationId}}</h3>' +
+        '{{#messages}}' +
+        '<div class="message">' +
+            '<p>{{message}}</p>' +
+            '<p>{{id}}</p>' +
+            '<p>{{time_stamp}}</p>' +
+        '</div>' +
+        '{{/messages}}';
+
+    that.update = function (data) {
+        console.log("View Data : " + JSON.stringify(data));
+
+        var messages = data.messages,
+            conversationId;
+
+        if(messages) {
+            //TODO, handle multiple conversation areas.
+            for(conversationId in messages) {
+                if(messages[conversationId] instanceof Array) {
+                    $('#phpIM-message-area').append(Mustache.render(
+                        messageTemplate, 
+                        {
+                            "conversationId": conversationId,
+                            "messages": messages[conversationId]
+                        }
+                    ));
+                }
+            }
+        }
+    };
+
+    return that;
+};
+
+
 
 var new_messenger = function (fig, my) {
     fig = fig || {};
@@ -20,9 +53,12 @@ var new_messenger = function (fig, my) {
                 ajax(my.ajax_fig({
                     url: my.build_update_url([{id: conversationId, last_id: lastId}]),
                     type: "GET",
-                    dataType: "text",
+                    //dataType: "text",
                     success: function (response) {
                         console.log("Update Response : " + JSON.stringify(response) + "\n");
+
+                        that.publish({messages: response});
+
                         if(my.updateTimeoutTime > 0) {
                             setTimeout(update, my.updateTimeoutTime);
                         }

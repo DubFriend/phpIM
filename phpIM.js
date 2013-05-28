@@ -89,12 +89,45 @@ var new_base_messenger = function (fig, my) {
 
     return that;
 };
-;/*
+;
 var new_messenger_view = function () {
-    var messageTemplate
-}
+    var that = {},
+        messageTemplate = '' +
+        '<h3>{{conversationId}}</h3>' +
+        '{{#messages}}' +
+        '<div class="message">' +
+            '<p>{{message}}</p>' +
+            '<p>{{id}}</p>' +
+            '<p>{{time_stamp}}</p>' +
+        '</div>' +
+        '{{/messages}}';
 
-*/
+    that.update = function (data) {
+        console.log("View Data : " + JSON.stringify(data));
+
+        var messages = data.messages,
+            conversationId;
+
+        if(messages) {
+            //TODO, handle multiple conversation areas.
+            for(conversationId in messages) {
+                if(messages[conversationId] instanceof Array) {
+                    $('#phpIM-message-area').append(Mustache.render(
+                        messageTemplate, 
+                        {
+                            "conversationId": conversationId,
+                            "messages": messages[conversationId]
+                        }
+                    ));
+                }
+            }
+        }
+    };
+
+    return that;
+};
+
+
 
 var new_messenger = function (fig, my) {
     fig = fig || {};
@@ -111,9 +144,12 @@ var new_messenger = function (fig, my) {
                 ajax(my.ajax_fig({
                     url: my.build_update_url([{id: conversationId, last_id: lastId}]),
                     type: "GET",
-                    dataType: "text",
+                    //dataType: "text",
                     success: function (response) {
                         console.log("Update Response : " + JSON.stringify(response) + "\n");
+
+                        that.publish({messages: response});
+
                         if(my.updateTimeoutTime > 0) {
                             setTimeout(update, my.updateTimeoutTime);
                         }
@@ -201,6 +237,20 @@ var new_messenger = function (fig, my) {
     
     messenger = new_messenger();
 
+    var messageView = new_messenger_view();
+    
+    messenger.subscribe(messageView);
+
+    messageView.update({ 
+        messages: {
+            "conversation_id":[{
+                id:"test_id",
+                message: "test message",
+                time_stamp: "test_time_stamp"
+            }]
+        }
+    });
+
 $(document).ready(function () {
 
     $('#phpIM-disconnect').click(function (e) {
@@ -219,5 +269,6 @@ $(document).ready(function () {
         console.log("Send Message : " + JSON.stringify(get_message_data()) + "\n");
         messenger.send_message(get_message_data());
     });
+
 
 });
