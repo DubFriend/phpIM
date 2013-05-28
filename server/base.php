@@ -33,7 +33,8 @@ abstract class Bootstrap_Model extends Model {
         switch(DEPLOYMENT) {
             case "development":
                 $js = array(
-                    PUBLIC_ROOT . "jquery-1.9.1.min.js",
+                    //PUBLIC_ROOT . "jquery-1.9.1.min.js",
+                    PUBLIC_ROOT . "jquery/jquery-1.10.0.js",
                     PUBLIC_ROOT . "js/define.js",
                     PUBLIC_ROOT . "js/lib.js",
                     PUBLIC_ROOT . "js/messenger.js",
@@ -42,9 +43,10 @@ abstract class Bootstrap_Model extends Model {
                 break;
             case "production":
                 $js = array(
-                    PUBLIC_ROOT . "jquery-1.9.1.min.js",
+                    PUBLIC_ROOT . "jquery/jquery-1.10.0.min.js",
                     PUBLIC_ROOT . "phpIM.min.js"
                 );
+                break;
             default:
                 throw new Exception("invalid deployment type");
         }

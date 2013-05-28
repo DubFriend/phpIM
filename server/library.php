@@ -1,9 +1,46 @@
 <?php
+
+//returns the position of the start and end of a block denoted by $open and $close
+//accounts for nesting.
+//ex:  nested_block_string_positions("{{}}", "{", "}") returns array(0, 3)
+function nested_block_string_positions($string, $open, $close) {
+
+    $firstPosition = strpos($string, $open);
+    $lastPosition = null;
+    $openLength = strlen($open);
+    $closeLength = strlen($close);
+
+    if($firstPosition !== false) {
+        $counter = 1;
+        $index = $firstPosition + $openLength;
+        while($counter > 0 and $index < strlen($string)) {
+            if(substr($string, $index, $openLength) === $open) {
+                $counter += 1;
+                $index += $openLength;
+            }
+            else if(substr($string, $index, $closeLength) === $close) {
+                $lastPosition = $index;
+                $counter -= 1;
+                $index += $closeLength;
+            }
+            else {
+                $index += 1;
+            }
+        }
+
+        return array($firstPosition, $lastPosition);
+    }
+    else {
+        return false;
+    }
+}
+
+//lightweight session wrapper.
 class Session {
 
-    function __construct() {
-        session_start();
-    }
+    //function __construct() {
+    //    session_start();
+    //}
     
     function get($key) {
         return isset($_SESSION[$key]) ? $_SESSION[$key] : null;

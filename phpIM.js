@@ -1,7 +1,7 @@
 var AJAX_DATA_TYPE = "json",
     AJAX_TIMEOUT_MILLISECONDS = 60000,
     ROOT = "/phpIM/index.php/",
-    MANAGER_CHECK_JOINED_TIMEOUT = 5000;
+    MANAGER_CHECK_JOINED_TIMEOUT = 10000;
 ;if(typeof Object.prototype.create !== 'function') {
     Object.create = function (o) {
         var F = function () {};
@@ -89,7 +89,14 @@ var new_base_messenger = function (fig, my) {
 
     return that;
 };
-;var new_messenger = function (fig, my) {
+;/*
+var new_messenger_view = function () {
+    var messageTemplate
+}
+
+*/
+
+var new_messenger = function (fig, my) {
     fig = fig || {};
     my = my || {};
 

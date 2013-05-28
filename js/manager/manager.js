@@ -159,7 +159,6 @@ UPDATE RESPONSE : {"0f36b480a1c6565fcf04c21fa1aca1aa1a38e939b558311b38c180eeaf55
 
 */
 
-
 var new_conversations_manager = function (fig, my) {
     fig = fig || {};
     my = my || {};

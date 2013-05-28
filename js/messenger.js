@@ -1,3 +1,10 @@
+/*
+var new_messenger_view = function () {
+    var messageTemplate
+}
+
+*/
+
 var new_messenger = function (fig, my) {
     fig = fig || {};
     my = my || {};

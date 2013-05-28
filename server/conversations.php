@@ -89,7 +89,6 @@ class Existing_Conversation_Model extends Model {
         }
 
         return $conversationsToUpdate;
-        //return $conversationsToUpdate->to_array();
     }
 
     function update_last_update_check(array $fig = array()) {
@@ -149,12 +148,9 @@ class Existing_Conversation_Controller extends Controller {
             }
             else {
                 $updateIndex = 0;
-                //TEST FOR MIXED ORDER.
                 foreach($conversationsToUpdate as $conv) {
                     $response[$conv] = $this->Model->get_updates(array(
                         "id" => $conv,
-                        //"last_id" => try_array($this->updates[$updateIndex], 'last_id'),
-                        //"user" => try_array($this->updates[$updateIndex], 'user')
                         "last_id" => try_array($this->updatesLookup[$conv], 'last_id'),
                         "user" => try_array($this->updatesLookup[$conv], 'user')
                     ))->to_array();

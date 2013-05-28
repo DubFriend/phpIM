@@ -85,6 +85,18 @@ class Router_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(3, $this->Factory->updates['updates'][0]['id']);
     }
 
+
+/*
+    function test_backslash_not_tokenized_if_embedded_in_json() {
+        $this->assertEquals(
+            "existing_conversations_controller",
+            $this->route("conversations/updates/" . json_encode((array(array("id" => "1/2")))))
+        );
+        $this->assertEquals("1/2", $this->Factory->updates['updates'][0]['id']);
+    }
+*/
+
+
     /**
      * @expectedException Router_Exception
      * @expectedExceptionMessage invalid base level path
@@ -107,6 +119,8 @@ class Router_Test extends PHPUnit_Framework_TestCase {
             $this->route("conversations/live")
         );
     }
+
+
 
 }
 ?>

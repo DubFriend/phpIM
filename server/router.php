@@ -1,4 +1,17 @@
 <?php
+/*
+class Router_Parser {
+    
+    function parse($path) {
+        $curlyStack = $squareStack = array();
+
+
+
+        return explode("/", $path);
+    }
+}
+*/
+
 class Router_Exception extends Exception {}
 
 class Router {
@@ -10,11 +23,56 @@ class Router {
         $this->Factory = $fig['factory'];
         //lowercase and remove begginning and trailing slashes
         $this->stringPath = strtolower(substr(remove_trailing($fig['path'], '/'), 1));
-        $path = explode("/", $this->stringPath);
-        foreach($path as $key => $value) {
-            $path[$key] = $value;
-        }
+
+        $path = $this->parse_route($this->stringPath);
+
         $this->path = $path;
+    }
+
+
+    //tokenize on '/' character excepting json sections (checks for {} and [])
+    private function parse_route($path) {
+        
+/*
+        if(strlen($path) > 0) {
+            $stack = $tokens = array();
+            $lastTokenIndex = 0;
+
+            //find sections of json, remove it and store, and replace with an indexed marker
+            $firstSquare = strpos($path, "[");
+            $firstCurly = strpos($path, "{");
+            
+            if($firstSquare !== false and $firstCurly !== false) {
+
+            }
+            else if($firstSquare !== false) {
+
+            }
+            else if($firstCurly !== false) {
+
+            }
+            else {
+
+            }
+
+            return array_merge(
+                $tokens,
+                $this->parse_route(substr($path, $lastTokenIndex))
+            );
+        }
+        else {
+            //recursion termination condition
+            return array();
+        }
+
+
+        //parse remaining string normally
+
+
+        //insert removed json sections into the array.
+
+*/
+        return explode("/", $path);
     }
 
     function build_controller() {
