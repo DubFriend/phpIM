@@ -8,8 +8,8 @@ class Messages_Model extends Model {
         ) {
 
             $insertId = $this->Database->insert(
-                "Message (conversation_id, user, message) VALUES (?, ?, ?)",
-                array($fig['conversation_id'], $fig['user'], $fig['message'])
+                "Message (conversation_id, user, message, time_stamp) VALUES (?, ?, ?, ?)",
+                array($fig['conversation_id'], $fig['user'], $fig['message'], date("Y-m-d H:i:s"))
             );
             $this->Database->update(
                 "Conversation SET last_update_check = ?, last_id = ? WHERE id = ?",

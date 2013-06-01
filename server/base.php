@@ -33,21 +33,18 @@ abstract class Bootstrap_Model extends Model {
         switch(DEPLOYMENT) {
             case "development":
                 $js = array(
-                    //PUBLIC_ROOT . "jquery-1.9.1.min.js",
                     PUBLIC_ROOT . "jquery/jquery-1.10.0.js",
                     PUBLIC_ROOT . "mustache.js",
+                    PUBLIC_ROOT . "bootstrap/js/bootstrap.js",
                     PUBLIC_ROOT . "js/define.js",
                     PUBLIC_ROOT . "js/lib.js"
-                    //,
-                    //PUBLIC_ROOT . "js/messenger.js",
-                    //PUBLIC_ROOT . "js/execute.js"
                 );
                 break;
             case "production":
                 $js = array(
                     PUBLIC_ROOT . "jquery/jquery-1.10.0.min.js",
                     PUBLIC_ROOT . "mustache.js",
-                    //PUBLIC_ROOT . "phpIM.min.js"
+                    PUBLIC_ROOT . "bootstrap/js/bootstrap.min.js"
                 );
                 break;
             default:
@@ -74,6 +71,16 @@ abstract class View implements Renderable {
 }
 
 abstract class Bootstrap_View extends View {
+
+    protected function template_head() {
+        return '' .
+        '<head>' .
+            '<title>phpIM</title>' .
+            '<meta name="viewport" content="width=device-width, initial-scale=1.0">' .
+            '<link href="/phpIM/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">' .
+        '</head>';
+    }
+
     protected function template_chat_box() {
         return "" .
         "<div id='phpIM-chat-box'>" .
@@ -89,14 +96,14 @@ abstract class Bootstrap_View extends View {
             
             "<form id='phpIM-connect'>" .
                 "<input type='text' name='username' placeholder='{{connectForm.placeholder}}'/>" .
-                "<input type='submit' value='{{connectForm.buttonName}}'/>" .
+                "<input type='submit' class='btn' value='{{connectForm.buttonName}}'/>" .
             "</form>" .
             
-            "<button id='phpIM-disconnect'>{{disconnectForm.buttonName}}</button>" .
+            "<button id='phpIM-disconnect' class='btn'>{{disconnectForm.buttonName}}</button>" .
 
             "<form id='phpIM-send-message'>" .
                 "<textarea name='message' placeholder='{{sendForm.placeholder}}'></textarea>" .
-                "<input type='submit' value='{{sendForm.buttonName}}'/>" .
+                "<input type='submit' class='btn btn-primary' value='{{sendForm.buttonName}}'/>" .
             "</form>" .
         "</div>";
     }

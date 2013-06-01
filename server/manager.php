@@ -41,15 +41,18 @@ class Manager_View extends Bootstrap_View {
 
     private function render_full_page(array $data) {
         return  "" .
+        "<!DOCTYPE html>" .
         "<html>" .
             $this->Templator->render($this->template_head(), try_array($data, "head", array())) .
             "<body>" .
-                $this->Templator->render(
-                    $this->template_conversations(),
-                    try_array($data, "conversation")
-                ) .
-                "<button id='get-available-conversations'>Get Conversations</button>" .
-                $this->Templator->render($this->template_js(), array("js" => try_array($data, "js", array()))) .
+                "<div class='row-fluid'>" .
+                    $this->Templator->render(
+                        $this->template_conversations(),
+                        try_array($data, "conversation")
+                    ) .
+                    "<button id='get-available-conversations' class='btn'>Get Conversations</button>" .
+                    $this->Templator->render($this->template_js(), array("js" => try_array($data, "js", array()))) .
+                "</div>" .
             "</body>" .
         "</html>";
     }
@@ -67,15 +70,9 @@ class Manager_View extends Bootstrap_View {
                     "</button>" .
                 "</div>" .
             "{{/available}}" .
-            "<input id='conversation-id' placeholder='conversation id'/>" .
+            "<input type='text' id='conversation-id' placeholder='conversation id'/>" .
             "<button id='join-conversation'>Join Conversation</button>" .
         "</div>";
-    }
-
-    private function template_head() {
-        return "" .
-        "<head>" .
-        "</head>";
     }
 }
 

@@ -40,15 +40,13 @@ class Messages_Model_Test extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(
             array(
+                "id" => null, //sqlite doesnt do autoincrement id's?
                 "user" => 'C',
                 "message" => "test add message",
-                "conversation_id" => "conv_id"
+                "conversation_id" => "conv_id",
+                "time_stamp" => date("Y-m-d H:i:s")
             ),
-            array(
-                "user" => $row['user'],
-                "message" => $row['message'],
-                "conversation_id" => $row['conversation_id']
-            )
+            $row
         );
     }
 
