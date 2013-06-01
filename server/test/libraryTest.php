@@ -2,6 +2,8 @@
 require_once 'library.php';
 
 class Library_Test extends PHPUnit_Framework_TestCase {
+
+    
     
     function test_remove_trailing() {
         $this->assertEquals("base", remove_trailing("basestring", "string"));

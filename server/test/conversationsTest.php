@@ -179,7 +179,7 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array(),
             $this->Model->is_up_to_date(array(
-                array("id" => 'conv_id', "last_id" => 2
+                'conv_id' => array("id" => 'conv_id', "last_id" => 2
             )
         )));
     }
@@ -187,10 +187,12 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
     function test_is_up_to_date_false() {
         $this->assertEquals(
             array('conv_id'),
-            $this->Model->is_up_to_date(array(array(
-                "id" => 'conv_id',
-                "last_id" => 1
-            )))
+            $this->Model->is_up_to_date(array(
+                'conv_id' => array(
+                    "id" => 'conv_id',
+                    "last_id" => 1
+                )
+            ))
         );
     }
 
@@ -198,8 +200,8 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array("conv_id", "conv_id_2"),
             $this->Model->is_up_to_date(array(
-                array("id" => "conv_id", "last_id" => 1),
-                array("id" => "conv_id_2", "last_id" => 2)
+                'conv_id' => array("id" => "conv_id", "last_id" => 1),
+                'conv_id_2' => array("id" => "conv_id_2", "last_id" => 2)
             ))
         );
     }
@@ -207,7 +209,7 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
     function test_is_up_to_date_last_id_not_sent() {
         $this->assertEquals(
             array('conv_id'),
-            $this->Model->is_up_to_date(array(array("id" => 'conv_id')))
+            $this->Model->is_up_to_date(array('conv_id' => array("id" => 'conv_id')))
         );
     }
 
@@ -218,11 +220,11 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         );
         $this->assertEquals(
             array(),
-            $this->Model->is_up_to_date(array(array("id" => 'conv_id')))
+            $this->Model->is_up_to_date(array('conv_id' => array("id" => 'conv_id')))
         );
         $this->assertEquals(
             array(),
-            $this->Model->is_up_to_date(array(array("id" => 'conv_id', "last_id" => 1)))
+            $this->Model->is_up_to_date(array('conv_id' => array("id" => 'conv_id', "last_id" => 1)))
         );
     }
 
@@ -233,7 +235,7 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
         );
         $this->assertEquals(
             array(),
-            $this->Model->is_up_to_date(array(array("id" => 'conv_id')))
+            $this->Model->is_up_to_date(array('conv_id' => array("id" => 'conv_id')))
         );
     }
 
@@ -241,7 +243,7 @@ class Existing_Conversations_Model_Test extends PHPUnit_Framework_TestCase {
      * @expectedException Exception
      */
     function test_is_up_to_date_invalid_conversation_id() {
-        $this->Model->is_up_to_date(array(array("id" => 'wrong')));
+        $this->Model->is_up_to_date(array('wrong' => array("id" => 'wrong')));
     }
 
     function test_get_updates() {
@@ -397,6 +399,8 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(json_encode(array("conv_id" => "mock update")), $response);
     }
 
+
+
     function test_get_multiple() {
         $Controller = $this->build_controller_override(array(
             "updates" => $this->multiple_conversation_updates()
@@ -408,7 +412,12 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
             $response
         );
 
-        $this->assertEquals($this->multiple_conversation_updates(), $this->Model->isUpdatedFig);
+        $modelUpdateFig = array();
+        foreach($this->multiple_conversation_updates() as $update) {
+            $modelUpdateFig[$update['id']] = $update;
+        }
+
+        $this->assertEquals($modelUpdateFig/*$this->multiple_conversation_updates()*/, $this->Model->isUpdatedFig);
     }
 
 
@@ -430,7 +439,7 @@ class Existing_Conversation_Controller_Test extends PHPUnit_Framework_TestCase {
     function test_is_updated_sent_parameters() {
         $response = $this->Controller->respond();
         $this->assertEquals(
-            array(array(
+            array('conv_id' => array(
                 "id" => 'conv_id',
                 "last_id" => 1,
                 "user" => "M"

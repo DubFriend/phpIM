@@ -13,13 +13,29 @@ var new_chatbox_view = function () {
                 "<textarea name='message' placeholder='message'></textarea>" +
                 "<input type='submit' value='send'/>" +
             "</form>" +
-        "</div>";
+        "</div>",
+
+        messagesTemplate = '' +
+        "{{#messages}}" +
+            "<div class='phpIM-message'>" +
+                "<p>id : {{id}}</p>" +
+                "<p>message : {{message}}</p>" +
+                "<p>time stamp : {{time_stamp}}</p>" +
+            "</div>" +
+        "{{/messages}}";
 
 
-    that.render = function (id) {
-        console.log("Chatbox View Data : " + JSON.stringify(data));
+    that.render_conversation = function (id) {
+        console.log("Chatbox Id : " + JSON.stringify(id));
         $('#phpIM-conversations').append(Mustache.render(
             chatTemplate, {conversationId: id}
+        ));
+    };
+
+    that.render_messages = function (id, messages) {
+        console.log("Messages Data : id : " + id + " : messages : " + JSON.stringify(messages));
+        $('#phpIM-conversation-' + id).append(Mustache.render(
+            messagesTemplate, {messages: messages}
         ));
     };
 
@@ -27,33 +43,20 @@ var new_chatbox_view = function () {
         console.log("Chatbox View Data : " + JSON.stringify(data));
         var id;
         if(data.newConversation) {
-            id = data.newConversation.id;
-            $("#phpIM-conversations").append(Mustache.render(
-                chatTemplate,
-                {
-                    "conversationId": id
-                }
-            ));
+            that.render_conversation(data.newConversation.id);
+        }
+        if(data.messages) {
+            var conversationId;
+            for(conversationId in data.messages) {
+                that.render_messages(conversationId, data.messages[conversationId]);
+            }
         }
     };
 
     return that; 
 };
 
-var new_conversations_controller = function () {
-    var that = {};
 
-    
-
-    that.update = function (data) {
-        console.log("Chatbox Controller Data : " + JSON.stringify(data));
-        if(data.newConversation && data.newConversation.id) {
-            
-        }
-    };
-
-    return that;
-};
 
 // - get available conversations
 // - subscribe to conversation

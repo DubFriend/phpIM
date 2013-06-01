@@ -68,9 +68,11 @@ class Existing_Conversation_Model extends Model {
     }
 
     function is_up_to_date(array $fig = array()) {
+        //print_r(array_by_column($fig, 'id'));
         $Results = $this->Database->select(
             "id, last_id FROM Conversation " . $this->conversation_where_sql($fig),
-            array_by_column($fig, 'id')
+            array_keys($fig)
+            //array_by_column($fig, 'id')
         );
 
         if($Results->count() === "0") {
@@ -82,7 +84,13 @@ class Existing_Conversation_Model extends Model {
         $conversationsToUpdate = array();
         
         foreach($Results as $Update) {
-            if($Update['last_id'] > $lastIdArray[$resultsIndex]) {
+            
+            $updateRequest = try_array($fig, $Update['id']);
+            $requestLastId = $updateRequest ? try_array($updateRequest, 'last_id') : null;
+            //echo "\nUpdate last_id : " . $Update['last_id'] . "
+            //      requestLastId : " . $requestLastId . "\n";
+
+            if($Update['last_id'] > $requestLastId/*$lastIdArray[$resultsIndex]*/) {
                 $conversationsToUpdate[] = $Update['id'];
             }
             $resultsIndex += 1;
@@ -142,7 +150,7 @@ class Existing_Conversation_Controller extends Controller {
         $response = array();
         while($numUpdates < self::MAX_NUM_UPDATES) {
             $numUpdates += 1;
-            $conversationsToUpdate = $this->Model->is_up_to_date($this->updates);
+            $conversationsToUpdate = $this->Model->is_up_to_date($this->updatesLookup/*$this->updates*/);
             if(count($conversationsToUpdate) === 0) {
                 $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
             }
@@ -159,7 +167,7 @@ class Existing_Conversation_Controller extends Controller {
                 break;
             }
         }
-        $response = $response !== array() ? $response : "Update Response Timeout";
+        $response = /*$response !== array()*/count($response) > 0 ? $response : "Update Response Timeout";
         return json_encode($response);
     }
 }
