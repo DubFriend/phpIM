@@ -15,7 +15,7 @@ var get_message_data = function () {
     var messageView = new_messenger_view();
     
     messenger.subscribe(messageView);
-
+/*
     messageView.update({ 
         messages: {
             "conversation_id":[{
@@ -25,7 +25,7 @@ var get_message_data = function () {
             }]
         }
     });
-
+*/
 $(document).ready(function () {
 
     $('#phpIM-disconnect').click(function (e) {

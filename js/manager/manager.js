@@ -11,7 +11,7 @@ var new_chatbox_view = function () {
 
             "<form class='phpIM-send-message'>" +
                 "<textarea name='message' placeholder='message'></textarea>" +
-                "<input type='submit' value='send'/>" +
+                "<input type='submit' class='btn btn-primary' value='send'/>" +
             "</form>" +
         "</div>",
 
@@ -41,13 +41,14 @@ var new_chatbox_view = function () {
 
     that.update = function (data) {
         console.log("Chatbox View Data : " + JSON.stringify(data));
-        var id;
+        //var id;
         if(data.newConversation) {
             that.render_conversation(data.newConversation.id);
         }
         if(data.messages) {
             var conversationId;
             for(conversationId in data.messages) {
+                if(data.messages[conversationId] instanceof Array)
                 that.render_messages(conversationId, data.messages[conversationId]);
             }
         }

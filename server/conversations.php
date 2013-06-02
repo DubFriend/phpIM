@@ -125,20 +125,33 @@ class Existing_Conversation_Model extends Model {
 class Existing_Conversation_Controller extends Controller {
     const INITIAL_SLEEP_TIME = 1000000, //1000000 == 1 second
           UPDATE_SLEEP_TIME  = 1000000,
-          MAX_NUM_UPDATES = 25;
+          MAX_NUM_UPDATES = 23;
 
     private $Clock,
             $updates,
-            $updatesLookup;
+            $updatesLookup,
+            $numUpdates;
 
     function __construct(array $fig = array()) {
         parent::__construct($fig);
+        $this->numUpdates = 0;
         $this->Clock = try_array($fig, "clock", new Clock());
         $this->updates = try_array($fig, 'updates');
 
         foreach($this->updates as $update) {
             $this->updatesLookup[$update['id']] = $update;
         }
+    }
+
+    //using logistic function to slow down update intervals
+    //from one to 3 seconds over about 8 updates.
+    private function get_update_sleep_time() {
+        //f(x) = 2 / (1 + e^(-x + 5)) + 1
+        $denominator = 1 + pow(2.72, $this->numUpdates * -1 + 5);
+        $updateTime = (2 / $denominator) + 1;
+        $this->numUpdates += 1;
+        return intval($updateTime * 1000000);
+        //return self::UPDATE_SLEEP_TIME
     }
 
     protected function get() {
@@ -150,7 +163,7 @@ class Existing_Conversation_Controller extends Controller {
             $numUpdates += 1;
             $conversationsToUpdate = $this->Model->is_up_to_date($this->updatesLookup);
             if(count($conversationsToUpdate) === 0) {
-                $this->Clock->sleep(self::UPDATE_SLEEP_TIME);
+                $this->Clock->sleep($this->get_update_sleep_time());
             }
             else {
                 $updateIndex = 0;

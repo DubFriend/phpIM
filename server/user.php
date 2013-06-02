@@ -38,13 +38,14 @@ class User_View extends Bootstrap_View {
 
     private function render_full_page(array $data) {
         return  "" .
+        "<!DOCTYPE html>" .
         "<html>" .
             $this->Templator->render($this->template_head(), try_array($data, "head", array())) .
             "<body>" .
-                "<div class='row-fluid'><div class='span12'>" .
-                $this->Templator->render($this->template_chat_box(), try_array($data, "chat", array())) .
+                "<div class='container'>" .
+                    $this->Templator->render($this->template_chat_box(), try_array($data, "chat", array())) .
+                "</div>" .
                 $this->Templator->render($this->template_js(), array("js" => try_array($data, "js", array()))) .
-                "</div></div>" .
             "</body>" .
         "</html>";
     }

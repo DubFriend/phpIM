@@ -45,14 +45,14 @@ class Manager_View extends Bootstrap_View {
         "<html>" .
             $this->Templator->render($this->template_head(), try_array($data, "head", array())) .
             "<body>" .
-                "<div class='row-fluid'>" .
+                "<div class='container'>" .
                     $this->Templator->render(
                         $this->template_conversations(),
                         try_array($data, "conversation")
                     ) .
                     "<button id='get-available-conversations' class='btn'>Get Conversations</button>" .
-                    $this->Templator->render($this->template_js(), array("js" => try_array($data, "js", array()))) .
                 "</div>" .
+                $this->Templator->render($this->template_js(), array("js" => try_array($data, "js", array()))) .
             "</body>" .
         "</html>";
     }
@@ -65,13 +65,13 @@ class Manager_View extends Bootstrap_View {
                     "<p>ID : {{id}}</p>" .
                     "<p>User : {{user}}</p>" .
                     "<p>Last Update Check : {{last_update_check}}</p>" .
-                    "<button class='join-button' id='{{id}}'>" .
+                    "<button class='join-button btn' id='{{id}}'>" .
                         "{{join_conversation_button_name}}" .
                     "</button>" .
                 "</div>" .
             "{{/available}}" .
             "<input type='text' id='conversation-id' placeholder='conversation id'/>" .
-            "<button id='join-conversation'>Join Conversation</button>" .
+            "<button id='join-conversation' class='btn'>Join Conversation</button>" .
         "</div>";
     }
 }
