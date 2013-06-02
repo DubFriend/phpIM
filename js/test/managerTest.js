@@ -137,12 +137,12 @@
 
     test("send_message(messageData)", function () {
         manager.connect();
-        var messageData = {conversation_id: "foo", data: "bar"};
+        var messageData = {conversation_id: "foo", message: "bar"};
         manager.send_message(messageData);
         var data = ajaxData.pop();
         deepEqual(data.url, ROOT + "conversations/messages", "url set");
         deepEqual(data.type, "POST", "http method type set");
-        deepEqual(data.data, messageData, "post data is set");
+        deepEqual(data.data, {messages: [messageData]}, "post data is set");
         deepEqual(my.isMessagePending, true, "messagePending flag set to true");
         manager.disconnect();
     });

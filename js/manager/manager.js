@@ -22,39 +22,88 @@ var new_chatbox_view = function () {
                 "<p>message : {{message}}</p>" +
                 "<p>time stamp : {{time_stamp}}</p>" +
             "</div>" +
-        "{{/messages}}";
+        "{{/messages}}",
 
+        render_conversation = function (id) {
+            console.log("Chatbox Id : " + JSON.stringify(id));
+            $('#phpIM-conversations').append(Mustache.render(
+                chatTemplate, {conversationId: id}
+            ));
+        },
 
-    that.render_conversation = function (id) {
-        console.log("Chatbox Id : " + JSON.stringify(id));
-        $('#phpIM-conversations').append(Mustache.render(
-            chatTemplate, {conversationId: id}
-        ));
-    };
+        render_messages = function (id, messages) {
+            console.log("Messages Data : id : " + id + " : messages : " + JSON.stringify(messages));
+            $('#phpIM-conversation-' + id).append(Mustache.render(
+                messagesTemplate, {messages: messages}
+            ));
+        };
+/*
+        bind_conversation = function (id) {
+            console.log("Bind Conversation id : " + id);
+            $('#phpIM-conversation-' + id + " .phpIM-send-message").submit(function (e) {
 
-    that.render_messages = function (id, messages) {
-        console.log("Messages Data : id : " + id + " : messages : " + JSON.stringify(messages));
-        $('#phpIM-conversation-' + id).append(Mustache.render(
-            messagesTemplate, {messages: messages}
-        ));
-    };
-
+            });
+        };
+*/
     that.update = function (data) {
         console.log("Chatbox View Data : " + JSON.stringify(data));
         //var id;
         if(data.newConversation) {
-            that.render_conversation(data.newConversation.id);
+            render_conversation(data.newConversation.id);
+            //that.render_conversation(data.newConversation.id);
+            //$('#phpIM-conversation-' + data.newConversation.id + " .submit-button").click(function (e) {});
         }
-        if(data.messages) {
+        if(data.messages && data.messages instanceof Object) {
             var conversationId;
             for(conversationId in data.messages) {
-                if(data.messages[conversationId] instanceof Array)
-                that.render_messages(conversationId, data.messages[conversationId]);
+                if(data.messages[conversationId] instanceof Array) {
+                    render_messages(conversationId, data.messages[conversationId]);
+                    //that.render_messages(conversationId, data.messages[conversationId]);
+                }
+                else {
+                    console.log("Update Message Data : " + JSON.stringify(data.messages[conversationId]));
+                }
             }
         }
     };
 
     return that; 
+};
+
+var new_conversations_controller = function (fig) {
+    var that = {},
+        conversationsManager = fig.conversationsManager,
+        
+        //note: needs server side implentation
+        get_message_data = function (id) {
+            return {
+                conversation_id: id,
+                message: $('#phpIM-conversation-' + id + ' [name="message"]').val()
+            };
+        },
+
+        bind_conversation = function (id) {
+            console.log("Bind Conversation id : " + id);
+            //model.send_message = function (messageData) {
+            $('#phpIM-conversation-' + id + " form.phpIM-send-message").submit(function (e) {
+                conversationsManager.send_message(get_message_data(id));
+            });
+        };
+
+        that.init = function () {
+            $('#get-available-conversations').click(function () {
+                conversationsManager.get_available_conversations();
+            });
+
+            $('#join-conversation').click(function () {
+                var id = $('#conversation-id').val();
+                conversationsManager.get_available_conversations();
+                conversationsManager.join_conversation(id);
+                //bind_conversation(id);
+            });
+        };
+
+    return that;
 };
 
 
@@ -164,13 +213,7 @@ var new_conversations_manager = function (fig, my) {
     that.join_conversation = function(id) {
         var conversation = JSON.parse(JSON.stringify(availableConversations[id]));
         if(!is_conversation_joined(id) && conversation) {
-            
-            that.publish({
-                newConversation: {
-                    id: id
-                }
-            });
-
+            that.publish({ newConversation: { id: id } });
             conversation.id = id;
             joinedConversations.push(conversation);
         }
@@ -186,7 +229,7 @@ var new_conversations_manager = function (fig, my) {
                 sendMessages = my.messageQueue;
             }
             else {
-                sendMessages = messageData;
+                sendMessages = [messageData];
             }
 
             my.messageQueue = [];
@@ -196,7 +239,7 @@ var new_conversations_manager = function (fig, my) {
                 url: ROOT + "conversations/messages",
                 type: "POST",
                 //dataType: "text",
-                data: sendMessages,
+                data: {messages: sendMessages},
                 success: function (response) {
                     lastId = response.id;
                     my.isMessagePending = false;
