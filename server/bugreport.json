@@ -1,0 +1,78 @@
+//Update Url :
+/phpIM/index.php/conversations/updates/[{
+	"id":"db3c7149fe231ad27559cdbfc950d0f4d171dbc1a9ebed145d74fafa9fe9088c9"
+}]									//messenger.js:13
+
+//COMPLETE : success 				//lib.js:68
+
+//Send Message : 
+{"message":"hello"}					//execute.js:44
+
+//Send Message Data : 
+[{
+	"message":"hello", "conversation_id":"db3c7149fe231ad27559cdbfc950d0f4d171dbc1a9ebed145d74fafa9fe9088c9"
+}]									//messenger.js:71
+
+//Send Message Response : 
+{"is_success":true, "id":"348"}		//messenger.js:82
+
+//COMPLETE : success 				//lib.js:68
+
+//endless repeat...
+//Update Response : 
+{
+	"db3c7149fe231ad27559cdbfc950d0f4d171dbc1a9ebed145d74fafa9fe9088c9":[{
+		"id":"348",
+		"message":"hello",
+		"time_stamp":"2013-06-04 03:04:33"
+	}]
+}									//messenger.js:19
+
+//View Data : 
+{"messages":{
+	"db3c7149fe231ad27559cdbfc950d0f4d171dbc1a9ebed145d74fafa9fe9088c9":[{
+		"id":"348",
+		"message":"hello",
+		"time_stamp":"2013-06-04 03:04:33"
+	}]
+}}									//lib.js:103
+
+//Update Url : 
+/phpIM/index.php/conversations/updates/[{
+	"id":"db3c7149fe231ad27559cdbfc950d0f4d171dbc1a9ebed145d74fafa9fe9088c9",
+	"last_id":"348"
+}]
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//Connect Data :
+{ "username":"" } //messenger.js:42
+//Connect Response : 
+{"id":"26e8ebf34be9a8214a18e411d92168e606a58dde0a003359afabd7ae4d964d090"} //messenger.js:51
+//Update Url :
+/phpIM/index.php/conversations/updates/[{
+	"id":"26e8ebf34be9a8214a18e411d92168e606a58dde0a003359afabd7ae4d964d090"
+}] //messenger.js:13
+
+COMPLETE : success //lib.js:68
+Update Response : {"26e8ebf34be9a8214a18e411d92168e606a58dde0a003359afabd7ae4d964d090":[{"id":"350","message":"hello","time_stamp":"2013-06-05 22:02:52"}]}
+ messenger.js:19
+View Data : {"messages":{"26e8ebf34be9a8214a18e411d92168e606a58dde0a003359afabd7ae4d964d090":[{"id":"350","message":"hello","time_stamp":"2013-06-05 22:02:52"}]}} lib.js:103
+Update Url : /phpIM/index.php/conversations/updates/[{
+	"id":"26e8ebf34be9a8214a18e411d92168e606a58dde0a003359afabd7ae4d964d090"
+}]
+ messenger.js:13
+Update Response : {"26e8ebf34be9a8214a18e411d92168e606a58dde0a003359afabd7ae4d964d090":[{"id":"350","message":"hello","time_stamp":"2013-06-05 22:02:52"}]}
+ messenger.js:19
+View Data : {"messages":{"26e8ebf34be9a8214a18e411d92168e606a58dde0a003359afabd7ae4d964d090":[{"id":"350","message":"hello","time_stamp":"2013-06-05 22:02:52"}]}} lib.js:103
+Update Url : /phpIM/index.php/conversations/updates/[{"id":"26e8ebf34be9a8214a18e411d92168e606a58dde0a003359afabd7ae4d964d090"}]
+ messenger.js:13
+Update Response : {"26e8ebf34be9a8214a18e411d92168e606a58dde0a003359afabd7ae4d964d090":[{"id":"350","message":"hello","time_stamp":"2013-06-05 22:02:52"}]}

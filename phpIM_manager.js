@@ -10,6 +10,27 @@ var AJAX_DATA_TYPE = "json",
     };
 }
 
+//instanceof doesnt work in iframes.  This is apparently better.
+//http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+var is_array = function (o) {
+    return Object.prototype.toString.call(o) === '[object Array]';
+};
+
+//returns the last element from a numerical array
+var array_last = function (array) {
+    if(is_array(array)) {
+        if(array.length > 0) {
+            return array[array.length - 1];
+        }
+        else {
+            return undefined;
+        }
+    }
+    else {
+        throw "not an array";
+    }
+};
+
 //gives passed object a publishers observer pattern
 var mixin_observer_publisher = function (object) {
     var subscribers = [];
@@ -126,9 +147,8 @@ var new_messenger_view = function () {
     };
 
     return that;
-};;
-
-var new_chatbox_view = function () {
+};
+;var new_chatbox_view = function () {
     var that = {},
         chatTemplate = '' +
         "<div id='phpIM-conversation-{{conversationId}}'>" +
@@ -139,7 +159,7 @@ var new_chatbox_view = function () {
 
             "<form class='phpIM-send-message'>" +
                 "<textarea name='message' placeholder='message'></textarea>" +
-                "<input type='submit' value='send'/>" +
+                "<input type='submit' class='btn btn-primary' value='send'/>" +
             "</form>" +
         "</div>",
 
@@ -150,33 +170,36 @@ var new_chatbox_view = function () {
                 "<p>message : {{message}}</p>" +
                 "<p>time stamp : {{time_stamp}}</p>" +
             "</div>" +
-        "{{/messages}}";
+        "{{/messages}}",
 
+        render_conversation = function (id) {
+            console.log("Chatbox Id : " + JSON.stringify(id));
+            $('#phpIM-conversations').append(Mustache.render(
+                chatTemplate, {conversationId: id}
+            ));
+        },
 
-    that.render_conversation = function (id) {
-        console.log("Chatbox Id : " + JSON.stringify(id));
-        $('#phpIM-conversations').append(Mustache.render(
-            chatTemplate, {conversationId: id}
-        ));
-    };
-
-    that.render_messages = function (id, messages) {
-        console.log("Messages Data : id : " + id + " : messages : " + JSON.stringify(messages));
-        $('#phpIM-conversation-' + id).append(Mustache.render(
-            messagesTemplate, {messages: messages}
-        ));
-    };
+        render_messages = function (id, messages) {
+            console.log("Messages Data : id : " + id + " : messages : " + JSON.stringify(messages));
+            $('#phpIM-conversation-' + id).append(Mustache.render(
+                messagesTemplate, {messages: messages}
+            ));
+        };
 
     that.update = function (data) {
         console.log("Chatbox View Data : " + JSON.stringify(data));
-        var id;
         if(data.newConversation) {
-            that.render_conversation(data.newConversation.id);
+            render_conversation(data.newConversation.id);
         }
-        if(data.messages) {
+        if(data.messages && data.messages instanceof Object) {
             var conversationId;
             for(conversationId in data.messages) {
-                that.render_messages(conversationId, data.messages[conversationId]);
+                if(data.messages[conversationId] instanceof Array) {
+                    render_messages(conversationId, data.messages[conversationId]);
+                }
+                else {
+                    console.log("Update Message Data : " + JSON.stringify(data.messages[conversationId]));
+                }
             }
         }
     };
@@ -184,12 +207,43 @@ var new_chatbox_view = function () {
     return that; 
 };
 
+var new_conversations_controller = function (fig) {
+    var that = {},
+        conversationsManager = fig.conversationsManager,
+        
+        //note: needs server side implentation
+        get_message_data = function (id) {
+            return {
+                conversation_id: id,
+                message: $('#phpIM-conversation-' + id + ' [name="message"]').val()
+            };
+        },
+
+        bind_conversation = function (id) {
+            console.log("Bind Conversation id : " + id);
+            $('#phpIM-conversation-' + id + " form.phpIM-send-message").submit(function (e) {
+                e.preventDefault();
+                conversationsManager.send_message(get_message_data(id));
+            });
+        };
+
+        that.init = function () {
+            $('#get-available-conversations').click(function () {
+                conversationsManager.get_available_conversations();
+            });
+
+            $('#join-conversation').click(function () {
+                var id = $('#conversation-id').val();
+                conversationsManager.get_available_conversations();
+                conversationsManager.join_conversation(id);
+                bind_conversation(id);
+            });
+        };
+
+    return that;
+};
 
 
-// - get available conversations
-// - subscribe to conversation
-// - send message to a conversation
-// - get updates for all subscribed conversations
 var new_conversations_manager = function (fig, my) {
     fig = fig || {};
     my = my || {};
@@ -291,13 +345,7 @@ var new_conversations_manager = function (fig, my) {
     that.join_conversation = function(id) {
         var conversation = JSON.parse(JSON.stringify(availableConversations[id]));
         if(!is_conversation_joined(id) && conversation) {
-            
-            that.publish({
-                newConversation: {
-                    id: id
-                }
-            });
-
+            that.publish({ newConversation: { id: id } });
             conversation.id = id;
             joinedConversations.push(conversation);
         }
@@ -313,7 +361,7 @@ var new_conversations_manager = function (fig, my) {
                 sendMessages = my.messageQueue;
             }
             else {
-                sendMessages = messageData;
+                sendMessages = [messageData];
             }
 
             my.messageQueue = [];
@@ -323,7 +371,7 @@ var new_conversations_manager = function (fig, my) {
                 url: ROOT + "conversations/messages",
                 type: "POST",
                 //dataType: "text",
-                data: sendMessages,
+                data: {messages: sendMessages},
                 success: function (response) {
                     lastId = response.id;
                     my.isMessagePending = false;
@@ -340,23 +388,16 @@ var new_conversations_manager = function (fig, my) {
     return that;
 };
 ;var conversationsManager = new_conversations_manager(),
-	messengerView = new_messenger_view(),
-	chatView = new_chatbox_view();
-
-//conversationsManager.subscribe(messengerView);
+    messengerView = new_messenger_view(),
+    chatView = new_chatbox_view(),
+    conversationsController = new_conversations_controller({
+        conversationsManager: conversationsManager
+    });
 
 conversationsManager.subscribe(chatView);
 
 conversationsManager.connect();
 
 $(document).ready(function () {
-    $('#get-available-conversations').click(function () {
-        conversationsManager.get_available_conversations();
-    });
-
-    $('#join-conversation').click(function () {
-    	var id = $('#conversation-id').val();
-    	conversationsManager.get_available_conversations();
-    	conversationsManager.join_conversation(id);
-    });
+    conversationsController.init();
 });

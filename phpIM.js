@@ -10,6 +10,27 @@ var AJAX_DATA_TYPE = "json",
     };
 }
 
+//instanceof doesnt work in iframes.  This is apparently better.
+//http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+var is_array = function (o) {
+    return Object.prototype.toString.call(o) === '[object Array]';
+};
+
+//returns the last element from a numerical array
+var array_last = function (array) {
+    if(is_array(array)) {
+        if(array.length > 0) {
+            return array[array.length - 1];
+        }
+        else {
+            return undefined;
+        }
+    }
+    else {
+        throw "not an array";
+    }
+};
+
 //gives passed object a publishers observer pattern
 var mixin_observer_publisher = function (object) {
     var subscribers = [];
@@ -126,8 +147,8 @@ var new_messenger_view = function () {
     };
 
     return that;
-};;
-var new_messenger = function (fig, my) {
+};
+;var new_messenger = function (fig, my) {
     fig = fig || {};
     my = my || {};
 
@@ -145,8 +166,11 @@ var new_messenger = function (fig, my) {
                     //dataType: "text",
                     success: function (response) {
                         console.log("Update Response : " + JSON.stringify(response) + "\n");
-
                         that.publish({messages: response});
+
+                        if(response[conversationId]) {
+                            lastId = array_last(response[conversationId]).id;
+                        }
 
                         if(my.updateTimeoutTime > 0) {
                             setTimeout(update, my.updateTimeoutTime);
@@ -233,24 +257,14 @@ var new_messenger = function (fig, my) {
         $('#phpIM-message-area').append("<p>" + JSON.stringify(message) + "</p>");
     },
     
-    messenger = new_messenger();
+    messenger = new_messenger(),
 
-    var messageView = new_messenger_view();
+    messageView = new_messenger_view();
     
-    messenger.subscribe(messageView);
 
-    messageView.update({ 
-        messages: {
-            "conversation_id":[{
-                id:"test_id",
-                message: "test message",
-                time_stamp: "test_time_stamp"
-            }]
-        }
-    });
+messenger.subscribe(messageView);
 
 $(document).ready(function () {
-
     $('#phpIM-disconnect').click(function (e) {
         e.preventDefault();
         console.log("Disconnect\n");
@@ -267,6 +281,4 @@ $(document).ready(function () {
         console.log("Send Message : " + JSON.stringify(get_message_data()) + "\n");
         messenger.send_message(get_message_data());
     });
-
-
 });

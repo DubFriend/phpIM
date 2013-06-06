@@ -76,6 +76,36 @@ class Clock {
     }
 }
 
+class Timer {
+    private $log = array();
+
+    const START = "START@^%#", //using unusual constants to avoid name collision
+          END = "END@^%#";
+
+    //add current time to the log
+    //(note that system reserves )START and END as marker names)
+    function mark($marker = null) {
+        $time = microtime(true);
+        $this->log[] = array(
+            "time" => $time,
+            "marker" => $marker
+        );
+        return $time;
+    }
+
+    function start() {
+        return $this->mark(self::START);
+    }
+
+    function stop() {
+        return $this->mark(self::END);
+    }
+
+    //return results of log, running totals, etc.
+    function data() {}
+    //return formatted string. (html, plain)
+    function display($format = "plain") {}
+}
 
 function try_array(array $array, $key, $default = null) {
     return array_key_exists($key, $array) ? $array[$key] : $default;
@@ -96,8 +126,6 @@ function array_by_column($array, $columnName) {
     }
     return $column;
 }
-
-
 
 function debug($message) {
     if(IS_DEBUG_MESSAGES_ON) {

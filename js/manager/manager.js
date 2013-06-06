@@ -1,5 +1,3 @@
-
-
 var new_chatbox_view = function () {
     var that = {},
         chatTemplate = '' +
@@ -37,28 +35,17 @@ var new_chatbox_view = function () {
                 messagesTemplate, {messages: messages}
             ));
         };
-/*
-        bind_conversation = function (id) {
-            console.log("Bind Conversation id : " + id);
-            $('#phpIM-conversation-' + id + " .phpIM-send-message").submit(function (e) {
 
-            });
-        };
-*/
     that.update = function (data) {
         console.log("Chatbox View Data : " + JSON.stringify(data));
-        //var id;
         if(data.newConversation) {
             render_conversation(data.newConversation.id);
-            //that.render_conversation(data.newConversation.id);
-            //$('#phpIM-conversation-' + data.newConversation.id + " .submit-button").click(function (e) {});
         }
         if(data.messages && data.messages instanceof Object) {
             var conversationId;
             for(conversationId in data.messages) {
                 if(data.messages[conversationId] instanceof Array) {
                     render_messages(conversationId, data.messages[conversationId]);
-                    //that.render_messages(conversationId, data.messages[conversationId]);
                 }
                 else {
                     console.log("Update Message Data : " + JSON.stringify(data.messages[conversationId]));
@@ -84,8 +71,8 @@ var new_conversations_controller = function (fig) {
 
         bind_conversation = function (id) {
             console.log("Bind Conversation id : " + id);
-            //model.send_message = function (messageData) {
             $('#phpIM-conversation-' + id + " form.phpIM-send-message").submit(function (e) {
+                e.preventDefault();
                 conversationsManager.send_message(get_message_data(id));
             });
         };
@@ -99,7 +86,7 @@ var new_conversations_controller = function (fig) {
                 var id = $('#conversation-id').val();
                 conversationsManager.get_available_conversations();
                 conversationsManager.join_conversation(id);
-                //bind_conversation(id);
+                bind_conversation(id);
             });
         };
 
@@ -107,11 +94,6 @@ var new_conversations_controller = function (fig) {
 };
 
 
-
-// - get available conversations
-// - subscribe to conversation
-// - send message to a conversation
-// - get updates for all subscribed conversations
 var new_conversations_manager = function (fig, my) {
     fig = fig || {};
     my = my || {};

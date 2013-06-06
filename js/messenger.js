@@ -1,4 +1,3 @@
-
 var new_messenger = function (fig, my) {
     fig = fig || {};
     my = my || {};
@@ -17,8 +16,11 @@ var new_messenger = function (fig, my) {
                     //dataType: "text",
                     success: function (response) {
                         console.log("Update Response : " + JSON.stringify(response) + "\n");
-
                         that.publish({messages: response});
+
+                        if(response[conversationId]) {
+                            lastId = array_last(response[conversationId]).id;
+                        }
 
                         if(my.updateTimeoutTime > 0) {
                             setTimeout(update, my.updateTimeoutTime);

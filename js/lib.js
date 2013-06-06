@@ -6,6 +6,27 @@ if(typeof Object.prototype.create !== 'function') {
     };
 }
 
+//instanceof doesnt work in iframes.  This is apparently better.
+//http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+var is_array = function (o) {
+    return Object.prototype.toString.call(o) === '[object Array]';
+};
+
+//returns the last element from a numerical array
+var array_last = function (array) {
+    if(is_array(array)) {
+        if(array.length > 0) {
+            return array[array.length - 1];
+        }
+        else {
+            return undefined;
+        }
+    }
+    else {
+        throw "not an array";
+    }
+};
+
 //gives passed object a publishers observer pattern
 var mixin_observer_publisher = function (object) {
     var subscribers = [];
