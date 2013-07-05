@@ -260,8 +260,16 @@ var new_conversations_controller = function (fig) {
         };
 
         that.init = function () {
-            $('#get-available-conversations').click(function () {
+            $('#get-available-conversations').click(function (e) {
+                e.preventDefault();
                 conversationsManager.get_available_conversations();
+            });
+
+            $('#phpIM-start-conversation').click(function (e) {
+                e.preventDefault();
+                conversationsManager.start_conversation(
+                    { username: $('#phpIM-username').val() }
+                );
             });
             /*
             $('#join-conversation').click(function () {
@@ -391,6 +399,42 @@ var new_conversations_manager = function (fig, my) {
         }));
     };
 
+    that.start_conversation = function (connectData) {
+        ajax(my.ajax_fig({
+            url: ROOT + "conversations",
+            type: "POST",
+            data: connectData,
+            success: function (response) {
+                console.log("Connect Response : " + JSON.stringify(response) + "\n");
+                that.get_available_conversations();
+                //that.join_conversation(response.id);
+            }
+        }));
+    };
+
+/*
+    that.connect = function (connectData) {
+        console.log("Connect Data : " + JSON.stringify(connectData) + "\n");
+        if(!my.isConnected) {
+            my.isConnected = true;
+            ajax(my.ajax_fig({
+                url: ROOT + "conversations",
+                type: "POST",
+                data: connectData,
+                //dataType: "text",
+                success: function (response) {
+                    console.log("Connect Response : " + JSON.stringify(response) + "\n");
+                    conversationId = response.id;
+                    update();
+                }
+            }));
+        }
+    };
+
+    that.disconnect = function () {
+        my.isConnected = false;
+    };
+*/
     that.join_conversation = function(id) {
         var conversation = JSON.parse(JSON.stringify(availableConversations[id]));
         if(!is_conversation_joined(id) && conversation) {

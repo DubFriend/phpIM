@@ -51,6 +51,10 @@ class Manager_View extends Bootstrap_View {
                         try_array($data, "conversation")
                     ) .
                     "<button id='get-available-conversations' class='btn'>Get Conversations</button>" .
+                    "<input type='text' id='phpIM-username' placeholder='username'/>" .
+                    "<button id='phpIM-start-conversation' class='btn'>" .
+                        "Start Conversation" .
+                    "</button>" .
                 "</div>" .
                 $this->Templator->render($this->template_js(), array("js" => try_array($data, "js", array()))) .
             "</body>" .
