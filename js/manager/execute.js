@@ -6,6 +6,7 @@ var conversationsManager = new_conversations_manager(),
     });
 
 conversationsManager.subscribe(chatView);
+conversationsManager.subscribe(conversationsController);
 
 conversationsManager.connect();
 

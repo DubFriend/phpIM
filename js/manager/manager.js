@@ -28,6 +28,9 @@ var new_chatbox_view = function () {
                 '<p>id : {{id}}</p>' +
                 '<p>username : {{username}}</p>' +
                 '<p>last_update_check : {{last_update_check}}</p>' +
+                '<button id="phpIM-join-{{id}}" class="btn btn-small btn-info">' +
+                    'Join' +
+                '</button>' +
             '</div>' +
         '{{/available}}';
 
@@ -100,13 +103,29 @@ var new_conversations_controller = function (fig) {
             $('#get-available-conversations').click(function () {
                 conversationsManager.get_available_conversations();
             });
-
+            /*
             $('#join-conversation').click(function () {
                 var id = $('#conversation-id').val();
                 conversationsManager.get_available_conversations();
                 conversationsManager.join_conversation(id);
                 bind_conversation(id);
             });
+            */
+        };
+
+        that.update = function (data) {
+            if(data.availableConversations) {
+                var i, available = object_values(data.availableConversations);
+                for(i = 0; i < available.length; i += 1) {
+                    (function (i) {
+                        var id = available[i].id;
+                        $('#phpIM-join-' + id).click(function () {
+                            conversationsManager.join_conversation(id);
+                            bind_conversation(id);
+                        });
+                    }(i));
+                }
+            }
         };
 
     return that;

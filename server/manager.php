@@ -60,6 +60,7 @@ class Manager_View extends Bootstrap_View {
     private function template_conversations() {
         return "" .
         "<div id='phpIM-conversations'>" .
+            /*
             "{{#available}}" .
                 "<div class='available-conversation'>" .
                     "<p>ID : {{id}}</p>" .
@@ -70,14 +71,15 @@ class Manager_View extends Bootstrap_View {
                     "</button>" .
                 "</div>" .
             "{{/available}}" .
-
+            */
 
             "<h3>Available Conversations</h3>" .
             "<div id='phpIM-available'></div>" .
 
-
+            /*
             "<input type='text' id='conversation-id' placeholder='conversation id'/>" .
             "<button id='join-conversation' class='btn'>Join Conversation</button>" .
+            */
         "</div>";
     }
 }
