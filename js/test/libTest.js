@@ -17,4 +17,12 @@
         }, "not an array", "throws exception if not passed an array");
     });
 
+    test("object_values", function () {
+        deepEqual(
+            object_values({ a:1, b: { foo: "bar" } }),
+            [1, {foo: "bar"}],
+            "returns an array of the objects values"
+        );
+    });
+
 }());

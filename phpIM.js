@@ -31,6 +31,16 @@ var array_last = function (array) {
     }
 };
 
+var object_values = function (o) {
+    var values = [], prop;
+    for (prop in o) {
+        if(o.hasOwnProperty(prop)){
+            values.push(o[prop]);
+        }
+    }
+    return values;
+};
+
 //gives passed object a publishers observer pattern
 var mixin_observer_publisher = function (object) {
     var subscribers = [];
@@ -64,7 +74,7 @@ var mixin_observer_publisher = function (object) {
 //base for messenger and manager classes.
 var new_base_messenger = function (fig, my) {
     var that = {};
-    
+
     my.isConnected = false;
     my.messageQueue = [];
     my.isMessagePending = false;
@@ -135,7 +145,7 @@ var new_messenger_view = function () {
             for(conversationId in messages) {
                 if(messages[conversationId] instanceof Array) {
                     $('#phpIM-message-area').append(Mustache.render(
-                        messageTemplate, 
+                        messageTemplate,
                         {
                             "conversationId": conversationId,
                             "messages": messages[conversationId]

@@ -31,6 +31,16 @@ var array_last = function (array) {
     }
 };
 
+var object_values = function (o) {
+    var values = [], prop;
+    for (prop in o) {
+        if(o.hasOwnProperty(prop)){
+            values.push(o[prop]);
+        }
+    }
+    return values;
+};
+
 //gives passed object a publishers observer pattern
 var mixin_observer_publisher = function (object) {
     var subscribers = [];
@@ -64,7 +74,7 @@ var mixin_observer_publisher = function (object) {
 //base for messenger and manager classes.
 var new_base_messenger = function (fig, my) {
     var that = {};
-    
+
     my.isConnected = false;
     my.messageQueue = [];
     my.isMessagePending = false;
@@ -135,7 +145,7 @@ var new_messenger_view = function () {
             for(conversationId in messages) {
                 if(messages[conversationId] instanceof Array) {
                     $('#phpIM-message-area').append(Mustache.render(
-                        messageTemplate, 
+                        messageTemplate,
                         {
                             "conversationId": conversationId,
                             "messages": messages[conversationId]
@@ -154,7 +164,7 @@ var new_messenger_view = function () {
         "<div id='phpIM-conversation-{{conversationId}}'>" +
             "<div class='phpIM-message-area'>" +
             "</div>" +
-            
+
             "<h3>{{conversationId}}</h3>" +
 
             "<form class='phpIM-send-message'>" +
@@ -172,6 +182,15 @@ var new_messenger_view = function () {
             "</div>" +
         "{{/messages}}",
 
+        availableTemplate = '' +
+        '{{#available}}' +
+            '<div class="phpIM-available">' +
+                '<p>id : {{id}}</p>' +
+                '<p>username : {{username}}</p>' +
+                '<p>last_update_check : {{last_update_check}}</p>' +
+            '</div>' +
+        '{{/available}}';
+
         render_conversation = function (id) {
             console.log("Chatbox Id : " + JSON.stringify(id));
             $('#phpIM-conversations').append(Mustache.render(
@@ -183,6 +202,13 @@ var new_messenger_view = function () {
             console.log("Messages Data : id : " + id + " : messages : " + JSON.stringify(messages));
             $('#phpIM-conversation-' + id).append(Mustache.render(
                 messagesTemplate, {messages: messages}
+            ));
+        };
+
+        render_available = function (conversations) {
+            console.log("Available Data : " + JSON.stringify(conversations));
+            $('#phpIM-available').html(Mustache.render(
+                availableTemplate, {available: conversations}
             ));
         };
 
@@ -202,15 +228,18 @@ var new_messenger_view = function () {
                 }
             }
         }
+        if(data.availableConversations) {
+            render_available(object_values(data.availableConversations));
+        }
     };
 
-    return that; 
+    return that;
 };
 
 var new_conversations_controller = function (fig) {
     var that = {},
         conversationsManager = fig.conversationsManager,
-        
+
         //note: needs server side implentation
         get_message_data = function (id) {
             return {
@@ -266,7 +295,7 @@ var new_conversations_manager = function (fig, my) {
                         console.log("UPDATE RESPONSE : " + JSON.stringify(response) + "\n");
 
                         that.publish({messages:response});
-                        
+
                         var r, i, conversationId, lastResponse;
                         //update last_id's on available conversations.
                         for(r in response) {
@@ -275,7 +304,7 @@ var new_conversations_manager = function (fig, my) {
                                 availableConversations[r].last_id = lastResponse.id;//response[r][0].id;
                             }
                         }
-                        
+
                         //copy updated last_id's from availableConversations to joinedConversations
                         //for(i = 0; i < joinedConversations.length; i += 1) {
                         //iterate backwords to avoid reindexing issue with Array.splice()
@@ -337,6 +366,7 @@ var new_conversations_manager = function (fig, my) {
                 for(i = 0; i < response.length; i += 1) {
                     availableConversations[response[i].id] = response[i];
                 }
+                that.publish({ availableConversations: availableConversations });
                 console.log("Available Conversations : " + JSON.stringify(availableConversations) + "\n");
             }
         }));
@@ -366,7 +396,7 @@ var new_conversations_manager = function (fig, my) {
 
             my.messageQueue = [];
             my.isMessagePending = true;
-            
+
             ajax(my.ajax_fig({
                 url: ROOT + "conversations/messages",
                 type: "POST",
