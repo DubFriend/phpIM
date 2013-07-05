@@ -1,16 +1,4 @@
 <?php
-/*
-class Router_Parser {
-    
-    function parse($path) {
-        $curlyStack = $squareStack = array();
-
-
-
-        return explode("/", $path);
-    }
-}
-*/
 
 class Router_Exception extends Exception {}
 
@@ -22,42 +10,17 @@ class Router {
     function __construct(array $fig = array()) {
         $this->Factory = $fig['factory'];
         //lowercase and remove begginning and trailing slashes
-        $this->stringPath = strtolower(substr(remove_trailing($fig['path'], '/'), 1));
+        $this->stringPath = strtolower(
+            substr(remove_trailing($fig['path'], '/'), 1)
+        );
 
         $path = $this->parse_route($this->stringPath);
 
         $this->path = $path;
     }
 
-
     //tokenize on '/' character excepting json sections (checks for {} and [])
     private function parse_route($path) {
-/*
-        if(strlen($path) > 0) {
-            $stack = $tokens = array();
-            $lastTokenIndex = 0;
-
-            //find sections of json, remove it and store, and replace with an indexed marker
-            $firstSquare = strpos($path, "[");
-            $firstCurly = strpos($path, "{");
-            
-            if($firstSquare !== false and $firstCurly !== false) {}
-            else if($firstSquare !== false) {}
-            else if($firstCurly !== false) {}
-            else {}
-
-            return array_merge(
-                $tokens,
-                $this->parse_route(substr($path, $lastTokenIndex))
-            );
-        }
-        else {
-            //recursion termination condition
-            return array();
-        }
-        //parse remaining string normally
-        //insert removed json sections into the array.
-*/
         return explode("/", $path);
     }
 
@@ -75,7 +38,7 @@ class Router {
                 $Controller = $this->follow_conversations_path();
                 break;
             default:
-                throw new Router_Exception("invalid base level path");	
+                throw new Router_Exception("invalid base level path");
         }
         return $Controller;
     }
@@ -96,21 +59,17 @@ class Router {
                 $Controller = $this->Factory->build_messages_controller();
                 break;
             default:
-                throw new Router_Exception("invalid conversations path : " . print_r($this->path, true));
+                throw new Router_Exception(
+                    "invalid conversations path : " . print_r($this->path, true)
+                );
         }
         return $Controller;
     }
-   
+
     private function follow_conversations_updates_path() {
         $updates = json_decode(try_array($this->path, 2), true);
-        //multi update needs to be handled for manager
-        //$updates = $updates[0];
-
         return $this->Factory->build_existing_conversations_controller(array(
             "updates" => $updates
-            //"conversation_id" => try_array($updates, 'id'),
-            //"last_id" => try_array($updates, 'last_id'),
-            //"user" => try_array($updates, 'user')
         ));
     }
 }
