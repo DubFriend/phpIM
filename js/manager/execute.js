@@ -7,7 +7,7 @@ var conversationsManager = new_conversations_manager(),
 
 conversationsManager.subscribe(chatView);
 conversationsManager.subscribe(conversationsController);
-
+conversationsController.subscribe(chatView);
 conversationsManager.connect();
 
 $(document).ready(function () {

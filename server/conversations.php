@@ -78,16 +78,16 @@ class Existing_Conversation_Model extends Model {
         if($Results->count() === "0") {
             throw new Exception("Invalid conversation_id");
         }
-        
+
         $lastIdArray = array_by_column($fig, 'last_id');
         $resultsIndex = 0;
         $conversationsToUpdate = array();
-        
+
         foreach($Results as $Update) {
-            
+
             $updateRequest = try_array($fig, $Update['id']);
             $requestLastId = $updateRequest ? try_array($updateRequest, 'last_id') : null;
-            
+
             if($Update['last_id'] > $requestLastId) {
                 $conversationsToUpdate[] = $Update['id'];
             }
@@ -106,7 +106,7 @@ class Existing_Conversation_Model extends Model {
     }
 
     function get_updates(array $fig = array()) {
-        $sql = "id, message, time_stamp FROM Message WHERE conversation_id = ?";
+        $sql = "id, message, username, time_stamp FROM Message WHERE conversation_id = ?";
         $values = array($fig['id']);
         if(isset($fig['last_id'])) {
             $sql .= " AND id > ?";
@@ -173,7 +173,7 @@ class Existing_Conversation_Controller extends Controller {
                         "last_id" => try_array($this->updatesLookup[$conv], 'last_id'),
                         "user" => try_array($this->updatesLookup[$conv], 'user')
                     ))->to_array();
-                    $updateIndex += 1;    
+                    $updateIndex += 1;
                 }
                 break;
             }
@@ -201,7 +201,7 @@ class Conversations_Model extends Model {
         $updateSleepTime = Existing_Conversation_Controller::UPDATE_SLEEP_TIME / 1000000;
         $maxNumUpdates = Existing_Conversation_Controller::MAX_NUM_UPDATES;
 
-        $this->maxLiveAge = $initialSleepTime + 
+        $this->maxLiveAge = $initialSleepTime +
                            ($updateSleepTime * $maxNumUpdates) +
                             self::MAX_LIVE_AGE_TIME_BUFFER;
     }

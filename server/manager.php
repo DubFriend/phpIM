@@ -49,8 +49,13 @@ class Manager_View extends Bootstrap_View {
                     "<div class='row-fluid'>" .
 
                         "<div class='span6'>" .
-                            "<div id='phpIM-new-conversation' class='form-inline'>" .
+                            "<div class='form-inline'>" .
                                 "<input type='text' id='phpIM-username' placeholder='username'/>" .
+                                "<button id='phpIM-set-username' class='btn'>Change Username</button>" .
+                            "</div>" .
+
+                            "<div id='phpIM-new-conversation' class='form-inline'>" .
+                                "<label><b>Username : </b><span id='username-label'></span></label>" .
                                 "<button id='phpIM-start-conversation' class='btn'>Start Conversation</button>" .
                             "</div>" .
                             "<div id='phpIM-conversations'></div>" .

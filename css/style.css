@@ -1,13 +1,16 @@
 .container {
     padding: 1em;
 }
-
-#phpIM-start-conversation {
-    margin-left: 0.5em;
+#phpIM-new-conversation label {
+    width: 227px;
 }
 
-#phpIM-new-conversation {
+.form-inline {
     margin: 1em 0 1em 0;
+}
+
+#phpIM-set-username {
+    margin-left: 0.5em;
 }
 
 .phpIM-message-area {

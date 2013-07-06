@@ -2,9 +2,10 @@ USE phpIM;
 
 CREATE TABLE IF NOT EXISTS Message (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user CHAR(1),
-    message VARCHAR(4096),
+    #user CHAR(1),
     conversation_id CHAR(65),
+    username VARCHAR(32),
+    message VARCHAR(4096),
     time_stamp DATETIME,
     INDEX(conversation_id),
     INDEX(time_stamp)

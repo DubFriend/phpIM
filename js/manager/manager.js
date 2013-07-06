@@ -25,7 +25,9 @@ var new_chatbox_view = function () {
         messagesTemplate = '' +
         "{{#messages}}" +
             "<div class='phpIM-message'>" +
-                "<p class='message'>{{message}}" +
+                "<p class='message'>" +
+                    "<b>{{username}} </b>" +
+                    "{{message}}" +
                     "<span class='time-stamp'>{{time_stamp}}</span>" +
                 "</p>" +
             "</div>" +
@@ -45,9 +47,9 @@ var new_chatbox_view = function () {
 
         render_conversation = function (data) {
             console.log("Chatbox Id : " + JSON.stringify(data));
-            $('#phpIM-conversations').append(Mustache.render(
-                chatTemplate, data//{conversationId: id}
-            ));
+            $('#phpIM-conversations').append(
+                Mustache.render(chatTemplate, data)
+            );
         },
 
         render_messages = function (id, messages) {
@@ -57,8 +59,6 @@ var new_chatbox_view = function () {
                 messagesTemplate, {messages: messages}
             ));
             $messageBox.scrollTop($messageBox.prop('scrollHeight'));
-
-            // OR $('#test')[0].scrollHeight
         };
 
         render_available = function (conversations) {
@@ -71,9 +71,9 @@ var new_chatbox_view = function () {
     that.update = function (data) {
         console.log("Chatbox View Data : " + JSON.stringify(data));
         if(data.newConversation) {
-            //render_conversation(data.newConversation.id);
             render_conversation(data.newConversation);
         }
+
         if(data.messages && data.messages instanceof Object) {
             var conversationId;
             for(conversationId in data.messages) {
@@ -85,8 +85,13 @@ var new_chatbox_view = function () {
                 }
             }
         }
+
         if(data.availableConversations) {
             render_available(object_values(data.availableConversations));
+        }
+
+        if(data.username) {
+            $('#username-label').html(data.username);
         }
     };
 
@@ -94,14 +99,16 @@ var new_chatbox_view = function () {
 };
 
 var new_conversations_controller = function (fig) {
-    var that = {},
+    var that = mixin_observer_publisher({}),
         conversationsManager = fig.conversationsManager,
+        username,
 
         //note: needs server side implentation
         get_message_data = function (id) {
             return {
                 conversation_id: id,
-                message: $('#phpIM-conversation-' + id + ' [name="message"]').val()
+                message: $('#phpIM-conversation-' + id + ' [name="message"]').val(),
+                username: username
             };
         },
 
@@ -119,11 +126,20 @@ var new_conversations_controller = function (fig) {
                 conversationsManager.get_available_conversations();
             });
 
+            $('#phpIM-set-username').click(function (e) {
+                e.preventDefault();
+                username = $('#phpIM-username').val();
+                that.publish({username: username});
+            });
+
             $('#phpIM-start-conversation').click(function (e) {
                 e.preventDefault();
-                conversationsManager.start_conversation(
-                    { username: $('#phpIM-username').val() }
-                );
+                if(username) {
+                    conversationsManager.start_conversation({ username: username });
+                }
+                else {
+                    alert("you must set your username.");
+                }
             });
         };
 
@@ -134,7 +150,12 @@ var new_conversations_controller = function (fig) {
                     (function (i) {
                         var id = available[i].id;
                         $('#phpIM-join-' + id).click(function () {
-                            conversationsManager.join_conversation(id);
+                            if(username) {
+                                conversationsManager.join_conversation(id);
+                            }
+                            else {
+                                alert("you must set your username.");
+                            }
                             bind_conversation(id);
                         });
                     }(i));
@@ -173,13 +194,12 @@ var new_conversations_manager = function (fig, my) {
                         //update last_id's on available conversations.
                         for(r in response) {
                             lastResponse = response[r][response[r].length - 1];
-                            if(availableConversations[r] && lastResponse/*response[r][0]*/) {
-                                availableConversations[r].last_id = lastResponse.id;//response[r][0].id;
+                            if(availableConversations[r] && lastResponse) {
+                                availableConversations[r].last_id = lastResponse.id;
                             }
                         }
 
                         //copy updated last_id's from availableConversations to joinedConversations
-                        //for(i = 0; i < joinedConversations.length; i += 1) {
                         //iterate backwords to avoid reindexing issue with Array.splice()
                         for(i = joinedConversations.length - 1; i >= 0; i -= 1) {
                             conversationId = joinedConversations[i].id;
@@ -285,8 +305,8 @@ var new_conversations_manager = function (fig, my) {
             ajax(my.ajax_fig({
                 url: ROOT + "conversations/messages",
                 type: "POST",
-                //dataType: "text",
                 data: {messages: sendMessages},
+                //dataType: "text",
                 success: function (response) {
                     lastId = response.id;
                     my.isMessagePending = false;
