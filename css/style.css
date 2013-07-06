@@ -1,0 +1,26 @@
+.container {
+    padding: 1em;
+}
+
+#phpIM-start-conversation {
+    margin-left: 0.5em;
+}
+
+#phpIM-new-conversation {
+    margin: 1em 0 1em 0;
+}
+
+.phpIM-message-area {
+    height: 10em;
+    overflow-y: scroll;
+}
+
+.phpIM-send-message textarea {
+    width: 97%;
+}
+
+.time-stamp {
+    float: right;
+    color: grey;
+    font-size: 80%;
+}

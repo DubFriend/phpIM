@@ -46,46 +46,29 @@ class Manager_View extends Bootstrap_View {
             $this->Templator->render($this->template_head(), try_array($data, "head", array())) .
             "<body>" .
                 "<div class='container'>" .
-                    $this->Templator->render(
-                        $this->template_conversations(),
-                        try_array($data, "conversation")
-                    ) .
-                    "<button id='get-available-conversations' class='btn'>Get Conversations</button>" .
-                    "<input type='text' id='phpIM-username' placeholder='username'/>" .
-                    "<button id='phpIM-start-conversation' class='btn'>" .
-                        "Start Conversation" .
-                    "</button>" .
+                    "<div class='row-fluid'>" .
+
+                        "<div class='span6'>" .
+                            "<div id='phpIM-new-conversation' class='form-inline'>" .
+                                "<input type='text' id='phpIM-username' placeholder='username'/>" .
+                                "<button id='phpIM-start-conversation' class='btn'>Start Conversation</button>" .
+                            "</div>" .
+                            "<div id='phpIM-conversations'></div>" .
+                        "</div>" .
+
+                        "<div class='span6'>" .
+                            "<h3>Available Conversations</h3>" .
+                            "<button id='get-available-conversations' class='btn'>Get Conversations</button>" .
+                            "<div id='phpIM-available'></div>" .
+                        "</div>" .
+
+                    "</div>" .
                 "</div>" .
                 $this->Templator->render($this->template_js(), array("js" => try_array($data, "js", array()))) .
             "</body>" .
         "</html>";
     }
 
-    private function template_conversations() {
-        return "" .
-        "<div id='phpIM-conversations'>" .
-            /*
-            "{{#available}}" .
-                "<div class='available-conversation'>" .
-                    "<p>ID : {{id}}</p>" .
-                    "<p>User : {{user}}</p>" .
-                    "<p>Last Update Check : {{last_update_check}}</p>" .
-                    "<button class='join-button btn' id='{{id}}'>" .
-                        "{{join_conversation_button_name}}" .
-                    "</button>" .
-                "</div>" .
-            "{{/available}}" .
-            */
-
-            "<h3>Available Conversations</h3>" .
-            "<div id='phpIM-available'></div>" .
-
-            /*
-            "<input type='text' id='conversation-id' placeholder='conversation id'/>" .
-            "<button id='join-conversation' class='btn'>Join Conversation</button>" .
-            */
-        "</div>";
-    }
 }
 
 class Manager_Controller extends Controller {

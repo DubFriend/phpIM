@@ -78,6 +78,7 @@ abstract class Bootstrap_View extends View {
             '<title>phpIM</title>' .
             '<meta name="viewport" content="width=device-width, initial-scale=1.0">' .
             '<link href="/phpIM/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">' .
+            '<link href="/phpIM/css/style.css" rel="stylesheet" media="screen">' .
         '</head>';
     }
 
@@ -93,12 +94,12 @@ abstract class Bootstrap_View extends View {
                     "</div>" .
                 "{{/messages}}" .
             "</div>" .
-            
+
             "<form id='phpIM-connect'>" .
                 "<input type='text' name='username' placeholder='{{connectForm.placeholder}}'/>" .
                 "<input type='submit' class='btn' value='{{connectForm.buttonName}}'/>" .
             "</form>" .
-            
+
             "<button id='phpIM-disconnect' class='btn'>{{disconnectForm.buttonName}}</button>" .
 
             "<form id='phpIM-send-message'>" .
@@ -120,7 +121,7 @@ abstract class Controller {
         $this->Model = try_array($fig, 'model');
         $this->View = try_array($fig, 'view');
     }
-    
+
     private function default_unimplemented_response($type) {
         throw new Exception("implement me");
     }
@@ -144,25 +145,25 @@ abstract class Controller {
         $method = $this->server['REQUEST_METHOD'];
         switch ($method) {
             case 'GET':
-                $response = $this->get();  
+                $response = $this->get();
                 break;
             case 'PUT':
-                $response = $this->put();  
+                $response = $this->put();
                 break;
             case 'POST':
-                $response = $this->post();  
+                $response = $this->post();
                 break;
             case 'DELETE':
-                $response = $this->delete();  
+                $response = $this->delete();
                 break;
             case 'HEAD':
-                $response = $this->head();  
+                $response = $this->head();
                 break;
             case 'OPTIONS':
-                $response = $this->options();    
+                $response = $this->options();
                 break;
             default:
-                $response = $this->error();  
+                $response = $this->error();
                 break;
         }
 
