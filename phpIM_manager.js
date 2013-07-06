@@ -159,26 +159,36 @@ var new_messenger_view = function () {
     return that;
 };
 ;var new_chatbox_view = function () {
+
     var that = {},
         chatTemplate = '' +
         "<div id='phpIM-conversation-{{conversationId}}'>" +
-            "<div class='phpIM-message-area'>" +
-            "</div>" +
-
-            "<h3>{{conversationId}}</h3>" +
-
+            "<h3>Conversation with {{username}}</h3>" +
+            "<div class='phpIM-message-area well'></div>" +
             "<form class='phpIM-send-message'>" +
-                "<textarea name='message' placeholder='message'></textarea>" +
-                "<input type='submit' class='btn btn-primary' value='send'/>" +
+                "<fieldset>" +
+                    "<div>" +
+                        "<textarea " +
+                            "name='message' " +
+                            "placeholder='Your message here.'>" +
+                        "</textarea>" +
+                    "</div>" +
+                    "<input " +
+                        "type='submit' " +
+                        "class='btn btn-primary' " +
+                        "value='Send'" +
+                    "/>" +
+                "</fieldset>" +
             "</form>" +
         "</div>",
 
         messagesTemplate = '' +
         "{{#messages}}" +
             "<div class='phpIM-message'>" +
-                "<p>id : {{id}}</p>" +
-                "<p>message : {{message}}</p>" +
-                "<p>time stamp : {{time_stamp}}</p>" +
+                //"<p>{{id}}</p>" +
+                "<p class='message'>{{message}}" +
+                    "<span class='time-stamp'>{{time_stamp}}</span>" +
+                "</p>" +
             "</div>" +
         "{{/messages}}",
 
@@ -188,7 +198,7 @@ var new_messenger_view = function () {
                 '<p>id : {{id}}</p>' +
                 '<p>username : {{username}}</p>' +
                 '<p>last_update_check : {{last_update_check}}</p>' +
-                '<button id="phpIM-join-{{id}}" class="btn btn-small btn-info">' +
+                '<button id="phpIM-join-{{id}}" class="btn btn-info">' +
                     'Join' +
                 '</button>' +
             '</div>' +
@@ -203,9 +213,13 @@ var new_messenger_view = function () {
 
         render_messages = function (id, messages) {
             console.log("Messages Data : id : " + id + " : messages : " + JSON.stringify(messages));
-            $('#phpIM-conversation-' + id).append(Mustache.render(
+            var $messageBox = $('#phpIM-conversation-' + id + " .phpIM-message-area");
+            $messageBox.append(Mustache.render(
                 messagesTemplate, {messages: messages}
             ));
+            $messageBox.scrollTop($messageBox.prop('scrollHeight'));
+
+            // OR $('#test')[0].scrollHeight
         };
 
         render_available = function (conversations) {
