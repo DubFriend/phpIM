@@ -2,7 +2,7 @@ var new_chatbox_view = function () {
 
     var that = {},
         chatTemplate = '' +
-        "<div id='phpIM-conversation-{{conversationId}}'>" +
+        "<div id='phpIM-conversation-{{id}}'>" +
             "<h3>Conversation with {{username}}</h3>" +
             "<div class='phpIM-message-area well'></div>" +
             "<form class='phpIM-send-message'>" +
@@ -25,7 +25,6 @@ var new_chatbox_view = function () {
         messagesTemplate = '' +
         "{{#messages}}" +
             "<div class='phpIM-message'>" +
-                //"<p>{{id}}</p>" +
                 "<p class='message'>{{message}}" +
                     "<span class='time-stamp'>{{time_stamp}}</span>" +
                 "</p>" +
@@ -44,10 +43,10 @@ var new_chatbox_view = function () {
             '</div>' +
         '{{/available}}';
 
-        render_conversation = function (id) {
-            console.log("Chatbox Id : " + JSON.stringify(id));
+        render_conversation = function (data) {
+            console.log("Chatbox Id : " + JSON.stringify(data));
             $('#phpIM-conversations').append(Mustache.render(
-                chatTemplate, {conversationId: id}
+                chatTemplate, data//{conversationId: id}
             ));
         },
 
@@ -72,7 +71,8 @@ var new_chatbox_view = function () {
     that.update = function (data) {
         console.log("Chatbox View Data : " + JSON.stringify(data));
         if(data.newConversation) {
-            render_conversation(data.newConversation.id);
+            //render_conversation(data.newConversation.id);
+            render_conversation(data.newConversation);
         }
         if(data.messages && data.messages instanceof Object) {
             var conversationId;
@@ -125,14 +125,6 @@ var new_conversations_controller = function (fig) {
                     { username: $('#phpIM-username').val() }
                 );
             });
-            /*
-            $('#join-conversation').click(function () {
-                var id = $('#conversation-id').val();
-                conversationsManager.get_available_conversations();
-                conversationsManager.join_conversation(id);
-                bind_conversation(id);
-            });
-            */
         };
 
         that.update = function (data) {
@@ -261,40 +253,16 @@ var new_conversations_manager = function (fig, my) {
             success: function (response) {
                 console.log("Connect Response : " + JSON.stringify(response) + "\n");
                 that.get_available_conversations();
-                //that.join_conversation(response.id);
             }
         }));
     };
 
-/*
-    that.connect = function (connectData) {
-        console.log("Connect Data : " + JSON.stringify(connectData) + "\n");
-        if(!my.isConnected) {
-            my.isConnected = true;
-            ajax(my.ajax_fig({
-                url: ROOT + "conversations",
-                type: "POST",
-                data: connectData,
-                //dataType: "text",
-                success: function (response) {
-                    console.log("Connect Response : " + JSON.stringify(response) + "\n");
-                    conversationId = response.id;
-                    update();
-                }
-            }));
-        }
-    };
-
-    that.disconnect = function () {
-        my.isConnected = false;
-    };
-*/
     that.join_conversation = function(id) {
         var conversation = JSON.parse(JSON.stringify(availableConversations[id]));
         if(!is_conversation_joined(id) && conversation) {
-            that.publish({ newConversation: { id: id } });
             conversation.id = id;
             joinedConversations.push(conversation);
+            that.publish({newConversation: conversation});
         }
         console.log("Joined Conversations : " + JSON.stringify(joinedConversations) + "\n");
     };

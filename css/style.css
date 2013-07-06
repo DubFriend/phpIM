@@ -19,8 +19,8 @@
     width: 97%;
 }
 
-.time-stamp {
+span.time-stamp {
     float: right;
     color: grey;
-    font-size: 80%;
+    font-size: 70%;
 }
