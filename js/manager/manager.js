@@ -189,9 +189,11 @@ var new_conversations_manager = function (fig, my) {
                 for(conversation in messages) {
                     if(messages.hasOwnProperty(conversation)) {
                         filtered[conversation] = [];
-                        for(i = 0; i < messages[conversation].length; i += 1) {
-                            if(messages[conversation][i].username !== that.username) {
-                                filtered[conversation].push(messages[conversation][i]);
+                        if(is_array(messages[conversation])) {
+                            for(i = 0; i < messages[conversation].length; i += 1) {
+                                if(messages[conversation][i].username !== that.username) {
+                                    filtered[conversation].push(messages[conversation][i]);
+                                }
                             }
                         }
                     }
