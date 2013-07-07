@@ -13,6 +13,10 @@
     margin-left: 0.5em;
 }
 
+#get-available-conversations {
+    margin-bottom: 1em;
+}
+
 .phpIM-message-area {
     height: 10em;
     overflow-y: scroll;
@@ -22,8 +26,13 @@
     width: 97%;
 }
 
+.small {
+    font-size: 12px;
+}
+
 span.time-stamp {
     float: right;
     color: grey;
     font-size: 70%;
 }
+

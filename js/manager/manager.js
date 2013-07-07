@@ -3,7 +3,7 @@ var new_chatbox_view = function () {
     var that = {},
         chatTemplate = '' +
         "<div id='phpIM-conversation-{{id}}'>" +
-            "<h3>Conversation with {{username}}</h3>" +
+            "<p class='small'><b>id: </b>{{id}}<p>" +
             "<div class='phpIM-message-area well'></div>" +
             "<form class='phpIM-send-message'>" +
                 "<fieldset>" +
@@ -35,10 +35,10 @@ var new_chatbox_view = function () {
 
         availableTemplate = '' +
         '{{#available}}' +
-            '<div class="phpIM-available">' +
-                '<p>id : {{id}}</p>' +
-                '<p>username : {{username}}</p>' +
-                '<p>last_update_check : {{last_update_check}}</p>' +
+            '<div class="phpIM-available well">' +
+                '<p class="small"><b>id:</b>{{id}}</p>' +
+                '<p><b>username:</b> {{username}}</p>' +
+                //'<p>last_update_check : {{last_update_check}}</p>' +
                 '<button id="phpIM-join-{{id}}" class="btn btn-info">' +
                     'Join' +
                 '</button>' +
@@ -288,7 +288,18 @@ var new_conversations_manager = function (fig, my) {
     };
 
     that.send_message = function (messageData) {
-        var sendMessages;
+        var sendMessages,
+            publishFormat = { messages: {} };
+
+        //optimistically display message to user right away.
+        //possibly inconsistent data, but gives better user experience.
+        publishFormat.messages[messageData.conversation_id] = [{
+            message: messageData.message,
+            username: messageData.username
+        }];
+
+        that.publish(publishFormat);
+
         if(my.isConnected && !my.isMessagePending) {
             console.log("Message Sending\n");
             if(my.messageQueue.length > 0) {

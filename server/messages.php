@@ -1,7 +1,5 @@
 <?php
-/*PDOStatement::execute(): SQLSTATE[HY093]:
-    Invalid parameter number: number of bound variables does not match number of
-    tokens in <b>/var/www/phpIM/server/sql.php</b> on line <b>24</b><br />\n{\"is_success\":true,\"id\":\"0\"}"*/
+
 class Messages_Model extends Model {
     function add_message(array $fig = array()) {
         //check that conversation exists
@@ -9,10 +7,6 @@ class Messages_Model extends Model {
             "id FROM Conversation WHERE id = ?",
             array($fig['conversation_id']))->next()
         ) {
-            /*$insertId = $this->Database->insert(
-                "Message (conversation_id, user, message, time_stamp) VALUES (?, ?, ?, ?)",
-                array($fig['conversation_id'], $fig['user'], $fig['message'], date("Y-m-d H:i:s"))
-            );*/
 
             $insertId = $this->Database->insert(
                 "Message (conversation_id, message, username, time_stamp) VALUES (?, ?, ?, ?)",
