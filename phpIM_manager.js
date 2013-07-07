@@ -163,7 +163,7 @@ var new_messenger_view = function () {
     var that = {},
         chatTemplate = '' +
         "<div id='phpIM-conversation-{{id}}'>" +
-            "<h3>Conversation with {{username}}</h3>" +
+            "<p class='small'><b>id: </b>{{id}}<p>" +
             "<div class='phpIM-message-area well'></div>" +
             "<form class='phpIM-send-message'>" +
                 "<fieldset>" +
@@ -195,10 +195,10 @@ var new_messenger_view = function () {
 
         availableTemplate = '' +
         '{{#available}}' +
-            '<div class="phpIM-available">' +
-                '<p>id : {{id}}</p>' +
-                '<p>username : {{username}}</p>' +
-                '<p>last_update_check : {{last_update_check}}</p>' +
+            '<div class="phpIM-available well">' +
+                '<p class="small"><b>id:</b>{{id}}</p>' +
+                '<p><b>username:</b> {{username}}</p>' +
+                //'<p>last_update_check : {{last_update_check}}</p>' +
                 '<button id="phpIM-join-{{id}}" class="btn btn-info">' +
                     'Join' +
                 '</button>' +
@@ -288,7 +288,10 @@ var new_conversations_controller = function (fig) {
 
             $('#phpIM-set-username').click(function (e) {
                 e.preventDefault();
+
                 username = $('#phpIM-username').val();
+                conversationsManager.username = username;
+
                 that.publish({username: username});
             });
 
@@ -340,6 +343,22 @@ var new_conversations_manager = function (fig, my) {
         },
 
         update = function () {
+            var filter_own_messages = function (messages) {
+                var conversation, i, filtered = {}, message;
+
+                for(conversation in messages) {
+                    if(messages.hasOwnProperty(conversation)) {
+                        filtered[conversation] = [];
+                        for(i = 0; i < messages[conversation].length; i += 1) {
+                            if(messages[conversation][i].username !== that.username) {
+                                filtered[conversation].push(messages[conversation][i]);
+                            }
+                        }
+                    }
+                }
+                return filtered;
+            };
+
             console.log("Update Url : " + my.build_update_url(joinedConversations));
             if(joinedConversations.length > 0) {
                 ajax(my.ajax_fig({
@@ -348,7 +367,10 @@ var new_conversations_manager = function (fig, my) {
                     success: function (response) {
                         console.log("UPDATE RESPONSE : " + JSON.stringify(response) + "\n");
 
-                        that.publish({messages:response});
+                        //that.publish({messages:response});
+                        that.publish({messages:filter_own_messages(response)});
+
+
 
                         var r, i, conversationId, lastResponse;
                         //update last_id's on available conversations.
@@ -389,6 +411,8 @@ var new_conversations_manager = function (fig, my) {
 
 
     mixin_observer_publisher(that);
+
+    that.username = undefined;
 
     that.connect = function () {
         if(!my.isConnected) {
@@ -448,7 +472,18 @@ var new_conversations_manager = function (fig, my) {
     };
 
     that.send_message = function (messageData) {
-        var sendMessages;
+        var sendMessages,
+            publishFormat = { messages: {} };
+
+        //optimistically display message to user right away.
+        //possibly inconsistent data, but gives better user experience.
+        publishFormat.messages[messageData.conversation_id] = [{
+            message: messageData.message,
+            username: messageData.username
+        }];
+
+        that.publish(publishFormat);
+
         if(my.isConnected && !my.isMessagePending) {
             console.log("Message Sending\n");
             if(my.messageQueue.length > 0) {

@@ -128,7 +128,10 @@ var new_conversations_controller = function (fig) {
 
             $('#phpIM-set-username').click(function (e) {
                 e.preventDefault();
+
                 username = $('#phpIM-username').val();
+                conversationsManager.username = username;
+
                 that.publish({username: username});
             });
 
@@ -180,6 +183,22 @@ var new_conversations_manager = function (fig, my) {
         },
 
         update = function () {
+            var filter_own_messages = function (messages) {
+                var conversation, i, filtered = {}, message;
+
+                for(conversation in messages) {
+                    if(messages.hasOwnProperty(conversation)) {
+                        filtered[conversation] = [];
+                        for(i = 0; i < messages[conversation].length; i += 1) {
+                            if(messages[conversation][i].username !== that.username) {
+                                filtered[conversation].push(messages[conversation][i]);
+                            }
+                        }
+                    }
+                }
+                return filtered;
+            };
+
             console.log("Update Url : " + my.build_update_url(joinedConversations));
             if(joinedConversations.length > 0) {
                 ajax(my.ajax_fig({
@@ -188,7 +207,10 @@ var new_conversations_manager = function (fig, my) {
                     success: function (response) {
                         console.log("UPDATE RESPONSE : " + JSON.stringify(response) + "\n");
 
-                        that.publish({messages:response});
+                        //that.publish({messages:response});
+                        that.publish({messages:filter_own_messages(response)});
+
+
 
                         var r, i, conversationId, lastResponse;
                         //update last_id's on available conversations.
@@ -229,6 +251,8 @@ var new_conversations_manager = function (fig, my) {
 
 
     mixin_observer_publisher(that);
+
+    that.username = undefined;
 
     that.connect = function () {
         if(!my.isConnected) {
